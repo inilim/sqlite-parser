@@ -1,7 +1,7 @@
-/vendor
-/cache
+/vendor/
 /composer.lock
-/.phpunit.*
-/TODO
-/.sandbox
-/.aicoder
+/.idea/
+/.vscode/
+/.DS_Store
+.phpunit.result.cache
+/var/

@@ -1,0 +1,14 @@
+{
+  "project_name": "IPDO",
+  "ignore_patterns": [
+    ".git",
+    ".aicoder"
+  ],
+  "context_focus": [
+    "vendor/phplrt/phplrt/skills/phplrt/reference",
+    "vendor/phplrt/phplrt/skills/phplrt/SKILL.md",
+    "composer.json",
+    "PLAN.md"
+  ],
+  "max_file_size_kb": 100
+}

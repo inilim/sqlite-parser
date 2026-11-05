@@ -1,6 +1,6 @@
 {
     "name": "inilim/sqlite-parser",
-    "description": "",
+    "description": "SQLite SQL parser producing typed AST on top of phplrt (target dialect: SQLite 3.54.*)",
     "type": "library",
     "license": "MIT",
     "autoload": {
@@ -27,14 +27,21 @@
         ],
         "stan": [
             "php vendor/bin/phpstan analyze"
+        ],
+        "grammar:check": [
+            "php vendor/bin/phplrt check grammar/sqlite.pp3 -v"
+        ],
+        "grammar:build": [
+            "php vendor/bin/phplrt compile grammar/sqlite.pp3 src/Parser/SqliteParser.php --class=SqliteParser --namespace='Inilim\\SqliteParser\\Parser'"
         ]
     },
     "require": {
         "php": "^8.4 | ^8.5 | ^8.6",
         "inilim/tools": "^0.1",
-        "phplrt/phplrt": "^4.2"
+        "phplrt/runtime": "^4.2"
     },
     "require-dev": {
+        "phplrt/compiler": "^4.2",
         "phpunit/phpunit": "^9.6",
         "phpstan/phpstan": "^2.2"
     },

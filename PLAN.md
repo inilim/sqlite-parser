@@ -3,6 +3,8 @@
 > Поэтапный план создания PHP-библиотеки, превращающей SQL-текст SQLite в типизированное AST
 > на основе `phplrt`. Итеративный: каждый этап завершается работающей грамматикой, коммитом
 > сгенерированного парсера и тестами на соответствующий участок синтаксиса.
+>
+> **Целевая версия диалекта SQLite — 3.54.\*** (актуальный релиз на момент старта).
 
 ---
 
@@ -45,8 +47,6 @@ foreach ($script->statements as $statement) {
    - `require`: `phplrt/runtime` (= `phplrt/lexer` + `phplrt/parser` + `phplrt/source`),
      `inilim/tools`;
    - `require-dev`: `phplrt/compiler`, `phpunit/phpunit`, `phpstan/phpstan`.
-   Сейчас в `composer.json` стоит `phplrt/phplrt` (метапакет) — **пересмотреть в Этапе 0**
-   (см. «Открытые вопросы»).
 3. **Типизированные AST-узлы**, а не один catch-all. Каждый statement / expression —
    собственный класс с readonly-свойствами.
 4. **Итеративная разработка**: грамматика расширяется по фичам, после каждого расширения —
@@ -62,6 +62,9 @@ foreach ($script->statements as $statement) {
 composer.json
 PLAN.md
 README.md
+phpunit.xml.dist
+phpstan.neon.dist
+.gitignore
 grammar/
     sqlite.pp3              # %pragma root Script, %include подграмматик
     tokens.pp3              # %token / %skip / %fragment
@@ -99,24 +102,25 @@ tests/
 
 ## 4. Этапы
 
-### Этап 0 — Инфраструктура (0.5 дня)
+### Этап 0 — Инфраструктура (0.5 дня) ✅ ВЫПОЛНЕНО
 
 **Цель:** чистая основа, окружение готово к кодогенерации.
 
-- [ ] Привести `composer.json` в порядок:
+- [x] Привести `composer.json` в порядок:
   - `require`: `php: ^8.4`, `inilim/tools: ^0.1`, `phplrt/runtime: ^4.2`;
   - `require-dev`: `phplrt/compiler: ^4.2`, `phpunit/phpunit: ^9.6`, `phpstan/phpstan: ^2.2`;
   - добавить скрипты `grammar:check` и `grammar:build`.
-- [ ] Создать каталоги `grammar/`, `src/Ast/`, `src/Parser/`, `tests/`.
-- [ ] `phpunit.xml.dist`, `phpstan.neon.dist`.
-- [ ] `README.md` — короткое описание + пример API.
-- [ ] `.gitignore` (дополнить `vendor/`, `.phpunit.result.cache`, `var/`).
+- [x] Создать каталоги `grammar/`, `src/Ast/`, `src/Parser/`, `tests/`
+  (через `.gitkeep`, пока пусто — наполняются на этапах 1–2).
+- [x] `phpunit.xml.dist`, `phpstan.neon.dist`.
+- [x] `README.md` — короткое описание + пример API.
+- [x] `.gitignore` (с `vendor/`, `composer.lock`, `.phpunit.result.cache`, `var/`, IDE).
 
 **Готово когда:** `composer install` чистый, `composer tests` запускается (даже с 0 тестов),
 `vendor/bin/phplrt --version` работает.
 
-> ⚠️ Перед правкой `composer.json` — согласовать с пользователем: смена `phplrt/phplrt` →
-> `phplrt/runtime` + `phplrt/compiler` требует `composer require` / `composer remove`.
+> Проверка «Готово когда» — на стороне пользователя: `composer install`, `composer tests`,
+> `vendor/bin/phplrt --version`.
 
 ---
 
@@ -129,7 +133,7 @@ tests/
 - [ ] `src/Ast/Script.php` — `public readonly array $statements`.
 - [ ] `src/Ast/Statement.php` — абстрактный.
 - [ ] `src/Ast/Expression.php` — абстрактный.
-- [ ] Заглушки конкретных типов появительных по мере этапов (пока пустые).
+- [ ] Заглушки конкретных типов появлятельные по мере этапов (пока пустые).
 - [ ] Первый тест `tests/Ast/ScriptTest.php` — конструктор работает.
 
 **Готово когда:** `phpstan analyse` чистый, базовые тесты зелёные.
@@ -361,25 +365,22 @@ tests/
 
 ## 6. Открытые вопросы для пользователя
 
-1. **`composer.json`**: сейчас в `require` стоит `phplrt/phplrt` (метапакет, тянет
-   `phplrt/compiler` + laminas + symfony + twig в прод). Заменить на:
-   - `phplrt/runtime` в `require`;
-   - `phplrt/compiler` в `require-dev`.
-   Требует `composer require phplrt/runtime` и `composer remove phplrt/phplrt` + `composer require --dev phplrt/compiler`.
-   **Даю добро?**
+1. **`composer.json`**: ✅ **ЗАКРЫТ** — пользователь подтвердил переход на
+   `phplrt/runtime` (require) + `phplrt/compiler` (require-dev).
+   `composer require phplrt/runtime` + `composer remove phplrt/phplrt` +
+   `composer require --dev phplrt/compiler` выполнены (см. Этап 0).
 
 2. **Обратный рендер AST → SQL** (`->toSql()`): нужен? Если да — выносится отдельным
-   этапом после Этапа 8.
+   этапом после Этапа 8. **Ожидает решения.**
 
 3. **Парсинг «частичного» SQL**: разрешать ли неполные выражения (например, `SELECT id FROM`
-   без завершения) или всегда строгий PEG (весь вход должен быть съеден)? По умолчанию — строгий.
+   без завершения) или всегда строгий PEG (весь вход должен быть съеден)? **По умолчанию — строгий.**
 
 4. **Уровень детализации типов**: различать `INTEGER` / `TEXT` / `REAL` / `BLOB` в
-   `ColumnDefinition`, или хранить `type` строкой как пришло из SQL? По умолчанию — строкой
-   (упрощает).
+   `ColumnDefinition`, или хранить `type` строкой как пришло из SQL? **По умолчанию — строкой.**
 
-5. **Версионирование SQLite**: целевая версия диалекта — 3.45+ (актуальный LTS)? Влияет на
-   наличие `RETURNING`, `STRICT`, `ON CONFLICT DO UPDATE`.
+5. **Версионирование SQLite**: ✅ **ЗАКРЫТ** — целевая версия диалекта **3.54.\***.
+   Включает `RETURNING`, `STRICT`, `ON CONFLICT DO UPDATE`, все фичи SQLite 3.54.
 
 ---
 
@@ -392,4 +393,4 @@ tests/
 | `v0.3.0`       | 5           | JOIN, CTE, UNION, оконные функции                            |
 | `v0.4.0`       | 6           | DML (INSERT/UPDATE/DELETE/UPSERT)                            |
 | `v0.5.0`       | 7           | DDL (CREATE/ALTER/DROP)                                      |
-| `v1.0.0`       | 10          | Полное покрытие SQLite + CI + стабильный API                 |
+| `v1.0.0`       | 10          | Полное покрытие SQLite 3.54.* + CI + стабильный API          |
