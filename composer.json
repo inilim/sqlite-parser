@@ -1,0 +1,46 @@
+{
+    "name": "inilim/sqlite-parser",
+    "description": "",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Inilim\\SqliteParser\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Inilim\\Test\\": "tests/"
+        }
+    },
+    "authors": [
+        {
+            "name": "inilim"
+        },
+        {
+            "name": "Web community"
+        }
+    ],
+    "scripts": {
+        "tests": [
+            "php vendor/bin/phpunit tests"
+        ],
+        "stan": [
+            "php vendor/bin/phpstan analyze"
+        ]
+    },
+    "require": {
+        "php": "^8.4 | ^8.5 | ^8.6",
+        "inilim/tools": "^0.1",
+        "phplrt/phplrt": "^4.2"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.6",
+        "phpstan/phpstan": "^2.2"
+    },
+    "config": {
+        "platform": {
+            "php": "8.4.99"
+        }
+    }
+}

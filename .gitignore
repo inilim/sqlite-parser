@@ -1,0 +1,7 @@
+/vendor
+/cache
+/composer.lock
+/.phpunit.*
+/TODO
+/.sandbox
+/.aicoder
