@@ -145,7 +145,7 @@ $root = Path::realPath($root);
 
 $tree = new TreeBuilder(
     root: $root,
-    ignoredDirs: ['vendor', '.git', 'cli-tools', '.aicoder'],
+    ignoredDirs: ['vendor', '.git', 'cli-tools', '.aicoder', '.sandbox'],
     ignoredFormats: [],
     ignoredFiles: ['.env', '.env.local', '.gitignore', 'composer.lock', '.gitkeep', 'tree.out'],
     showFiles: true,

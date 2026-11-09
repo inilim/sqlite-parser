@@ -86,6 +86,7 @@ sqlite-parser/
 │   ├── Grammar/
 │   │   └── Reducers.php (5538 байт)
 │   └── Parser/
+│       ├── Parser.php (1312 байт)
 │       └── SqliteParser.php (211297 байт)
 ├── tests/
 │   ├── Ast/
@@ -99,11 +100,12 @@ sqlite-parser/
 │   │   ├── SelectTest.php (3687 байт)
 │   │   └── UtilityTest.php (8828 байт)
 │   └── Parser/
+│       ├── ParserTest.php (1523 байт)
 │       └── SqliteParserTest.php (2502 байт)
 ├── .gitattributes (108 байт)
-├── .phpunit.result.cache (9754 байт)
+├── .phpunit.result.cache (10042 байт)
 ├── composer.json (1783 байт)
 ├── phpstan.neon (225 байт)
 ├── phpstan.neon.dist (225 байт)
 ├── phpunit.xml.dist (562 байт)
-└── README.md (3428 байт)
+└── README.md (4174 байт)
