@@ -167,8 +167,8 @@
 // Правила
 //
 // Синтаксис редукторов phplrt 4.x: RuleName -> { ... } : ... ;
-// Пустое правило выражается пустым телом: RuleName : ;
-// (директива %empty в PP3 не поддерживается).
+// Пустая альтернатива выражается через ? (zero or one) или * (zero or more),
+// а не через %empty — директива %empty в PP3 не поддерживается.
 // ============================================================================
 
 Statement
@@ -177,27 +177,23 @@ Statement
     ;
 
 Script
-    -> { return $children; }
-    : EmptyScript() | SemicolonScript() | StatementsScript()
-    ;
-
-EmptyScript
-    -> { return new \Inilim\SqliteParser\Ast\Script([]); }
-    :
-    ;
-
-SemicolonScript
     -> {
+        // $children может быть пустым массивом (при StatementList()? -> zero)
+        // либо массивом Statement'ов (при успешном StatementList()).
         return new \Inilim\SqliteParser\Ast\Script(
-            [new \Inilim\SqliteParser\Ast\Statement\EmptyStatement()]
+            \is_array($children) ? $children : []
         );
     }
-    : ::T_SEMICOLON::
+    : StatementList()?
+    | ::T_SEMICOLON::
+        -> {
+            return new \Inilim\SqliteParser\Ast\Script(
+                [new \Inilim\SqliteParser\Ast\Statement\EmptyStatement()]
+            );
+        }
     ;
 
-StatementsScript
-    -> {
-        return new \Inilim\SqliteParser\Ast\Script($children);
-    }
-    : Statement() (::T_SEMICOLON:: Statement())* (::T_SEMICOLON::)?
+StatementList
+    -> { return $children; }
+    : Statement() (::T_SEMICOLON:: Statement())*
     ;
