@@ -139,7 +139,7 @@
 
 %token T_CONCAT /\|\|/
 %token T_LSHIFT /<</
-%token T_RSHIFT />/
+%token T_RSHIFT />>/
 %token T_LTE /<=/
 %token T_GTE />=/
 %token T_NEQ /<>|!=/
