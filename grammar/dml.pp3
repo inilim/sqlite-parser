@@ -1,0 +1,363 @@
+// ============================================================================
+// DML: INSERT / UPDATE / DELETE / UPSERT
+//
+// Опирается на:
+//   - tokens.pp3     — T_INSERT, T_INTO, T_VALUES, T_SET, T_UPDATE, T_DELETE,
+//                      T_DEFAULT, T_RETURNING, T_CONFLICT, T_DO, T_NOTHING,
+//                      T_OR, T_REPLACE, T_IGNORE, T_ABORT, T_FAIL, T_ROLLBACK
+//   - select.pp3     — SelectStatement, SelectList, TableName, IdentList,
+//                      WhereClause, ResultColumnList
+//   - expression.pp3 — Expression, ExprList
+// ============================================================================
+
+// ----------------------------------------------------------------------------
+// INSERT
+// ----------------------------------------------------------------------------
+
+InsertStatement
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+
+        $table          = null;
+        $orAction       = null;
+        $columns        = null;
+        $valuesBody     = null;
+        $selectBody     = null;
+        $defaultValues  = false;
+        $upsert         = null;
+        $returning      = null;
+
+        foreach ($children as $child) {
+            if (\is_string($child)) {
+                $upper = \strtoupper($child);
+                if ($orAction === null
+                    && \in_array($upper, ['REPLACE', 'IGNORE', 'ABORT', 'FAIL', 'ROLLBACK'], true)
+                ) {
+                    $orAction = $upper;
+                    continue;
+                }
+                if ($table === null) {
+                    $table = $child;
+                }
+                continue;
+            }
+
+            if (\is_array($child)) {
+                if ($columns === null) {
+                    $columns = $child;
+                }
+                continue;
+            }
+
+            if ($child instanceof \Inilim\SqliteParser\Ast\Statement\InsertValuesBody) {
+                $valuesBody = $child;
+                continue;
+            }
+
+            if ($child instanceof \Inilim\SqliteParser\Ast\Statement\InsertDefaultBody) {
+                $defaultValues = true;
+                continue;
+            }
+
+            if ($child instanceof \Inilim\SqliteParser\Ast\Statement) {
+                $selectBody = $child;
+                continue;
+            }
+
+            if ($child instanceof \Inilim\SqliteParser\Ast\Statement\UpsertClause) {
+                $upsert = $child;
+                continue;
+            }
+
+            if ($child instanceof \Inilim\SqliteParser\Ast\Statement\ReturningClause) {
+                $returning = $child;
+                continue;
+            }
+        }
+
+        return new \Inilim\SqliteParser\Ast\Statement\InsertStatement(
+            table: $table ?? '',
+            columns: $columns,
+            rows: $valuesBody?->rows,
+            select: $selectBody,
+            defaultValues: $defaultValues,
+            orAction: $orAction,
+            upsert: $upsert,
+            returning: $returning,
+        );
+    }
+    : ::T_INSERT:: OrAction()? ::T_INTO:: TableName()
+      (::T_LPAREN:: IdentList() ::T_RPAREN::)?
+      InsertBody()
+      UpsertClause()?
+      ReturningClause()?
+    ;
+
+InsertBody
+    : InsertValuesBody()
+    | SelectStatement()
+    | InsertDefaultBody()
+    ;
+
+InsertValuesBody
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+
+        $rows = [];
+        $collect = static function ($items) use (&$collect, &$rows): void {
+            foreach ($items as $item) {
+                if ($item instanceof \Inilim\SqliteParser\Ast\Expression\ExpressionList) {
+                    $rows[] = $item->items;
+                } elseif (\is_array($item)) {
+                    $collect($item);
+                }
+            }
+        };
+        $collect($children);
+
+        return new \Inilim\SqliteParser\Ast\Statement\InsertValuesBody($rows);
+    }
+    : ::T_VALUES:: ::T_LPAREN:: ExprList() ::T_RPAREN::
+      (::T_COMMA:: ::T_LPAREN:: ExprList() ::T_RPAREN::)*
+    ;
+
+InsertDefaultBody
+    -> {
+        return new \Inilim\SqliteParser\Ast\Statement\InsertDefaultBody();
+    }
+    : ::T_DEFAULT:: ::T_VALUES::
+    ;
+
+OrAction
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+
+        foreach ($children as $child) {
+            if ($child instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+                $v = \strtoupper($child->value);
+                if (\in_array($v, ['REPLACE', 'IGNORE', 'ABORT', 'FAIL', 'ROLLBACK'], true)) {
+                    return $v;
+                }
+            }
+        }
+
+        return '';
+    }
+    : ::T_OR:: (<T_REPLACE> | <T_IGNORE> | <T_ABORT> | <T_FAIL> | <T_ROLLBACK>)
+    ;
+
+UpsertClause
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+
+        $conflictTarget = null;
+        $assignments    = null;
+        $where          = null;
+        $doNothing      = false;
+
+        foreach ($children as $child) {
+            if (\is_array($child)) {
+                if ($conflictTarget === null) {
+                    $conflictTarget = $child;
+                }
+                continue;
+            }
+
+            if ($child instanceof \Inilim\SqliteParser\Ast\Statement\AssignmentList) {
+                $assignments = $child->items;
+                continue;
+            }
+
+            if ($child instanceof \Inilim\SqliteParser\Ast\Statement\WhereClause) {
+                $where = $child->expression;
+                continue;
+            }
+
+            if ($child instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+                if (\strtoupper($child->value) === 'NOTHING') {
+                    $doNothing = true;
+                }
+                continue;
+            }
+        }
+
+        return new \Inilim\SqliteParser\Ast\Statement\UpsertClause(
+            conflictTarget: $conflictTarget,
+            assignments: $doNothing ? null : $assignments,
+            where: $where,
+        );
+    }
+    : ::T_ON:: ::T_CONFLICT:: (::T_LPAREN:: IdentList() ::T_RPAREN::)?
+      ::T_DO:: (<T_NOTHING> | ::T_UPDATE:: ::T_SET:: AssignmentList() WhereClause()?)
+    ;
+
+ReturningClause
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+
+        $columns = [];
+        foreach ($children as $child) {
+            if ($child instanceof \Inilim\SqliteParser\Ast\Statement\ResultColumnList) {
+                $columns = $child->items;
+                break;
+            }
+        }
+
+        return new \Inilim\SqliteParser\Ast\Statement\ReturningClause($columns);
+    }
+    : ::T_RETURNING:: SelectList()
+    ;
+
+// ----------------------------------------------------------------------------
+// UPDATE
+// ----------------------------------------------------------------------------
+
+UpdateStatement
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+
+        $table       = null;
+        $orAction    = null;
+        $assignments = [];
+        $where       = null;
+        $returning   = null;
+
+        foreach ($children as $child) {
+            if (\is_string($child)) {
+                $upper = \strtoupper($child);
+                if ($orAction === null
+                    && \in_array($upper, ['REPLACE', 'IGNORE', 'ABORT', 'FAIL', 'ROLLBACK'], true)
+                ) {
+                    $orAction = $upper;
+                    continue;
+                }
+                if ($table === null) {
+                    $table = $child;
+                }
+                continue;
+            }
+
+            if ($child instanceof \Inilim\SqliteParser\Ast\Statement\AssignmentList) {
+                $assignments = $child->items;
+                continue;
+            }
+
+            if ($child instanceof \Inilim\SqliteParser\Ast\Statement\WhereClause) {
+                $where = $child->expression;
+                continue;
+            }
+
+            if ($child instanceof \Inilim\SqliteParser\Ast\Statement\ReturningClause) {
+                $returning = $child;
+                continue;
+            }
+        }
+
+        return new \Inilim\SqliteParser\Ast\Statement\UpdateStatement(
+            table: $table ?? '',
+            assignments: $assignments,
+            where: $where,
+            orAction: $orAction,
+            returning: $returning,
+        );
+    }
+    : ::T_UPDATE:: OrAction()? TableName()
+      ::T_SET:: AssignmentList()
+      WhereClause()? ReturningClause()?
+    ;
+
+// ----------------------------------------------------------------------------
+// DELETE
+// ----------------------------------------------------------------------------
+
+DeleteStatement
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+
+        $table     = null;
+        $where     = null;
+        $returning = null;
+
+        foreach ($children as $child) {
+            if (\is_string($child)) {
+                if ($table === null) {
+                    $table = $child;
+                }
+                continue;
+            }
+
+            if ($child instanceof \Inilim\SqliteParser\Ast\Statement\WhereClause) {
+                $where = $child->expression;
+                continue;
+            }
+
+            if ($child instanceof \Inilim\SqliteParser\Ast\Statement\ReturningClause) {
+                $returning = $child;
+                continue;
+            }
+        }
+
+        return new \Inilim\SqliteParser\Ast\Statement\DeleteStatement(
+            table: $table ?? '',
+            where: $where,
+            returning: $returning,
+        );
+    }
+    : ::T_DELETE:: ::T_FROM:: TableName() WhereClause()? ReturningClause()?
+    ;
+
+// ----------------------------------------------------------------------------
+// Assignment
+// ----------------------------------------------------------------------------
+
+Assignment
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+
+        $column = '';
+        $value  = null;
+
+        foreach ($children as $child) {
+            if ($child instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+                $v   = $child->value;
+                $len = \strlen($v);
+                if ($len >= 2) {
+                    $first = $v[0];
+                    $last  = $v[$len - 1];
+                    if (($first === '"' && $last === '"') || ($first === '`' && $last === '`')) {
+                        $v = \substr($v, 1, -1);
+                        $v = \str_replace($first . $first, $first, $v);
+                    } elseif ($first === '[' && $last === ']') {
+                        $v = \substr($v, 1, -1);
+                    }
+                }
+                $column = $v;
+                continue;
+            }
+
+            if ($child instanceof \Inilim\SqliteParser\Ast\Expression) {
+                $value = $child;
+                continue;
+            }
+        }
+
+        return new \Inilim\SqliteParser\Ast\Statement\Assignment($column, $value);
+    }
+    : (<T_IDENT> | <T_QUOTED_IDENT>) ::T_EQ:: Expression()
+    ;
+
+AssignmentList
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+
+        $flat = [];
+        \array_walk_recursive($children, static function ($item) use (&$flat): void {
+            if ($item instanceof \Inilim\SqliteParser\Ast\Statement\Assignment) {
+                $flat[] = $item;
+            }
+        });
+
+        return new \Inilim\SqliteParser\Ast\Statement\AssignmentList($flat);
+    }
+    : Assignment() (::T_COMMA:: Assignment())*
+    ;

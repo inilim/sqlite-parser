@@ -10,6 +10,7 @@
 //   statement.pp3   — Script, StatementList, Statement (корневые узлы)
 //   select.pp3      — SELECT, FROM, JOIN, WITH, WHERE, GROUP BY, ORDER BY, LIMIT
 //   expression.pp3  — выражения, приоритеты, функции, CAST, CASE, литералы
+//   dml.pp3         — INSERT / UPDATE / DELETE / UPSERT
 //
 // Порядок включения важен только для лексера: токены объявляются первыми,
 // чтобы многосимвольные операторы и ключевые слова выигрывали у T_IDENT.
@@ -19,3 +20,4 @@
 %include statement.pp3
 %include select.pp3
 %include expression.pp3
+%include dml.pp3

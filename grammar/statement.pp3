@@ -47,9 +47,12 @@ StatementList
     ;
 
 // ----------------------------------------------------------------------------
-// Statement: на этапе 5 — SELECT (одиночный и составной).
+// Statement: SELECT, INSERT, UPDATE, DELETE.
 // ----------------------------------------------------------------------------
 
 Statement
     : SelectStatement()
+    | InsertStatement()
+    | UpdateStatement()
+    | DeleteStatement()
     ;
