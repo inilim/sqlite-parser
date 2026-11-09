@@ -8,17 +8,34 @@ use Inilim\SqliteParser\Ast\Expression;
 use Inilim\SqliteParser\Ast\Node;
 
 /**
- * Один элемент секции ORDER BY.
+ * ORDER BY item: выражение и необязательный флаг DESC.
  *
- * На этапе 3 direction всегда 'ASC' — поддержка явного ASC/DESC будет
- * добавлена на этапе 5 (продвинутый SELECT).
+ * Пример: ORDER BY обновлен_unix DESC -> expression = ColumnReference('обновлен_unix'), desc = true
  */
 final class OrderBy extends Node
 {
     public function __construct(
-        public readonly Expression $expression,
-        public readonly string $direction = 'ASC',
-    ) {
-        parent::__construct();
+        public ?Expression $expression = null,
+        public bool $desc = false,
+    ) {}
+
+    public function getExpression(): ?Expression
+    {
+        return $this->expression;
+    }
+
+    public function getDesc(): bool
+    {
+        return $this->desc;
+    }
+
+    public function isDesc(): bool
+    {
+        return $this->desc;
+    }
+
+    public function isAsc(): bool
+    {
+        return !$this->desc;
     }
 }

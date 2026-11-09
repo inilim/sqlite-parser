@@ -397,9 +397,13 @@ TableReference
             $subquery = $first;
         }
 
-        $collectAliases = static function ($items) use (&$collectAliases, &$columnAliases): void {
+        $collectAliases = static function ($items) use (&$collectAliases, &$columnAliases, &$alias): void {
             foreach ($items as $item) {
-                if (\is_string($item)) {
+                if ($item instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+                    if ($alias === null) {
+                        $alias = $item->value;
+                    }
+                } elseif (\is_string($item)) {
                     $columnAliases[] = $item;
                 } elseif (\is_array($item)) {
                     $collectAliases($item);
@@ -426,8 +430,8 @@ TableReference
             columnAliases: $columnAliases === [] ? null : $columnAliases,
         );
     }
-    : TableName() (::T_AS:: <T_IDENT>)? (::T_LPAREN:: IdentList() ::T_RPAREN::)?
-    | ::T_LPAREN:: SelectStatement() ::T_RPAREN:: (::T_AS:: <T_IDENT>)? (::T_LPAREN:: IdentList() ::T_RPAREN::)?
+    : TableName() ((::T_AS::)? <T_IDENT>)? (::T_LPAREN:: IdentList() ::T_RPAREN::)?
+    | ::T_LPAREN:: SelectStatement() ::T_RPAREN:: ((::T_AS::)? <T_IDENT>)? (::T_LPAREN:: IdentList() ::T_RPAREN::)?
     ;
 
 TableName
@@ -517,10 +521,18 @@ OrderByClause
 OrderByItem
     -> {
         $children = \is_array($children) ? $children : [$children];
-        $expression = $children[0] ?? null;
-        return new \Inilim\SqliteParser\Ast\Statement\OrderBy($expression);
+        $expression = null;
+        $desc = false;
+        foreach ($children as $child) {
+            if ($child instanceof \Inilim\SqliteParser\Ast\Expression) {
+                $expression = $child;
+            } elseif (\is_string($child) && $child === 'DESC') {
+                $desc = true;
+            }
+        }
+        return new \Inilim\SqliteParser\Ast\Statement\OrderBy($expression, $desc);
     }
-    : Expression()
+    : Expression() SortOrder()?
     ;
 
 LimitClause
