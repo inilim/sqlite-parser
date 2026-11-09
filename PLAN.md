@@ -47,7 +47,7 @@ foreach ($script->statements as $statement) {
    - `require`: `phplrt/runtime` (= `phplrt/lexer` + `phplrt/parser` + `phplrt/source`),
      `inilim/tools`;
    - `require-dev`: `phplrt/compiler`, `phpunit/phpunit`, `phpstan/phpstan`.
-3. **Типизированные AST-узлы**, а не один catch-all. Каждый statement / expression —
+3. **Типизированные AST-узлы**, а не один catch-all. Каждый statement / expression — 
    собственный класс с readonly-свойствами.
 4. **Итеративная разработка**: грамматика расширяется по фичам, после каждого расширения —
    `check` → `compile` → `phpunit` → `git diff` пустой.
@@ -134,7 +134,7 @@ tests/
 - [x] `src/Ast/Script.php` — `public readonly array $statements`.
 - [x] `src/Ast/Statement.php` — абстрактный.
 - [x] `src/Ast/Expression.php` — абстрактный.
-- [ ] Заглушки конкретных типов появлятельные по мере этапов (пока пустые).
+- [x] Заглушки конкретных типов появлятельные по мере этапов (пока пустые).
 - [x] Первый тест `tests/Ast/ScriptTest.php` — конструктор работает.
 
 **Готово когда:** `phpstan analyse` чистый, базовые тесты зелёные.
@@ -182,67 +182,84 @@ tests/
 
 ---
 
-### Этап 3 — SELECT (MVP) (1–2 дня)
+### Этап 3 — SELECT (MVP) (1–2 дня) ✅ ВЫПОЛНЕНО
 
 **Цель:** «скелет» библиотеки — можно спарсить простой SELECT.
 
-- [ ] `grammar/select.pp3`:
-  - `SelectStatement : ::T_SELECT:: SelectList() ::T_FROM:: TableRef() SelectTail()? ;`
-  - `SelectList : (ResultColumn() (::T_COMMA:: ResultColumn())*) ;`
-  - `ResultColumn : Expression() (::T_AS:: ::T_IDENT::)? | ::T_STAR:: ;`
-  - `TableRef : TableName() (::T_AS:: ::T_IDENT::)? ;`
-  - `SelectTail` (пока): `WHERE`, `ORDER BY`, `LIMIT` / `OFFSET`.
-- [ ] AST-узлы: `SelectStatement`, `ResultColumn`, `TableReference`, `OrderBy`.
-- [ ] Минимальные выражения (см. Этап 4 будет расширять):
-  - `Literal` (`T_INT`, `T_FLOAT`, `T_STRING`, `T_NULL`), `ColumnReference`, `Star`.
-- [ ] Reducer'ы в `.pp3` возвращают `new Node(...)` (с `--use`, если понадобится FQCN — см. Этап 4).
+- [x] `grammar/select.pp3`:
+  - `SelectStatement : ::T_SELECT:: SelectList() FromClause()? WhereClause()? OrderByClause()? LimitClause()? ;`
+  - `SelectList` — правая рекурсия, обёрнута в `ResultColumnList` (barrier).
+  - `ResultColumn : Expression() (::T_AS:: <T_IDENT>)? | <T_STAR> ;`
+  - `TableReference : TableName() (::T_AS:: <T_IDENT>)? ;`
+- [x] AST-узлы: `SelectStatement`, `ResultColumn`, `TableReference`, `OrderBy`,
+  `ResultColumnList`, `OrderByList`.
+- [x] Минимальные выражения: `Literal`, `ColumnReference`, `Star`, `BinaryOperation`.
+- [x] Reducer'ы в `.pp3` возвращают `new Node(...)` (FQCN прямо в редукторе).
+- [x] Тест `tests/Grammar/SelectTest.php` — `SELECT 1`, `SELECT * FROM users`,
+  `SELECT id, name FROM users WHERE id = 1`.
+- [x] Обход phplrt-gotcha: списки узлов обёрнуты в контейнерные объекты.
 
 **Проверки:**
-- [ ] Тест: `SELECT 1` → `Script([SelectStatement(columns=[Literal(1)])])`.
-- [ ] Тест: `SELECT * FROM users` → корректное AST.
-- [ ] Тест: `SELECT id, name FROM users WHERE id = 1` → AST с `Where`.
+- [x] Тест: `SELECT 1` → `Script([SelectStatement(columns=[Literal(1)])])`.
+- [x] Тест: `SELECT * FROM users` → корректное AST.
+- [x] Тест: `SELECT id, name FROM users WHERE id = 1` → AST с `Where`.
 
 **Готово когда:** эти три сценария проходят через `new Inilim\SqliteParser\Parser\SqliteParser()`.
 
 ---
 
-### Этап 4 — Выражения (2 дня)
+### Этап 4 — Выражения (2 дня) ✅ ВЫПОЛНЕНО
 
 **Цель:** полноценная грамматика выражений SQLite.
 
-- [ ] `grammar/expression.pp3`:
+- [x] `grammar/sqlite.pp3` — раздел «Выражения»:
   - `Expression : OrExpr() ;`
   - `OrExpr : AndExpr() (::T_OR:: AndExpr())* ;`
   - `AndExpr : NotExpr() (::T_AND:: NotExpr())* ;`
   - `NotExpr : ::T_NOT:: NotExpr() | Comparison() ;`
-  - `Comparison : Additive() (('=' | '<>' | '!=' | '<' | '<=' | '>' | '>=') Additive()
-                        | ::T_IS:: ::T_NULL:: | ::T_IS:: ::T_NOT:: ::T_NULL::
-                        | ::T_LIKE:: Additive() | ::T_GLOB:: Additive()
-                        | ::T_IN:: '(' ExprList()? ')'
-                        | ::T_BETWEEN:: Additive() ::T_AND:: Additive())* ;`
-  - `Additive : Multiplicative() (('+' | '-') Multiplicative())* ;`
-  - `Multiplicative : Unary() (('*' | '/' | '%') Unary())* ;`
-  - `Unary : ('+' | '-' | '~') Unary() | Primary() ;`
-  - `Primary : '(' Expression() ')' | Literal() | ColumnReference()
-              | FunctionCall() | CaseExpression() | CastExpression() | Subquery() ;`
-- [ ] Узлы: `Literal`, `ColumnReference`, `BinaryOperation`, `UnaryOperation`,
-  `FunctionCall`, `CaseExpression`, `CastExpression`, `BetweenExpression`,
-  `InExpression`, `LikeExpression`, `IsNullExpression`, `Subquery`.
-- [ ] `FunctionCall`: `name '(' (Expression (',' Expression)*)? ')'`,
-  поддержка `DISTINCT` внутри агрегатов.
-- [ ] `CAST(x AS type)` — отдельная ветка.
-- [ ] **Трюк с flattening**: каждый вложенный узел возвращает объект (не голый массив),
-  иначе `$children` родителя схлопнется (см. `SKILL.md` → «gotcha»).
-- [ ] При `compile` использовать `--use "Inilim\SqliteParser\Ast\Expression\..."` (или через alias).
+  - `Comparison : Additive() (CompareOp() Additive())* ;`
+  - `Additive : Multiplicative() (AddOp() Multiplicative())* ;`
+  - `Multiplicative : Unary() (MulOp() Unary())* ;`
+  - `Unary : <T_PLUS> Unary() | <T_MINUS> Unary() | <T_TILDE> Unary() | Primary() ;`
+  - `Primary : PrimaryBase() (PostfixOp())* ;`
+  - `PrimaryBase : ::T_LPAREN:: Expression() ::T_RPAREN:: | CastExpression() | CaseExpression()
+                  | FunctionCall() | Literal() | ColumnReference() ;`
+  - `PostfixOp` — замыкание `Expression → Expression`, реализует IS [NOT] NULL,
+    [NOT] LIKE, [NOT] GLOB, [NOT] BETWEEN, [NOT] IN.
+- [x] Узлы: `Literal`, `ColumnReference` (с квалификацией через точку), `BinaryOperation`,
+  `UnaryOperation`, `FunctionCall`, `CaseExpression`, `WhenClause`, `CastExpression`,
+  `BetweenExpression`, `InExpression`, `LikeExpression`, `IsNullExpression`,
+  `ExpressionList`.
+- [x] `FunctionCall`: `name '(' (DISTINCT|ALL)? (ExprList|'*')? ')'`.
+- [x] `CAST(x AS type)` — отдельная ветка.
+- [x] `src/Grammar/Reducers.php` — helper `foldLeftBinaryChain()` для сворачивания
+  левоассоциативных цепочек; устойчив к трём формам результата повтора phplrt
+  (flat, nested, flat-inner).
+- [x] Тест `tests/Grammar/ExpressionTest.php` — приоритеты, ассоциативность,
+  функции, CAST, CASE, IS NULL, LIKE, GLOB, BETWEEN, IN, `t.id`.
 
-**Проверки:**
-- [ ] Приоритеты: `1 + 2 * 3` → `Add(1, Mul(2, 3))`.
-- [ ] Скобки: `(1 + 2) * 3` → `Mul(Add(1, 2), 3)`.
-- [ ] `a = 1 AND b <> 2` → `And(Eq(a,1), Ne(b,2))`.
-- [ ] `CAST(x AS INTEGER)` → `CastExpression`.
-- [ ] `COUNT(DISTINCT x)` → `FunctionCall('COUNT', [x], distinct: true)`.
+**Проверки (выполнены через `tests/Grammar/ExpressionTest.php`):**
+- [x] Приоритеты: `1 + 2 * 3` → `Add(1, Mul(2, 3))`.
+- [x] Скобки: `(1 + 2) * 3` → `Mul(Add(1, 2), 3)`.
+- [x] `a = 1 AND b <> 2` → `And(Eq(a,1), Ne(b,2))`.
+- [x] `CAST(x AS INTEGER)` → `CastExpression`.
+- [x] `COUNT(DISTINCT x)` → `FunctionCall('COUNT', [x], distinct: true)`.
+- [x] `COUNT(*)` → `FunctionCall('COUNT', [Star()])`.
+- [x] `x IS NULL` / `x IS NOT NULL` → `IsNullExpression`.
+- [x] `name LIKE 'A%'` / `name NOT GLOB 'A*'` → `LikeExpression`.
+- [x] `x BETWEEN 1 AND 10` / `x BETWEEN 1 AND 10 AND y = 2` → `BetweenExpression`.
+- [x] `x IN (1, 2, 3)` / `x NOT IN (1, 2)` → `InExpression`.
+- [x] `CASE ... WHEN ... END` (simple / searched) → `CaseExpression`.
+- [x] `-5`, `NOT a = 1` → `UnaryOperation`.
+- [x] `t.id` → `ColumnReference('id', 't')`.
 
-**Готово когда:** ~10 тестов на приоритеты, ассоциативность, функции — зелёные.
+**Готово когда:** ~20 тестов на приоритеты, ассоциативность, функции — зелёные.
+
+> Ограничения этапа 4:
+> - функции с ключевыми именами (`REPLACE`, `LEFT`, `RIGHT`) не поддерживаются —
+>   в FunctionCall принимается только `T_IDENT` / `T_QUOTED_IDENT`;
+> - параметризованные типы в `CAST` (`VARCHAR(10)`) не поддерживаются — только одно слово;
+> - `IN (SELECT ...)` (подзапрос) появится вместе с subquery на этапе 5.
 
 ---
 

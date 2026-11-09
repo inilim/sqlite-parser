@@ -9,13 +9,18 @@ use Inilim\SqliteParser\Ast\Expression;
 /**
  * Ссылка на колонку по имени.
  *
- * На этапе 3 поддерживается только простое имя (`id`, `"user name"`).
- * Квалификация через точку (`t.id`) появится на этапе 4.
+ * Поддерживаются:
+ *   - простое имя:          `id`, `"user name"`   → name='id', table=null
+ *   - квалифицированное:    `t.id`, `"t"."id"`    → name='id', table='t'
+ *
+ * `table` хранится без кавычек (если использовались обрамляющие кавычки — они
+ * снимаются на этапе редукции токена T_QUOTED_IDENT).
  */
 final class ColumnReference extends Expression
 {
     public function __construct(
         public readonly string $name,
+        public readonly ?string $table = null,
     ) {
         parent::__construct();
     }
