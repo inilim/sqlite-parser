@@ -18,16 +18,28 @@ sqlite-parser/
 │   │   │   ├── LikeExpression.php
 │   │   │   ├── Literal.php
 │   │   │   ├── Star.php
+│   │   │   ├── Subquery.php
 │   │   │   ├── UnaryOperation.php
-│   │   │   └── WhenClause.php
+│   │   │   ├── WhenClause.php
+│   │   │   └── WindowFunction.php
 │   │   ├── Statement/
+│   │   │   ├── CommonTableExpression.php
+│   │   │   ├── CompoundSelect.php
 │   │   │   ├── EmptyStatement.php
+│   │   │   ├── FrameBound.php
+│   │   │   ├── FrameSpec.php
+│   │   │   ├── FromClause.php
+│   │   │   ├── GroupByClause.php
+│   │   │   ├── JoinClause.php
+│   │   │   ├── JoinConstraint.php
 │   │   │   ├── OrderBy.php
 │   │   │   ├── OrderByList.php
 │   │   │   ├── ResultColumn.php
 │   │   │   ├── ResultColumnList.php
 │   │   │   ├── SelectStatement.php
-│   │   │   └── TableReference.php
+│   │   │   ├── TableReference.php
+│   │   │   ├── WindowSpecification.php
+│   │   │   └── WithClause.php
 │   │   ├── Expression.php
 │   │   ├── Node.php
 │   │   ├── Script.php
@@ -40,6 +52,7 @@ sqlite-parser/
 │   ├── Ast/
 │   │   └── ScriptTest.php
 │   └── Grammar/
+│       ├── AdvancedSelectTest.php
 │       ├── ExpressionTest.php
 │       └── SelectTest.php
 ├── .gitattributes

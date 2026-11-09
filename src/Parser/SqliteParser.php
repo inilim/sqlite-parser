@@ -488,103 +488,14 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
         true,
         false,
         true,
-        true,
-        true,
-        true,
-        true,
-        true,
-        true,
-        false,
-        true,
-        true,
-        true,
-        true,
-        true,
-        false,
-        true,
-        false,
-        true,
-        false,
-        true,
-        true,
-        true,
-        false,
-        false,
-        true,
-        false,
-        false,
-        false,
-        true,
-        false,
-        false,
-        false,
-        true,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        true,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        true,
-        false,
-        false,
-        false,
         false,
         false,
         false,
         true,
         true,
         true,
-        true,
-        true,
-        true,
-        true,
-        true,
         false,
         false,
-        false,
-        true,
-        false,
-        false,
-        false,
-        false,
-        false,
-        true,
-        true,
-        false,
-        false,
-        false,
-        true,
-        false,
-        true,
-        false,
-        true,
-        false,
-        false,
-        true,
-        false,
-        false,
-        true,
-        true,
-        true,
-        true,
-        false,
-        false,
-        false,
-        true,
-        false,
-        false,
-        false,
-        false,
-        false,
-        true,
         false,
         false,
         false,
@@ -598,6 +509,150 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
         false,
         false,
         false,
+        true,
+        false,
+        false,
+        true,
+        false,
+        false,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        true,
+        false,
+        true,
+        false,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        true,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        true,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        true,
+        true,
+        false,
+        false,
+        true,
+        false,
+        true,
+        false,
+        false,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        true,
+        true,
+        false,
+        false,
+        false,
+        true,
+        false,
+        true,
+        false,
+        true,
+        false,
+        true,
+        false,
+        false,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
         false,
         false,
         false,
@@ -610,15 +665,47 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
         false,
         false,
         true,
+        false,
+        true,
+        true,
+        true,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
         true,
         false,
         false,
         false,
         false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        true,
+        true,
+        false,
         true,
         false,
         false,
+        false,
+        false,
+        false,
         true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        true,
+        true,
+        false,
+        false,
         false,
         false,
         false,
@@ -645,251 +732,320 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
         null,
         [
             2 => true,
+            96 => true,
         ],
         [
             2 => true,
+            96 => true,
+        ],
+        null,
+        [
+            96 => true,
         ],
         [
-            2 => true,
+            96 => true,
+        ],
+        null,
+        [
+            95 => true,
         ],
         [
-            16 => true,
-            18 => true,
-            24 => true,
-            29 => true,
-            106 => true,
+            122 => true,
             true,
-            119 => true,
-            true,
-            true,
-            true,
-            true,
-            135 => true,
-            true,
-            true,
-            true,
-            141 => true,
         ],
         [
-            16 => true,
-            18 => true,
-            24 => true,
-            29 => true,
-            106 => true,
+            122 => true,
             true,
-            119 => true,
-            true,
-            true,
-            true,
-            true,
-            135 => true,
-            true,
-            true,
-            true,
-            141 => true,
         ],
         [
-            16 => true,
-            18 => true,
-            24 => true,
-            29 => true,
-            106 => true,
+            122 => true,
             true,
-            119 => true,
-            true,
-            true,
-            true,
-            true,
-            135 => true,
-            true,
-            true,
-            141 => true,
         ],
         [
-            16 => true,
-            18 => true,
-            24 => true,
-            29 => true,
-            106 => true,
-            true,
-            119 => true,
-            true,
-            true,
-            true,
-            true,
-            135 => true,
-            true,
-            true,
-            141 => true,
+            123 => true,
         ],
         [
-            16 => true,
-            18 => true,
-            24 => true,
-            29 => true,
-            106 => true,
-            true,
-            119 => true,
-            true,
-            true,
-            true,
-            true,
-            135 => true,
-            true,
-            true,
-            141 => true,
+            122 => true,
         ],
-        [
-            16 => true,
-            18 => true,
-            24 => true,
-            29 => true,
-            106 => true,
-            true,
-            119 => true,
-            true,
-            true,
-            true,
-            true,
-            135 => true,
-            true,
-            true,
-            141 => true,
-        ],
-        [
-            16 => true,
-        ],
-        [
-            16 => true,
-        ],
-        [
-            18 => true,
-            24 => true,
-            29 => true,
-            106 => true,
-            true,
-            119 => true,
-            true,
-            true,
-            true,
-            true,
-            135 => true,
-            true,
-            true,
-            141 => true,
-        ],
-        [
-            18 => true,
-            24 => true,
-            29 => true,
-            106 => true,
-            true,
-            119 => true,
-            true,
-            true,
-            true,
-            true,
-            135 => true,
-            true,
-            true,
-            141 => true,
-        ],
-        [
-            18 => true,
-            24 => true,
-            29 => true,
-            106 => true,
-            true,
-            119 => true,
-            true,
-            true,
-            true,
-            true,
-            135 => true,
-            true,
-            true,
-            141 => true,
-        ],
-        [
-            18 => true,
-            24 => true,
-            29 => true,
-            106 => true,
-            true,
-            119 => true,
-            true,
-            true,
-            true,
-            true,
-            135 => true,
-            true,
-            true,
-            141 => true,
-        ],
-        [
-            136 => true,
-        ],
-        [
-            136 => true,
-        ],
-        [
-            137 => true,
-        ],
-        [
-            137 => true,
-        ],
-        [
-            135 => true,
-        ],
-        [
-            135 => true,
-        ],
-        [
-            18 => true,
-            24 => true,
-            29 => true,
-            106 => true,
-            true,
-            119 => true,
-            true,
-            true,
-            true,
-            true,
-            141 => true,
-        ],
-        [
-            18 => true,
-            24 => true,
-            29 => true,
-            106 => true,
-            true,
-            119 => true,
-            true,
-            true,
-            true,
-            true,
-            141 => true,
-        ],
+        null,
         [
             141 => true,
         ],
         [
             141 => true,
+        ],
+        [
+            123 => true,
+        ],
+        null,
+        [
+            143 => true,
+        ],
+        [
+            143 => true,
+        ],
+        [
+            143 => true,
         ],
         [
             142 => true,
         ],
         [
-            29 => true,
-        ],
-        [
-            29 => true,
-        ],
-        [
             11 => true,
         ],
+        null,
         [
-            123 => true,
+            143 => true,
+        ],
+        [
+            143 => true,
+        ],
+        [
+            2 => true,
+        ],
+        [
+            2 => true,
+        ],
+        null,
+        [
+            12 => true,
+            true,
+        ],
+        [
+            12 => true,
+        ],
+        [
+            13 => true,
+        ],
+        [
+            16 => true,
+            18 => true,
+            24 => true,
+            29 => true,
+            106 => true,
+            true,
+            119 => true,
+            true,
+            true,
+            true,
+            true,
+            135 => true,
+            true,
+            true,
+            true,
+            141 => true,
+        ],
+        [
+            16 => true,
+            18 => true,
+            24 => true,
+            29 => true,
+            106 => true,
+            true,
+            119 => true,
+            true,
+            true,
+            true,
+            true,
+            135 => true,
+            true,
+            true,
+            true,
+            141 => true,
+        ],
+        [
+            16 => true,
+            18 => true,
+            24 => true,
+            29 => true,
+            106 => true,
+            true,
+            119 => true,
+            true,
+            true,
+            true,
+            true,
+            135 => true,
+            true,
+            true,
+            141 => true,
+        ],
+        [
+            16 => true,
+            18 => true,
+            24 => true,
+            29 => true,
+            106 => true,
+            true,
+            119 => true,
+            true,
+            true,
+            true,
+            true,
+            135 => true,
+            true,
+            true,
+            141 => true,
+        ],
+        [
+            16 => true,
+            18 => true,
+            24 => true,
+            29 => true,
+            106 => true,
+            true,
+            119 => true,
+            true,
+            true,
+            true,
+            true,
+            135 => true,
+            true,
+            true,
+            141 => true,
+        ],
+        [
+            16 => true,
+            18 => true,
+            24 => true,
+            29 => true,
+            106 => true,
+            true,
+            119 => true,
+            true,
+            true,
+            true,
+            true,
+            135 => true,
+            true,
+            true,
+            141 => true,
+        ],
+        [
+            16 => true,
+        ],
+        [
+            16 => true,
+        ],
+        [
+            18 => true,
+            24 => true,
+            29 => true,
+            106 => true,
+            true,
+            119 => true,
+            true,
+            true,
+            true,
+            true,
+            135 => true,
+            true,
+            true,
+            141 => true,
+        ],
+        [
+            18 => true,
+            24 => true,
+            29 => true,
+            106 => true,
+            true,
+            119 => true,
+            true,
+            true,
+            true,
+            true,
+            135 => true,
+            true,
+            true,
+            141 => true,
+        ],
+        [
+            18 => true,
+            24 => true,
+            29 => true,
+            106 => true,
+            true,
+            119 => true,
+            true,
+            true,
+            true,
+            true,
+            135 => true,
+            true,
+            true,
+            141 => true,
+        ],
+        [
+            18 => true,
+            24 => true,
+            29 => true,
+            106 => true,
+            true,
+            119 => true,
+            true,
+            true,
+            true,
+            true,
+            135 => true,
+            true,
+            true,
+            141 => true,
+        ],
+        [
+            136 => true,
+        ],
+        [
+            136 => true,
+        ],
+        [
+            137 => true,
+        ],
+        [
+            137 => true,
+        ],
+        [
+            135 => true,
+        ],
+        [
+            135 => true,
+        ],
+        [
+            18 => true,
+            24 => true,
+            29 => true,
+            106 => true,
+            true,
+            119 => true,
+            true,
+            true,
+            true,
+            true,
+            141 => true,
+        ],
+        [
+            18 => true,
+            24 => true,
+            29 => true,
+            106 => true,
+            true,
+            119 => true,
+            true,
+            true,
+            true,
+            true,
+            141 => true,
+        ],
+        [
+            141 => true,
+        ],
+        [
+            141 => true,
+        ],
+        [
+            29 => true,
+        ],
+        [
+            29 => true,
         ],
         [
             24 => true,
@@ -923,16 +1079,16 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
         [
             123 => true,
         ],
+        [
+            123 => true,
+        ],
+        [
+            123 => true,
+        ],
         null,
         [
             12 => true,
             true,
-        ],
-        [
-            12 => true,
-        ],
-        [
-            13 => true,
         ],
         null,
         [
@@ -971,9 +1127,6 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
             141 => true,
         ],
         null,
-        [
-            143 => true,
-        ],
         [
             143 => true,
         ],
@@ -982,6 +1135,153 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
         ],
         [
             138 => true,
+        ],
+        [
+            97 => true,
+        ],
+        [
+            123 => true,
+            141 => true,
+        ],
+        [
+            141 => true,
+        ],
+        null,
+        [
+            98 => true,
+        ],
+        [
+            98 => true,
+        ],
+        [
+            7 => true,
+        ],
+        null,
+        [
+            5 => true,
+        ],
+        [
+            5 => true,
+        ],
+        [
+            16 => true,
+            18 => true,
+            24 => true,
+            29 => true,
+            106 => true,
+            true,
+            119 => true,
+            true,
+            true,
+            true,
+            true,
+            135 => true,
+            true,
+            true,
+            141 => true,
+        ],
+        null,
+        [
+            143 => true,
+        ],
+        [
+            143 => true,
+        ],
+        null,
+        [
+            99 => true,
+            true,
+        ],
+        [
+            99 => true,
+            true,
+        ],
+        [
+            100 => true,
+        ],
+        [
+            99 => true,
+        ],
+        [
+            18 => true,
+            24 => true,
+            29 => true,
+            103 => true,
+            true,
+            106 => true,
+            true,
+            119 => true,
+            true,
+            true,
+            true,
+            true,
+            135 => true,
+            true,
+            true,
+            141 => true,
+        ],
+        [
+            103 => true,
+        ],
+        [
+            103 => true,
+        ],
+        [
+            101 => true,
+        ],
+        [
+            103 => true,
+        ],
+        [
+            102 => true,
+        ],
+        [
+            104 => true,
+        ],
+        [
+            104 => true,
+        ],
+        [
+            105 => true,
+        ],
+        [
+            18 => true,
+            24 => true,
+            29 => true,
+            106 => true,
+            true,
+            119 => true,
+            true,
+            true,
+            true,
+            true,
+            135 => true,
+            true,
+            true,
+            141 => true,
+        ],
+        [
+            18 => true,
+            24 => true,
+            29 => true,
+            106 => true,
+            true,
+            119 => true,
+            true,
+            true,
+            true,
+            true,
+            135 => true,
+            true,
+            true,
+            141 => true,
+        ],
+        null,
+        [
+            14 => true,
+        ],
+        [
+            14 => true,
         ],
         [
             18 => true,
@@ -1026,9 +1326,6 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
         [
             122 => true,
         ],
-        [
-            122 => true,
-        ],
         null,
         [
             144 => true,
@@ -1079,15 +1376,18 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
             22 => true,
         ],
         [
-            14 => true,
-        ],
-        [
             19 => true,
         ],
         [
             19 => true,
         ],
         null,
+        [
+            19 => true,
+        ],
+        [
+            16 => true,
+        ],
         [
             16 => true,
         ],
@@ -1213,51 +1513,139 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
         [
             122 => true,
             true,
+            141 => true,
         ],
         [
             122 => true,
             true,
         ],
-        null,
         [
-            4 => true,
-        ],
-        [
-            4 => true,
-        ],
-        null,
-        [
-            5 => true,
-        ],
-        [
-            5 => true,
-        ],
-        [
-            7 => true,
-        ],
-        [
-            16 => true,
-            18 => true,
-            24 => true,
-            29 => true,
-            106 => true,
-            true,
-            119 => true,
-            true,
-            true,
-            true,
-            true,
-            135 => true,
-            true,
-            true,
             141 => true,
         ],
         null,
         [
-            143 => true,
+            30 => true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
         ],
         [
-            143 => true,
+            30 => true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+        ],
+        null,
+        [
+            37 => true,
+        ],
+        null,
+        [
+            31 => true,
+            true,
+            true,
+            true,
+            36 => true,
+        ],
+        [
+            31 => true,
+        ],
+        [
+            32 => true,
+        ],
+        [
+            33 => true,
+        ],
+        [
+            34 => true,
+        ],
+        [
+            36 => true,
+        ],
+        null,
+        [
+            35 => true,
+        ],
+        [
+            30 => true,
+        ],
+        null,
+        [
+            38 => true,
+            true,
+        ],
+        [
+            38 => true,
+        ],
+        [
+            38 => true,
+        ],
+        [
+            39 => true,
+        ],
+        [
+            39 => true,
+        ],
+        null,
+        [
+            4 => true,
+        ],
+        [
+            4 => true,
+        ],
+        null,
+        [
+            6 => true,
+        ],
+        [
+            6 => true,
+        ],
+        null,
+        [
+            8 => true,
+        ],
+        [
+            8 => true,
+        ],
+        null,
+        [
+            40 => true,
+            true,
+            true,
+        ],
+        [
+            40 => true,
+            true,
+            true,
+        ],
+        [
+            40 => true,
+            true,
+            true,
+        ],
+        [
+            40 => true,
+        ],
+        [
+            40 => true,
+        ],
+        null,
+        [
+            13 => true,
+        ],
+        [
+            41 => true,
+        ],
+        [
+            42 => true,
         ],
         null,
         [
@@ -1297,337 +1685,476 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
                 2,
             ],
         ],
-        7 => [
-            16 => [
-                8,
-            ],
-            18 => [
-                8,
-            ],
-            24 => [
-                8,
-            ],
-            29 => [
-                8,
-            ],
-            106 => [
-                8,
-            ],
-            [
-                8,
-            ],
-            119 => [
-                8,
-            ],
-            [
-                8,
-            ],
-            [
-                8,
-            ],
-            [
-                8,
-            ],
-            [
-                8,
-            ],
-            135 => [
-                8,
-            ],
-            [
-                8,
-            ],
-            [
-                8,
-            ],
-            141 => [
-                8,
-            ],
-            138 => [
-                -57,
-            ],
-        ],
-        11 => [
-            16 => [
-                12,
-            ],
-            18 => [
-                14,
-            ],
-            24 => [
-                14,
-            ],
-            29 => [
-                14,
-            ],
-            106 => [
-                14,
-            ],
-            [
-                14,
-            ],
-            119 => [
-                14,
-            ],
-            [
-                14,
-            ],
-            [
-                14,
-            ],
-            [
-                14,
-            ],
-            [
-                14,
-            ],
-            135 => [
-                14,
-            ],
-            [
-                14,
-            ],
-            [
-                14,
-            ],
-            141 => [
-                14,
-            ],
-        ],
-        17 => [
-            136 => [
-                18,
-            ],
-            [
-                20,
-            ],
-            135 => [
-                22,
-            ],
-            18 => [
-                24,
-            ],
-            24 => [
-                24,
-            ],
-            29 => [
-                24,
-            ],
-            106 => [
-                24,
-            ],
-            107 => [
-                24,
-            ],
-            119 => [
-                24,
-            ],
-            120 => [
-                24,
-            ],
-            121 => [
-                24,
+        12 => [
+            123 => [
+                -14,
             ],
             122 => [
-                24,
-            ],
-            123 => [
-                24,
-            ],
-            141 => [
-                24,
+                -15,
             ],
         ],
-        25 => [
-            141 => [
-                26,
-            ],
-            29 => [
-                29,
-            ],
-            24 => [
-                33,
-            ],
-            123 => [
-                44,
-                64,
-            ],
-            18 => [
-                57,
-            ],
-            106 => [
-                57,
-            ],
-            107 => [
-                57,
-            ],
-            119 => [
-                57,
-            ],
-            120 => [
-                57,
-            ],
-            121 => [
-                57,
-            ],
-            122 => [
-                64,
-            ],
-        ],
-        46 => [
+        31 => [
             12 => [
-                -48,
+                -33,
             ],
             [
-                -49,
+                -34,
             ],
         ],
-        50 => [
+        35 => [
             16 => [
-                51,
+                36,
             ],
             18 => [
-                51,
+                36,
             ],
             24 => [
-                51,
+                36,
             ],
             29 => [
-                51,
+                36,
             ],
             106 => [
-                51,
+                36,
             ],
             [
-                51,
+                36,
             ],
             119 => [
-                51,
+                36,
             ],
             [
-                51,
+                36,
             ],
             [
-                51,
+                36,
             ],
             [
-                51,
+                36,
             ],
             [
-                51,
+                36,
             ],
             135 => [
-                51,
+                36,
             ],
             [
-                51,
+                36,
             ],
             [
-                51,
+                36,
             ],
             141 => [
-                51,
+                36,
             ],
             138 => [
-                -57,
+                -81,
             ],
         ],
-        57 => [
-            120 => [
-                -59,
-            ],
-            119 => [
-                -60,
-            ],
-            [
-                -61,
+        39 => [
+            16 => [
+                40,
             ],
             18 => [
-                -62,
+                42,
+            ],
+            24 => [
+                42,
+            ],
+            29 => [
+                42,
             ],
             106 => [
-                -63,
+                42,
             ],
-            107 => [
-                -64,
+            [
+                42,
+            ],
+            119 => [
+                42,
+            ],
+            [
+                42,
+            ],
+            [
+                42,
+            ],
+            [
+                42,
+            ],
+            [
+                42,
+            ],
+            135 => [
+                42,
+            ],
+            [
+                42,
+            ],
+            [
+                42,
+            ],
+            141 => [
+                42,
             ],
         ],
-        64 => [
-            123 => [
-                65,
+        45 => [
+            136 => [
+                46,
+            ],
+            [
+                48,
+            ],
+            135 => [
+                50,
+            ],
+            18 => [
+                52,
+            ],
+            24 => [
+                52,
+            ],
+            29 => [
+                52,
+            ],
+            106 => [
+                52,
+            ],
+            107 => [
+                52,
+            ],
+            119 => [
+                52,
+            ],
+            120 => [
+                52,
+            ],
+            121 => [
+                52,
             ],
             122 => [
+                52,
+            ],
+            123 => [
+                52,
+            ],
+            141 => [
+                52,
+            ],
+        ],
+        53 => [
+            141 => [
+                54,
+                55,
+            ],
+            29 => [
+                56,
+            ],
+            24 => [
+                58,
+            ],
+            123 => [
                 69,
+                121,
+            ],
+            18 => [
+                114,
+            ],
+            106 => [
+                114,
+            ],
+            107 => [
+                114,
+            ],
+            119 => [
+                114,
+            ],
+            120 => [
+                114,
+            ],
+            121 => [
+                114,
+            ],
+            122 => [
+                121,
+            ],
+        ],
+        73 => [
+            12 => [
+                -33,
+            ],
+            [
+                -34,
             ],
         ],
         75 => [
-            17 => [
+            16 => [
                 76,
             ],
-            20 => [
-                80,
+            18 => [
+                76,
+            ],
+            24 => [
+                76,
+            ],
+            29 => [
+                76,
+            ],
+            106 => [
+                76,
             ],
             [
-                82,
+                76,
+            ],
+            119 => [
+                76,
             ],
             [
-                84,
+                76,
             ],
-            19 => [
-                87,
+            [
+                76,
             ],
-            16 => [
-                90,
-                91,
-                92,
-                93,
+            [
+                76,
+            ],
+            [
+                76,
+            ],
+            135 => [
+                76,
+            ],
+            [
+                76,
+            ],
+            [
+                76,
+            ],
+            141 => [
+                76,
+            ],
+            138 => [
+                -81,
+            ],
+        ],
+        82 => [
+            141 => [
+                83,
+            ],
+            123 => [
+                -14,
             ],
         ],
         97 => [
-            138 => [
-                -57,
-            ],
-            [
+            100 => [
                 -99,
             ],
-            [
+            99 => [
                 -100,
             ],
         ],
-        103 => [
-            136 => [
-                -20,
+        100 => [
+            103 => [
+                101,
+                104,
             ],
             [
-                -22,
+                106,
+            ],
+            18 => [
+                109,
+                110,
+            ],
+            24 => [
+                109,
+                110,
+            ],
+            29 => [
+                109,
+                110,
+            ],
+            106 => [
+                109,
+                110,
+            ],
+            [
+                109,
+                110,
+            ],
+            119 => [
+                109,
+                110,
+            ],
+            [
+                109,
+                110,
+            ],
+            [
+                109,
+                110,
+            ],
+            [
+                109,
+                110,
+            ],
+            [
+                109,
+                110,
+            ],
+            135 => [
+                109,
+                110,
+            ],
+            [
+                109,
+                110,
+            ],
+            [
+                109,
+                110,
+            ],
+            141 => [
+                109,
+                110,
             ],
         ],
-        107 => [
-            130 => [
-                -109,
+        114 => [
+            120 => [
+                -116,
             ],
-            129 => [
-                -110,
-            ],
-            [
-                -111,
-            ],
-            127 => [
-                -112,
+            119 => [
+                -117,
             ],
             [
-                -113,
+                -118,
             ],
-            128 => [
-                -114,
+            18 => [
+                -119,
+            ],
+            106 => [
+                -120,
+            ],
+            107 => [
+                -121,
             ],
         ],
-        129 => [
+        121 => [
             123 => [
-                -33,
+                122,
             ],
             122 => [
-                -71,
+                126,
+            ],
+        ],
+        131 => [
+            17 => [
+                132,
+            ],
+            20 => [
+                136,
+            ],
+            [
+                138,
+            ],
+            [
+                140,
+            ],
+            19 => [
+                142,
+                145,
+            ],
+            16 => [
+                146,
+                147,
+                148,
+                149,
+                150,
+            ],
+        ],
+        154 => [
+            138 => [
+                -81,
+            ],
+            [
+                -156,
+            ],
+            [
+                -157,
+            ],
+        ],
+        160 => [
+            136 => [
+                -48,
+            ],
+            [
+                -50,
+            ],
+        ],
+        164 => [
+            130 => [
+                -166,
+            ],
+            129 => [
+                -167,
+            ],
+            [
+                -168,
+            ],
+            127 => [
+                -169,
+            ],
+            [
+                -170,
+            ],
+            128 => [
+                -171,
+            ],
+        ],
+        185 => [
+            122 => [
+                186,
+            ],
+            [
+                186,
+            ],
+            141 => [
+                187,
+            ],
+        ],
+        194 => [
+            31 => [
+                -196,
+            ],
+            [
+                -197,
+            ],
+            [
+                -198,
+            ],
+            [
+                -199,
+            ],
+            36 => [
+                -200,
+            ],
+        ],
+        204 => [
+            38 => [
+                205,
+            ],
+            [
+                207,
+            ],
+        ],
+        221 => [
+            40 => [
+                222,
+            ],
+            [
+                -227,
+            ],
+            [
+                -228,
             ],
         ],
     ];
@@ -1636,107 +2163,173 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
     private const array PARSER_SEQUENCE_PREDICTION_TABLE = [
         3 => [
             4,
-            -150,
-            -152,
+            -237,
+            -239,
         ],
         [
-            5,
-            6,
-            -127,
-            -132,
-            -135,
-            -143,
+            -7,
+            28,
+            -220,
+            -90,
+            -230,
         ],
         6 => [
             7,
-            -125,
-        ],
-        8 => [
-            9,
-            -123,
-        ],
-        [
-            10,
-            -119,
-        ],
-        [
-            11,
-            -116,
-        ],
-        14 => [
-            15,
-            -106,
-        ],
-        [
-            16,
-            -102,
-        ],
-        [
-            17,
-            -96,
-        ],
-        24 => [
-            25,
-            -75,
-        ],
-        33 => [
-            34,
             -10,
-            36,
-            -42,
+            10,
+        ],
+        10 => [
+            11,
+            -27,
+        ],
+        [
+            12,
+            -17,
+            24,
+            17,
+            4,
+            23,
+        ],
+        18 => [
+            13,
+            -21,
+        ],
+        28 => [
+            29,
+            -32,
+            34,
+            -184,
+            -211,
+            -214,
+            -217,
+        ],
+        34 => [
+            35,
+            -182,
+        ],
+        36 => [
+            37,
+            -180,
+        ],
+        [
+            38,
+            -176,
+        ],
+        [
+            39,
+            -173,
+        ],
+        42 => [
             43,
+            -163,
         ],
-        44 => [
-            32,
-            27,
-            -47,
-            -51,
-            28,
+        [
+            44,
+            -159,
         ],
-        51 => [
-            9,
-            -54,
+        [
+            45,
+            -153,
         ],
-        65 => [
-            32,
-            -68,
+        52 => [
+            53,
+            -131,
         ],
-        69 => [
-            70,
-            -73,
+        58 => [
+            59,
+            -38,
+            61,
+            -67,
+            68,
+        ],
+        71 => [
+            13,
+            17,
+            -74,
+            -76,
+            23,
         ],
         76 => [
-            77,
-            -14,
-            79,
+            37,
+            -79,
         ],
-        87 => [
-            88,
-            27,
-            -52,
-            28,
+        83 => [
+            17,
+            -86,
+            -90,
+            -97,
+            23,
         ],
-        93 => [
+        89 => [
+            90,
+            87,
+            91,
+            -94,
+        ],
+        96 => [
+            97,
+            100,
+            -113,
+        ],
+        122 => [
             13,
-            88,
-            27,
-            -52,
-            28,
+            -125,
         ],
-        128 => [
-            129,
-            -123,
+        126 => [
+            14,
+            -129,
         ],
-        134 => [
+        132 => [
+            133,
+            -42,
             135,
-            136,
-            137,
-            -140,
         ],
         142 => [
             143,
-            144,
-            -147,
+            17,
+            -77,
+            23,
+        ],
+        149 => [
+            41,
+            143,
+            17,
+            -77,
+            23,
+        ],
+        183 => [
+            184,
+            185,
+            -190,
+        ],
+        186 => [
+            12,
+            -180,
+            -17,
+        ],
+        [
+            17,
+            4,
+            23,
+            -180,
+            -17,
+        ],
+        190 => [
+            -193,
+            -195,
+            -202,
+            202,
+            185,
+            -205,
+        ],
+        222 => [
+            223,
+            -226,
+        ],
+        229 => [
+            230,
+            231,
+            -234,
         ],
     ];
 
@@ -1915,194 +2508,298 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
                 new \Phplrt\Parser\Grammar\Alternation([1, 2]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_SEMICOLON, true),
                 new \Phplrt\Parser\Grammar\Optional(3),
-                new \Phplrt\Parser\Grammar\Concatenation([4, 148, 152]),
-                new \Phplrt\Parser\Grammar\Concatenation([5, 6, 125, 130, 133, 141]),
-                new \Phplrt\Parser\Grammar\Lexeme(self::T_SELECT, false),
-                new \Phplrt\Parser\Grammar\Concatenation([7, 123]),
-                new \Phplrt\Parser\Grammar\Alternation([8, 56]),
-                new \Phplrt\Parser\Grammar\Concatenation([9, 121]),
-                new \Phplrt\Parser\Grammar\Concatenation([10, 117]),
-                new \Phplrt\Parser\Grammar\Concatenation([11, 114]),
-                new \Phplrt\Parser\Grammar\Alternation([12, 14]),
-                new \Phplrt\Parser\Grammar\Concatenation([13, 11]),
-                new \Phplrt\Parser\Grammar\Lexeme(self::T_NOT, true),
-                new \Phplrt\Parser\Grammar\Concatenation([15, 104]),
-                new \Phplrt\Parser\Grammar\Concatenation([16, 100]),
-                new \Phplrt\Parser\Grammar\Concatenation([17, 94]),
-                new \Phplrt\Parser\Grammar\Alternation([18, 20, 22, 24]),
-                new \Phplrt\Parser\Grammar\Concatenation([19, 17]),
-                new \Phplrt\Parser\Grammar\Lexeme(self::T_PLUS, true),
-                new \Phplrt\Parser\Grammar\Concatenation([21, 17]),
-                new \Phplrt\Parser\Grammar\Lexeme(self::T_MINUS, true),
-                new \Phplrt\Parser\Grammar\Concatenation([23, 17]),
-                new \Phplrt\Parser\Grammar\Lexeme(self::T_TILDE, true),
-                new \Phplrt\Parser\Grammar\Concatenation([25, 73]),
-                new \Phplrt\Parser\Grammar\Alternation([26, 29, 33, 44, 57, 64]),
-                new \Phplrt\Parser\Grammar\Concatenation([27, 9, 28]),
-                new \Phplrt\Parser\Grammar\Lexeme(self::T_LPAREN, false),
-                new \Phplrt\Parser\Grammar\Lexeme(self::T_RPAREN, false),
-                new \Phplrt\Parser\Grammar\Concatenation([30, 27, 9, 31, 32, 28]),
-                new \Phplrt\Parser\Grammar\Lexeme(self::T_CAST, false),
-                new \Phplrt\Parser\Grammar\Lexeme(self::T_AS, false),
-                new \Phplrt\Parser\Grammar\Lexeme(self::T_IDENT, true),
-                new \Phplrt\Parser\Grammar\Concatenation([34, 35, 36, 40, 43]),
-                new \Phplrt\Parser\Grammar\Lexeme(self::T_CASE, false),
+                new \Phplrt\Parser\Grammar\Concatenation([4, 235, 239]),
+                new \Phplrt\Parser\Grammar\Concatenation([5, 28, 218, 88, 228]),
+                new \Phplrt\Parser\Grammar\Optional(6),
+                new \Phplrt\Parser\Grammar\Concatenation([7, 8, 10]),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_WITH, false),
                 new \Phplrt\Parser\Grammar\Optional(9),
-                new \Phplrt\Parser\Grammar\Repetition(37, 1, \INF),
-                new \Phplrt\Parser\Grammar\Concatenation([38, 9, 39, 9]),
-                new \Phplrt\Parser\Grammar\Lexeme(self::T_WHEN, false),
-                new \Phplrt\Parser\Grammar\Lexeme(self::T_THEN, false),
-                new \Phplrt\Parser\Grammar\Optional(41),
-                new \Phplrt\Parser\Grammar\Concatenation([42, 9]),
-                new \Phplrt\Parser\Grammar\Lexeme(self::T_ELSE, false),
-                new \Phplrt\Parser\Grammar\Lexeme(self::T_END, false),
-                new \Phplrt\Parser\Grammar\Concatenation([32, 27, 45, 49, 28]),
-                new \Phplrt\Parser\Grammar\Optional(46),
-                new \Phplrt\Parser\Grammar\Alternation([47, 48]),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_RECURSIVE, true),
+                new \Phplrt\Parser\Grammar\Concatenation([11, 25]),
+                new \Phplrt\Parser\Grammar\Concatenation([12, 15, 24, 17, 4, 23]),
+                new \Phplrt\Parser\Grammar\Alternation([13, 14]),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_IDENT, true),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_QUOTED_IDENT, true),
+                new \Phplrt\Parser\Grammar\Optional(16),
+                new \Phplrt\Parser\Grammar\Concatenation([17, 18, 23]),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_LPAREN, false),
+                new \Phplrt\Parser\Grammar\Concatenation([13, 19]),
+                new \Phplrt\Parser\Grammar\Optional(20),
+                new \Phplrt\Parser\Grammar\Repetition(21, 1, \INF),
+                new \Phplrt\Parser\Grammar\Concatenation([22, 13]),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_COMMA, false),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_RPAREN, false),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_AS, false),
+                new \Phplrt\Parser\Grammar\Optional(26),
+                new \Phplrt\Parser\Grammar\Repetition(27, 1, \INF),
+                new \Phplrt\Parser\Grammar\Concatenation([22, 11]),
+                new \Phplrt\Parser\Grammar\Concatenation([29, 30, 34, 182, 209, 212, 215]),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_SELECT, false),
+                new \Phplrt\Parser\Grammar\Optional(31),
+                new \Phplrt\Parser\Grammar\Alternation([32, 33]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_DISTINCT, true),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_ALL, true),
-                new \Phplrt\Parser\Grammar\Optional(50),
-                new \Phplrt\Parser\Grammar\Alternation([51, 56]),
-                new \Phplrt\Parser\Grammar\Concatenation([9, 52]),
-                new \Phplrt\Parser\Grammar\Optional(53),
-                new \Phplrt\Parser\Grammar\Repetition(54, 1, \INF),
-                new \Phplrt\Parser\Grammar\Concatenation([55, 9]),
-                new \Phplrt\Parser\Grammar\Lexeme(self::T_COMMA, false),
+                new \Phplrt\Parser\Grammar\Concatenation([35, 180]),
+                new \Phplrt\Parser\Grammar\Alternation([36, 80]),
+                new \Phplrt\Parser\Grammar\Concatenation([37, 178]),
+                new \Phplrt\Parser\Grammar\Concatenation([38, 174]),
+                new \Phplrt\Parser\Grammar\Concatenation([39, 171]),
+                new \Phplrt\Parser\Grammar\Alternation([40, 42]),
+                new \Phplrt\Parser\Grammar\Concatenation([41, 39]),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_NOT, true),
+                new \Phplrt\Parser\Grammar\Concatenation([43, 161]),
+                new \Phplrt\Parser\Grammar\Concatenation([44, 157]),
+                new \Phplrt\Parser\Grammar\Concatenation([45, 151]),
+                new \Phplrt\Parser\Grammar\Alternation([46, 48, 50, 52]),
+                new \Phplrt\Parser\Grammar\Concatenation([47, 45]),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_PLUS, true),
+                new \Phplrt\Parser\Grammar\Concatenation([49, 45]),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_MINUS, true),
+                new \Phplrt\Parser\Grammar\Concatenation([51, 45]),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_TILDE, true),
+                new \Phplrt\Parser\Grammar\Concatenation([53, 129]),
+                new \Phplrt\Parser\Grammar\Alternation([54, 55, 56, 58, 69, 114, 121]),
+                new \Phplrt\Parser\Grammar\Concatenation([17, 4, 23]),
+                new \Phplrt\Parser\Grammar\Concatenation([17, 37, 23]),
+                new \Phplrt\Parser\Grammar\Concatenation([57, 17, 37, 24, 13, 23]),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_CAST, false),
+                new \Phplrt\Parser\Grammar\Concatenation([59, 60, 61, 65, 68]),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_CASE, false),
+                new \Phplrt\Parser\Grammar\Optional(37),
+                new \Phplrt\Parser\Grammar\Repetition(62, 1, \INF),
+                new \Phplrt\Parser\Grammar\Concatenation([63, 37, 64, 37]),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_WHEN, false),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_THEN, false),
+                new \Phplrt\Parser\Grammar\Optional(66),
+                new \Phplrt\Parser\Grammar\Concatenation([67, 37]),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_ELSE, false),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_END, false),
+                new \Phplrt\Parser\Grammar\Alternation([70, 71]),
+                new \Phplrt\Parser\Grammar\Concatenation([71, 81, 82]),
+                new \Phplrt\Parser\Grammar\Concatenation([13, 17, 72, 74, 23]),
+                new \Phplrt\Parser\Grammar\Optional(73),
+                new \Phplrt\Parser\Grammar\Alternation([32, 33]),
+                new \Phplrt\Parser\Grammar\Optional(75),
+                new \Phplrt\Parser\Grammar\Alternation([76, 80]),
+                new \Phplrt\Parser\Grammar\Concatenation([37, 77]),
+                new \Phplrt\Parser\Grammar\Optional(78),
+                new \Phplrt\Parser\Grammar\Repetition(79, 1, \INF),
+                new \Phplrt\Parser\Grammar\Concatenation([22, 37]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_STAR, true),
-                new \Phplrt\Parser\Grammar\Alternation([58, 59, 60, 61, 62, 63]),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_OVER, false),
+                new \Phplrt\Parser\Grammar\Alternation([83, 13]),
+                new \Phplrt\Parser\Grammar\Concatenation([17, 84, 88, 95, 23]),
+                new \Phplrt\Parser\Grammar\Optional(85),
+                new \Phplrt\Parser\Grammar\Concatenation([86, 87, 76]),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_PARTITION, false),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_BY, false),
+                new \Phplrt\Parser\Grammar\Optional(89),
+                new \Phplrt\Parser\Grammar\Concatenation([90, 87, 91, 92]),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_ORDER, false),
+                new \Phplrt\Parser\Grammar\Concatenation([37]),
+                new \Phplrt\Parser\Grammar\Optional(93),
+                new \Phplrt\Parser\Grammar\Repetition(94, 1, \INF),
+                new \Phplrt\Parser\Grammar\Concatenation([22, 91]),
+                new \Phplrt\Parser\Grammar\Optional(96),
+                new \Phplrt\Parser\Grammar\Concatenation([97, 100, 111]),
+                new \Phplrt\Parser\Grammar\Alternation([98, 99]),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_ROWS, true),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_RANGE, true),
+                new \Phplrt\Parser\Grammar\Alternation([101, 104, 106, 109, 110]),
+                new \Phplrt\Parser\Grammar\Concatenation([102, 103]),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_UNBOUNDED, true),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_PRECEDING, true),
+                new \Phplrt\Parser\Grammar\Concatenation([102, 105]),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_FOLLOWING, true),
+                new \Phplrt\Parser\Grammar\Concatenation([107, 108]),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_CURRENT, true),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_ROW, true),
+                new \Phplrt\Parser\Grammar\Concatenation([43, 103]),
+                new \Phplrt\Parser\Grammar\Concatenation([43, 105]),
+                new \Phplrt\Parser\Grammar\Optional(112),
+                new \Phplrt\Parser\Grammar\Concatenation([113, 100]),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_AND, false),
+                new \Phplrt\Parser\Grammar\Alternation([115, 116, 117, 118, 119, 120]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_INT, true),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_FLOAT, true),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_STRING, true),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_NULL, true),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_TRUE, true),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_FALSE, true),
-                new \Phplrt\Parser\Grammar\Alternation([65, 69]),
-                new \Phplrt\Parser\Grammar\Concatenation([32, 66]),
-                new \Phplrt\Parser\Grammar\Optional(67),
-                new \Phplrt\Parser\Grammar\Concatenation([68, 32]),
+                new \Phplrt\Parser\Grammar\Alternation([122, 126]),
+                new \Phplrt\Parser\Grammar\Concatenation([13, 123]),
+                new \Phplrt\Parser\Grammar\Optional(124),
+                new \Phplrt\Parser\Grammar\Concatenation([125, 13]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_DOT, false),
-                new \Phplrt\Parser\Grammar\Concatenation([70, 71]),
-                new \Phplrt\Parser\Grammar\Lexeme(self::T_QUOTED_IDENT, true),
-                new \Phplrt\Parser\Grammar\Optional(72),
-                new \Phplrt\Parser\Grammar\Concatenation([68, 70]),
-                new \Phplrt\Parser\Grammar\Optional(74),
-                new \Phplrt\Parser\Grammar\Repetition(75, 1, \INF),
-                new \Phplrt\Parser\Grammar\Alternation([76, 80, 82, 84, 87, 90, 91, 92, 93]),
-                new \Phplrt\Parser\Grammar\Concatenation([77, 78, 79]),
+                new \Phplrt\Parser\Grammar\Concatenation([14, 127]),
+                new \Phplrt\Parser\Grammar\Optional(128),
+                new \Phplrt\Parser\Grammar\Concatenation([125, 14]),
+                new \Phplrt\Parser\Grammar\Optional(130),
+                new \Phplrt\Parser\Grammar\Repetition(131, 1, \INF),
+                new \Phplrt\Parser\Grammar\Alternation([132, 136, 138, 140, 142, 145, 146, 147, 148, 149, 150]),
+                new \Phplrt\Parser\Grammar\Concatenation([133, 134, 135]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_IS, true),
-                new \Phplrt\Parser\Grammar\Optional(13),
+                new \Phplrt\Parser\Grammar\Optional(41),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_NULL, false),
-                new \Phplrt\Parser\Grammar\Concatenation([81, 15]),
+                new \Phplrt\Parser\Grammar\Concatenation([137, 43]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_LIKE, true),
-                new \Phplrt\Parser\Grammar\Concatenation([83, 15]),
+                new \Phplrt\Parser\Grammar\Concatenation([139, 43]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_GLOB, true),
-                new \Phplrt\Parser\Grammar\Concatenation([85, 15, 86, 15]),
+                new \Phplrt\Parser\Grammar\Concatenation([141, 43, 113, 43]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_BETWEEN, true),
-                new \Phplrt\Parser\Grammar\Lexeme(self::T_AND, false),
-                new \Phplrt\Parser\Grammar\Concatenation([88, 27, 89, 28]),
+                new \Phplrt\Parser\Grammar\Concatenation([143, 17, 144, 23]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_IN, true),
-                new \Phplrt\Parser\Grammar\Optional(51),
-                new \Phplrt\Parser\Grammar\Concatenation([13, 81, 15]),
-                new \Phplrt\Parser\Grammar\Concatenation([13, 83, 15]),
-                new \Phplrt\Parser\Grammar\Concatenation([13, 85, 15, 86, 15]),
-                new \Phplrt\Parser\Grammar\Concatenation([13, 88, 27, 89, 28]),
-                new \Phplrt\Parser\Grammar\Optional(95),
-                new \Phplrt\Parser\Grammar\Repetition(96, 1, \INF),
-                new \Phplrt\Parser\Grammar\Concatenation([97, 17]),
-                new \Phplrt\Parser\Grammar\Alternation([56, 98, 99]),
+                new \Phplrt\Parser\Grammar\Optional(76),
+                new \Phplrt\Parser\Grammar\Concatenation([143, 17, 4, 23]),
+                new \Phplrt\Parser\Grammar\Concatenation([41, 137, 43]),
+                new \Phplrt\Parser\Grammar\Concatenation([41, 139, 43]),
+                new \Phplrt\Parser\Grammar\Concatenation([41, 141, 43, 113, 43]),
+                new \Phplrt\Parser\Grammar\Concatenation([41, 143, 17, 144, 23]),
+                new \Phplrt\Parser\Grammar\Concatenation([41, 143, 17, 4, 23]),
+                new \Phplrt\Parser\Grammar\Optional(152),
+                new \Phplrt\Parser\Grammar\Repetition(153, 1, \INF),
+                new \Phplrt\Parser\Grammar\Concatenation([154, 45]),
+                new \Phplrt\Parser\Grammar\Alternation([80, 155, 156]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_SLASH, true),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_PERCENT, true),
-                new \Phplrt\Parser\Grammar\Optional(101),
-                new \Phplrt\Parser\Grammar\Repetition(102, 1, \INF),
-                new \Phplrt\Parser\Grammar\Concatenation([103, 16]),
-                new \Phplrt\Parser\Grammar\Alternation([19, 21]),
-                new \Phplrt\Parser\Grammar\Optional(105),
-                new \Phplrt\Parser\Grammar\Repetition(106, 1, \INF),
-                new \Phplrt\Parser\Grammar\Concatenation([107, 15]),
-                new \Phplrt\Parser\Grammar\Alternation([108, 109, 110, 111, 112, 113]),
+                new \Phplrt\Parser\Grammar\Optional(158),
+                new \Phplrt\Parser\Grammar\Repetition(159, 1, \INF),
+                new \Phplrt\Parser\Grammar\Concatenation([160, 44]),
+                new \Phplrt\Parser\Grammar\Alternation([47, 49]),
+                new \Phplrt\Parser\Grammar\Optional(162),
+                new \Phplrt\Parser\Grammar\Repetition(163, 1, \INF),
+                new \Phplrt\Parser\Grammar\Concatenation([164, 43]),
+                new \Phplrt\Parser\Grammar\Alternation([165, 166, 167, 168, 169, 170]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_EQ, true),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_NEQ, true),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_LT, true),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_LTE, true),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_GT, true),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_GTE, true),
-                new \Phplrt\Parser\Grammar\Optional(115),
-                new \Phplrt\Parser\Grammar\Repetition(116, 1, \INF),
-                new \Phplrt\Parser\Grammar\Concatenation([86, 11]),
-                new \Phplrt\Parser\Grammar\Optional(118),
-                new \Phplrt\Parser\Grammar\Repetition(119, 1, \INF),
-                new \Phplrt\Parser\Grammar\Concatenation([120, 10]),
+                new \Phplrt\Parser\Grammar\Optional(172),
+                new \Phplrt\Parser\Grammar\Repetition(173, 1, \INF),
+                new \Phplrt\Parser\Grammar\Concatenation([113, 39]),
+                new \Phplrt\Parser\Grammar\Optional(175),
+                new \Phplrt\Parser\Grammar\Repetition(176, 1, \INF),
+                new \Phplrt\Parser\Grammar\Concatenation([177, 38]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_OR, false),
-                new \Phplrt\Parser\Grammar\Optional(122),
-                new \Phplrt\Parser\Grammar\Concatenation([31, 32]),
-                new \Phplrt\Parser\Grammar\Optional(124),
-                new \Phplrt\Parser\Grammar\Concatenation([55, 6]),
-                new \Phplrt\Parser\Grammar\Optional(126),
-                new \Phplrt\Parser\Grammar\Concatenation([127, 128]),
+                new \Phplrt\Parser\Grammar\Optional(179),
+                new \Phplrt\Parser\Grammar\Concatenation([24, 13]),
+                new \Phplrt\Parser\Grammar\Optional(181),
+                new \Phplrt\Parser\Grammar\Concatenation([22, 34]),
+                new \Phplrt\Parser\Grammar\Optional(183),
+                new \Phplrt\Parser\Grammar\Concatenation([184, 185, 188]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_FROM, false),
-                new \Phplrt\Parser\Grammar\Concatenation([129, 121]),
-                new \Phplrt\Parser\Grammar\Alternation([32, 70]),
-                new \Phplrt\Parser\Grammar\Optional(131),
-                new \Phplrt\Parser\Grammar\Concatenation([132, 9]),
+                new \Phplrt\Parser\Grammar\Alternation([186, 187]),
+                new \Phplrt\Parser\Grammar\Concatenation([12, 178, 15]),
+                new \Phplrt\Parser\Grammar\Concatenation([17, 4, 23, 178, 15]),
+                new \Phplrt\Parser\Grammar\Optional(189),
+                new \Phplrt\Parser\Grammar\Repetition(190, 1, \INF),
+                new \Phplrt\Parser\Grammar\Concatenation([191, 193, 200, 202, 185, 203]),
+                new \Phplrt\Parser\Grammar\Optional(192),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_NATURAL, true),
+                new \Phplrt\Parser\Grammar\Optional(194),
+                new \Phplrt\Parser\Grammar\Alternation([195, 196, 197, 198, 199]),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_INNER, true),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_LEFT, true),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_RIGHT, true),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_FULL, true),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_CROSS, true),
+                new \Phplrt\Parser\Grammar\Optional(201),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_OUTER, false),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_JOIN, false),
+                new \Phplrt\Parser\Grammar\Optional(204),
+                new \Phplrt\Parser\Grammar\Alternation([205, 207]),
+                new \Phplrt\Parser\Grammar\Concatenation([206, 37]),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_ON, false),
+                new \Phplrt\Parser\Grammar\Concatenation([208, 17, 18, 23]),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_USING, false),
+                new \Phplrt\Parser\Grammar\Optional(210),
+                new \Phplrt\Parser\Grammar\Concatenation([211, 37]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_WHERE, false),
-                new \Phplrt\Parser\Grammar\Optional(134),
-                new \Phplrt\Parser\Grammar\Concatenation([135, 136, 137, 138]),
-                new \Phplrt\Parser\Grammar\Lexeme(self::T_ORDER, false),
-                new \Phplrt\Parser\Grammar\Lexeme(self::T_BY, false),
-                new \Phplrt\Parser\Grammar\Concatenation([9]),
-                new \Phplrt\Parser\Grammar\Optional(139),
-                new \Phplrt\Parser\Grammar\Repetition(140, 1, \INF),
-                new \Phplrt\Parser\Grammar\Concatenation([55, 137]),
-                new \Phplrt\Parser\Grammar\Optional(142),
-                new \Phplrt\Parser\Grammar\Concatenation([143, 144, 145]),
+                new \Phplrt\Parser\Grammar\Optional(213),
+                new \Phplrt\Parser\Grammar\Concatenation([214, 87, 76]),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_GROUP, false),
+                new \Phplrt\Parser\Grammar\Optional(216),
+                new \Phplrt\Parser\Grammar\Concatenation([217, 37]),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_HAVING, false),
+                new \Phplrt\Parser\Grammar\Optional(219),
+                new \Phplrt\Parser\Grammar\Repetition(220, 1, \INF),
+                new \Phplrt\Parser\Grammar\Concatenation([221, 28]),
+                new \Phplrt\Parser\Grammar\Alternation([222, 226, 227]),
+                new \Phplrt\Parser\Grammar\Concatenation([223, 224]),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_UNION, true),
+                new \Phplrt\Parser\Grammar\Optional(225),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_ALL, false),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_INTERSECT, true),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_EXCEPT, true),
+                new \Phplrt\Parser\Grammar\Optional(229),
+                new \Phplrt\Parser\Grammar\Concatenation([230, 231, 232]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_LIMIT, false),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_INT, true),
-                new \Phplrt\Parser\Grammar\Optional(146),
-                new \Phplrt\Parser\Grammar\Concatenation([147, 144]),
+                new \Phplrt\Parser\Grammar\Optional(233),
+                new \Phplrt\Parser\Grammar\Concatenation([234, 231]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_OFFSET, false),
-                new \Phplrt\Parser\Grammar\Optional(149),
-                new \Phplrt\Parser\Grammar\Repetition(150, 1, \INF),
-                new \Phplrt\Parser\Grammar\Concatenation([151, 4]),
+                new \Phplrt\Parser\Grammar\Optional(236),
+                new \Phplrt\Parser\Grammar\Repetition(237, 1, \INF),
+                new \Phplrt\Parser\Grammar\Concatenation([238, 4]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_SEMICOLON, false),
-                new \Phplrt\Parser\Grammar\Optional(151),
+                new \Phplrt\Parser\Grammar\Optional(238),
             ],
             initial: 0,
             reducers: [
                 0 => self::reduceScript(...),
                 3 => self::reduceStatementList(...),
                 4 => self::reduceSelectStatement(...),
-                6 => self::reduceSelectList(...),
-                7 => self::reduceResultColumn(...),
-                9 => self::reduceOrExpr(...),
-                10 => self::reduceAndExpr(...),
-                11 => self::reduceNotExpr(...),
-                14 => self::reduceComparison(...),
-                15 => self::reduceAdditive(...),
-                16 => self::reduceMultiplicative(...),
-                17 => self::reduceUnary(...),
-                24 => self::reducePrimary(...),
-                25 => self::reducePrimaryBase(...),
-                29 => self::reduceCastExpression(...),
-                33 => self::reduceCaseExpression(...),
-                37 => self::reduceWhenClause(...),
-                44 => self::reduceFunctionCall(...),
-                51 => self::reduceExprList(...),
-                58 => self::reduceIntLiteral(...),
-                59 => self::reduceFloatLiteral(...),
-                60 => self::reduceStringLiteral(...),
-                61 => self::reduceNullLiteral(...),
-                62 => self::reduceTrueLiteral(...),
-                63 => self::reduceFalseLiteral(...),
-                64 => self::reduceColumnReference(...),
-                75 => self::reducePostfixOp(...),
-                97 => self::reduceMulOp(...),
-                103 => self::reduceAddOp(...),
-                107 => self::reduceCompareOp(...),
-                128 => self::reduceTableReference(...),
-                129 => self::reduceTableName(...),
-                134 => self::reduceOrderByClause(...),
-                137 => self::reduceOrderByItem(...),
-                142 => self::reduceLimitClause(...),
+                6 => self::reduceWithClause(...),
+                10 => self::reduceCTEList(...),
+                11 => self::reduceCommonTableExpression(...),
+                12 => self::reduceTableName(...),
+                18 => self::reduceIdentList(...),
+                28 => self::reduceSelectCore(...),
+                31 => self::reduceDistinctModifier(...),
+                34 => self::reduceSelectList(...),
+                35 => self::reduceResultColumn(...),
+                37 => self::reduceOrExpr(...),
+                38 => self::reduceAndExpr(...),
+                39 => self::reduceNotExpr(...),
+                42 => self::reduceComparison(...),
+                43 => self::reduceAdditive(...),
+                44 => self::reduceMultiplicative(...),
+                45 => self::reduceUnary(...),
+                52 => self::reducePrimary(...),
+                53 => self::reducePrimaryBase(...),
+                54 => self::reduceSubquery(...),
+                56 => self::reduceCastExpression(...),
+                58 => self::reduceCaseExpression(...),
+                62 => self::reduceWhenClause(...),
+                69 => self::reduceFunctionCallWithOver(...),
+                71 => self::reduceFunctionCall(...),
+                76 => self::reduceExprList(...),
+                83 => self::reduceWindowSpecification(...),
+                89 => self::reduceOrderByClause(...),
+                91 => self::reduceOrderByItem(...),
+                96 => self::reduceFrameSpec(...),
+                100 => self::reduceFrameBound(...),
+                115 => self::reduceIntLiteral(...),
+                116 => self::reduceFloatLiteral(...),
+                117 => self::reduceStringLiteral(...),
+                118 => self::reduceNullLiteral(...),
+                119 => self::reduceTrueLiteral(...),
+                120 => self::reduceFalseLiteral(...),
+                121 => self::reduceColumnReference(...),
+                131 => self::reducePostfixOp(...),
+                154 => self::reduceMulOp(...),
+                160 => self::reduceAddOp(...),
+                164 => self::reduceCompareOp(...),
+                183 => self::reduceFromClause(...),
+                185 => self::reduceTableReference(...),
+                190 => self::reduceJoinClause(...),
+                194 => self::reduceJoinType(...),
+                204 => self::reduceJoinConstraint(...),
+                213 => self::reduceGroupByClause(...),
+                221 => self::reduceCompoundOp(...),
+                229 => self::reduceLimitClause(...),
             ],
             expectations: self::PARSER_EXPECTATIONS,
             kept: self::PARSER_KEPT_TABLE,
@@ -2125,12 +2822,10 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
             if (\is_array($children)) {
                 return new \Inilim\SqliteParser\Ast\Script($children);
             }
-            // Одиночный Statement (unwrap-случай) — оборачиваем в массив.
             if ($children instanceof \Inilim\SqliteParser\Ast\Statement) {
                 return new \Inilim\SqliteParser\Ast\Script([$children]);
             }
 
-            // Сюда попадаем только для одиночного `;` — это EmptyStatement.
             return new \Inilim\SqliteParser\Ast\Script(
                 [new \Inilim\SqliteParser\Ast\Statement\EmptyStatement()]
             );
@@ -2154,32 +2849,178 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
     {
         $children = \is_array($children) ? $children : [$children];
 
-            // ResultColumnList — объект-контейнер (не массив), значит SelectList
-            // не был развёрнут unwrap-флаттенингом на уровне этого правила.
-            $columns_raw = $children[0] ?? null;
-            $columns = $columns_raw instanceof \Inilim\SqliteParser\Ast\Statement\ResultColumnList
-                ? $columns_raw->items
-                : [];
+            $with    = null;
+            $cores   = [];
+            $ops     = [];
+            $orderBy = null;
+            $limit   = null;
 
-            $from_raw  = $children[1] ?? null;
-            $where_raw = $children[2] ?? null;
-            $order_raw = $children[3] ?? null;
-            $limit_raw = $children[4] ?? null;
+            foreach ($children as $child) {
+                if ($child instanceof \Inilim\SqliteParser\Ast\Statement\WithClause) {
+                    $with = $child;
+                } elseif ($child instanceof \Inilim\SqliteParser\Ast\Statement\SelectStatement) {
+                    $cores[] = $child;
+                } elseif ($child instanceof \Inilim\SqliteParser\Ast\Statement\OrderByList) {
+                    $orderBy = $child->items;
+                } elseif (\is_array($child) && isset($child['limit'])) {
+                    $limit = $child;
+                } elseif (\is_string($child)
+                    && \in_array(\strtoupper($child), ['UNION', 'UNION ALL', 'INTERSECT', 'EXCEPT'], true)
+                ) {
+                    $ops[] = $child;
+                }
+            }
 
-            $from  = $from_raw instanceof \Inilim\SqliteParser\Ast\Statement\TableReference ? $from_raw : null;
-            $where = $where_raw instanceof \Inilim\SqliteParser\Ast\Expression ? $where_raw : null;
-            $orderBy = $order_raw instanceof \Inilim\SqliteParser\Ast\Statement\OrderByList
-                ? $order_raw->items
-                : null;
-            $limit = \is_array($limit_raw) && isset($limit_raw['limit']) ? $limit_raw : null;
+            if (\count($cores) === 1) {
+                $core = $cores[0];
+                return new \Inilim\SqliteParser\Ast\Statement\SelectStatement(
+                    columns: $core->columns,
+                    distinct: $core->distinct,
+                    from: $core->from,
+                    joins: $core->joins,
+                    where: $core->where,
+                    groupBy: $core->groupBy,
+                    having: $core->having,
+                    with: $with,
+                    orderBy: $orderBy,
+                    limit: $limit,
+                );
+            }
 
-            return new \Inilim\SqliteParser\Ast\Statement\SelectStatement(
-                columns: $columns,
-                from: $from,
-                where: $where,
+            return new \Inilim\SqliteParser\Ast\Statement\CompoundSelect(
+                selects: $cores,
+                operators: $ops,
+                with: $with,
                 orderBy: $orderBy,
                 limit: $limit,
             );
+    }
+
+    private static function reduceWithClause(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        $children = \is_array($children) ? $children : [$children];
+
+            $recursive = false;
+            $ctes      = [];
+
+            foreach ($children as $child) {
+                if ($child instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+                    if (\strtoupper($child->value) === 'RECURSIVE') {
+                        $recursive = true;
+                    }
+                } elseif (\is_array($child)) {
+                    $ctes = $child;
+                }
+            }
+
+            return new \Inilim\SqliteParser\Ast\Statement\WithClause($recursive, $ctes);
+    }
+
+    private static function reduceCTEList(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        $children = \is_array($children) ? $children : [$children];
+
+            $flat = [];
+            \array_walk_recursive($children, static function ($item) use (&$flat): void {
+                if ($item instanceof \Inilim\SqliteParser\Ast\Statement\CommonTableExpression) {
+                    $flat[] = $item;
+                }
+            });
+
+            return $flat;
+    }
+
+    private static function reduceCommonTableExpression(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        $children = \is_array($children) ? $children : [$children];
+
+            $name    = null;
+            $columns = null;
+            $query   = null;
+
+            foreach ($children as $child) {
+                if (\is_string($child) && $name === null) {
+                    $name = $child;
+                } elseif (\is_array($child)) {
+                    $columns = $child;
+                } elseif ($child instanceof \Inilim\SqliteParser\Ast\Statement) {
+                    $query = $child;
+                }
+            }
+
+            return new \Inilim\SqliteParser\Ast\Statement\CommonTableExpression(
+                name: $name ?? '',
+                columns: $columns,
+                query: $query,
+            );
+    }
+
+    private static function reduceTableName(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        return $children->value;
+    }
+
+    private static function reduceIdentList(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        $children = \is_array($children) ? $children : [$children];
+
+            $flat = [];
+            \array_walk_recursive($children, static function ($item) use (&$flat): void {
+                if ($item instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+                    $flat[] = $item->value;
+                }
+            });
+
+            return $flat;
+    }
+
+    private static function reduceSelectCore(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        $children = \is_array($children) ? $children : [$children];
+
+            $distinct = false;
+            $columns  = [];
+            $from     = null;
+            $joins    = [];
+            $groupBy  = null;
+            $exprs    = [];
+
+            foreach ($children as $child) {
+                if (\is_string($child)) {
+                    if (\strtoupper($child) === 'DISTINCT') {
+                        $distinct = true;
+                    }
+                } elseif ($child instanceof \Inilim\SqliteParser\Ast\Statement\ResultColumnList) {
+                    $columns = $child->items;
+                } elseif ($child instanceof \Inilim\SqliteParser\Ast\Statement\FromClause) {
+                    $from  = $child->base;
+                    $joins = $child->joins;
+                } elseif ($child instanceof \Inilim\SqliteParser\Ast\Statement\GroupByClause) {
+                    $groupBy = $child;
+                } elseif ($child instanceof \Inilim\SqliteParser\Ast\Expression) {
+                    $exprs[] = $child;
+                }
+            }
+
+            $where  = $exprs[0] ?? null;
+            $having = $exprs[1] ?? null;
+
+            return new \Inilim\SqliteParser\Ast\Statement\SelectStatement(
+                columns: $columns,
+                distinct: $distinct,
+                from: $from,
+                joins: $joins,
+                where: $where,
+                groupBy: $groupBy,
+                having: $having,
+            );
+    }
+
+    private static function reduceDistinctModifier(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        return $children instanceof \Phplrt\Contracts\Lexer\TokenInterface
+                ? \strtoupper($children->value)
+                : '';
     }
 
     private static function reduceSelectList(\Phplrt\Parser\Context $ctx, mixed $children): mixed
@@ -2206,16 +3047,13 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
 
     private static function reduceResultColumn(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
-        // Альтернатива <T_STAR> — одиночный Token.
-            if ($children instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+        if ($children instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
                 return new \Inilim\SqliteParser\Ast\Statement\ResultColumn(
                     new \Inilim\SqliteParser\Ast\Expression\Star(),
                     null,
                 );
             }
 
-            // Альтернатива Expression() (::T_AS:: <T_IDENT>)? — массив [Expression]
-            // или [Expression, Token(alias)].
             $children = \is_array($children) ? $children : [$children];
             $expression = $children[0];
             $alias = null;
@@ -2354,6 +3192,17 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
             return $children[0] ?? null;
     }
 
+    private static function reduceSubquery(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        $children = \is_array($children) ? $children : [$children];
+            foreach ($children as $child) {
+                if ($child instanceof \Inilim\SqliteParser\Ast\Statement) {
+                    return new \Inilim\SqliteParser\Ast\Expression\Subquery($child);
+                }
+            }
+            return null;
+    }
+
     private static function reduceCastExpression(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
         $children = \is_array($children) ? $children : [$children];
@@ -2419,6 +3268,37 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
             return new \Inilim\SqliteParser\Ast\Expression\WhenClause($when, $then);
     }
 
+    private static function reduceFunctionCallWithOver(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        $children = \is_array($children) ? $children : [$children];
+
+            $fn   = null;
+            $spec = null;
+            $name = null;
+
+            foreach ($children as $child) {
+                if ($child instanceof \Inilim\SqliteParser\Ast\Expression\FunctionCall) {
+                    $fn = $child;
+                } elseif ($child instanceof \Inilim\SqliteParser\Ast\Statement\WindowSpecification) {
+                    $spec = $child;
+                } elseif ($child instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+                    if (\strtoupper($child->value) === 'OVER') {
+                        continue;
+                    }
+                    $name = $child->value;
+                }
+            }
+
+            if ($fn === null) {
+                return null;
+            }
+            if ($spec === null && $name === null) {
+                return $fn;
+            }
+
+            return new \Inilim\SqliteParser\Ast\Expression\WindowFunction($fn, $spec, $name);
+    }
+
     private static function reduceFunctionCall(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
         $children = \is_array($children) ? $children : [$children];
@@ -2477,6 +3357,111 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
             return new \Inilim\SqliteParser\Ast\Expression\ExpressionList($flat);
     }
 
+    private static function reduceWindowSpecification(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        $children = \is_array($children) ? $children : [$children];
+
+            $partition = null;
+            $orderBy   = null;
+            $frame     = null;
+
+            foreach ($children as $child) {
+                if ($child instanceof \Inilim\SqliteParser\Ast\Expression\ExpressionList) {
+                    $partition = $child->items;
+                } elseif ($child instanceof \Inilim\SqliteParser\Ast\Statement\OrderByList) {
+                    $orderBy = $child->items;
+                } elseif ($child instanceof \Inilim\SqliteParser\Ast\Statement\FrameSpec) {
+                    $frame = $child;
+                }
+            }
+
+            return new \Inilim\SqliteParser\Ast\Statement\WindowSpecification(
+                partitionBy: $partition,
+                orderBy: $orderBy,
+                frame: $frame,
+            );
+    }
+
+    private static function reduceOrderByClause(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        $children = \is_array($children) ? $children : [$children];
+
+            $flat = [];
+            \array_walk_recursive($children, static function ($item) use (&$flat): void {
+                if ($item instanceof \Inilim\SqliteParser\Ast\Statement\OrderBy) {
+                    $flat[] = $item;
+                }
+            });
+
+            return new \Inilim\SqliteParser\Ast\Statement\OrderByList($flat);
+    }
+
+    private static function reduceOrderByItem(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        $children = \is_array($children) ? $children : [$children];
+            $expression = $children[0] ?? null;
+            return new \Inilim\SqliteParser\Ast\Statement\OrderBy($expression);
+    }
+
+    private static function reduceFrameSpec(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        $children = \is_array($children) ? $children : [$children];
+
+            $unit   = '';
+            $bounds = [];
+
+            foreach ($children as $child) {
+                if ($child instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+                    $u = \strtoupper($child->value);
+                    if (\in_array($u, ['ROWS', 'RANGE'], true)) {
+                        $unit = $u;
+                    }
+                } elseif ($child instanceof \Inilim\SqliteParser\Ast\Statement\FrameBound) {
+                    $bounds[] = $child;
+                }
+            }
+
+            return new \Inilim\SqliteParser\Ast\Statement\FrameSpec(
+                unit: $unit,
+                start: $bounds[0],
+                end: $bounds[1] ?? null,
+            );
+    }
+
+    private static function reduceFrameBound(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        $children = \is_array($children) ? $children : [$children];
+
+            $prefix = '';
+            $expr   = null;
+
+            foreach ($children as $child) {
+                if ($child instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+                    $u = \strtoupper($child->value);
+                    if ($u === 'UNBOUNDED') {
+                        $prefix = 'UNBOUNDED';
+                    } elseif ($u === 'CURRENT') {
+                        $prefix = 'CURRENT';
+                    } elseif ($u === 'ROW') {
+                        $prefix .= '_ROW';
+                    } elseif ($u === 'PRECEDING') {
+                        $prefix .= '_PRECEDING';
+                    } elseif ($u === 'FOLLOWING') {
+                        $prefix .= '_FOLLOWING';
+                    }
+                } elseif ($child instanceof \Inilim\SqliteParser\Ast\Expression) {
+                    $expr = $child;
+                }
+            }
+
+            if ($expr !== null) {
+                $direction = \strpos($prefix, 'FOLLOWING') !== false ? 'FOLLOWING' : 'PRECEDING';
+                return new \Inilim\SqliteParser\Ast\Statement\FrameBound('EXPR_' . $direction, $expr);
+            }
+
+            return new \Inilim\SqliteParser\Ast\Statement\FrameBound($prefix);
+    }
+
     private static function reduceIntLiteral(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
         return new \Inilim\SqliteParser\Ast\Expression\Literal((int) $children->value, 'int');
@@ -2514,7 +3499,6 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
             $table = null;
             $name  = null;
 
-            // Форма с квалификацией: [Token(ident), Token(ident)] (точка отброшена).
             if (isset($children[1]) && $children[1] instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
                 $table = $children[0]->value;
                 $name  = $children[1]->value;
@@ -2573,6 +3557,14 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
 
                 if ($v === 'IN') {
                     $listRaw = $children[1] ?? null;
+                    if ($listRaw instanceof \Inilim\SqliteParser\Ast\Statement) {
+                        return new \Inilim\SqliteParser\Ast\Expression\InExpression(
+                            $left,
+                            [],
+                            false,
+                            $listRaw,
+                        );
+                    }
                     $items = $listRaw instanceof \Inilim\SqliteParser\Ast\Expression\ExpressionList
                         ? $listRaw->items
                         : [];
@@ -2611,6 +3603,14 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
                     }
                     if ($v2 === 'IN') {
                         $listRaw = $children[2] ?? null;
+                        if ($listRaw instanceof \Inilim\SqliteParser\Ast\Statement) {
+                            return new \Inilim\SqliteParser\Ast\Expression\InExpression(
+                                $left,
+                                [],
+                                true,
+                                $listRaw,
+                            );
+                        }
                         $items = $listRaw instanceof \Inilim\SqliteParser\Ast\Expression\ExpressionList
                             ? $listRaw->items
                             : [];
@@ -2638,43 +3638,154 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
         return $children->value;
     }
 
-    private static function reduceTableReference(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    private static function reduceFromClause(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
-        // $children = [name(string), aliasToken|null]
-            $children = \is_array($children) ? $children : [$children];
-            $name = $children[0];
-            $alias = null;
-            if (isset($children[1]) && $children[1] instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
-                $alias = $children[1]->value;
+        $children = \is_array($children) ? $children : [$children];
+
+            $base  = null;
+            $joins = [];
+
+            foreach ($children as $child) {
+                if ($child instanceof \Inilim\SqliteParser\Ast\Statement\TableReference && $base === null) {
+                    $base = $child;
+                } elseif ($child instanceof \Inilim\SqliteParser\Ast\Statement\JoinClause) {
+                    $joins[] = $child;
+                }
             }
 
-            return new \Inilim\SqliteParser\Ast\Statement\TableReference($name, $alias);
+            return new \Inilim\SqliteParser\Ast\Statement\FromClause($base, $joins);
     }
 
-    private static function reduceTableName(\Phplrt\Parser\Context $ctx, mixed $children): mixed
-    {
-        return $children->value;
-    }
-
-    private static function reduceOrderByClause(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    private static function reduceTableReference(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
         $children = \is_array($children) ? $children : [$children];
 
-            $flat = [];
-            \array_walk_recursive($children, static function ($item) use (&$flat): void {
-                if ($item instanceof \Inilim\SqliteParser\Ast\Statement\OrderBy) {
-                    $flat[] = $item;
+            $name          = null;
+            $alias         = null;
+            $subquery      = null;
+            $columnAliases = null;
+            $index         = 0;
+
+            foreach ($children as $child) {
+                if ($index === 0) {
+                    if (\is_string($child)) {
+                        $name = $child;
+                    } elseif ($child instanceof \Inilim\SqliteParser\Ast\Statement) {
+                        $subquery = $child;
+                    }
+                    $index = 1;
+                    continue;
                 }
-            });
 
-            return new \Inilim\SqliteParser\Ast\Statement\OrderByList($flat);
+                if ($child instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+                    $alias = $child->value;
+                } elseif (\is_array($child)) {
+                    $columnAliases = $child;
+                }
+            }
+
+            return new \Inilim\SqliteParser\Ast\Statement\TableReference(
+                name: $name,
+                alias: $alias,
+                subquery: $subquery,
+                columnAliases: $columnAliases,
+            );
     }
 
-    private static function reduceOrderByItem(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    private static function reduceJoinClause(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
         $children = \is_array($children) ? $children : [$children];
-            $expression = $children[0] ?? null;
-            return new \Inilim\SqliteParser\Ast\Statement\OrderBy($expression);
+
+            $natural = false;
+            $type    = '';
+            $table   = null;
+            $on      = null;
+            $using   = null;
+
+            foreach ($children as $child) {
+                if ($child instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+                    $u = \strtoupper($child->value);
+                    if ($u === 'NATURAL') {
+                        $natural = true;
+                    }
+                    continue;
+                }
+                if (\is_string($child) && \in_array($child, ['INNER', 'LEFT', 'RIGHT', 'FULL', 'CROSS'], true)) {
+                    $type = $child;
+                    continue;
+                }
+                if ($child instanceof \Inilim\SqliteParser\Ast\Statement\TableReference) {
+                    $table = $child;
+                    continue;
+                }
+                if ($child instanceof \Inilim\SqliteParser\Ast\Statement\JoinConstraint) {
+                    $on    = $child->on;
+                    $using = $child->using;
+                    continue;
+                }
+            }
+
+            return new \Inilim\SqliteParser\Ast\Statement\JoinClause(
+                type: $type,
+                table: $table,
+                on: $on,
+                using: $using,
+                natural: $natural,
+            );
+    }
+
+    private static function reduceJoinType(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        return $children instanceof \Phplrt\Contracts\Lexer\TokenInterface
+                ? \strtoupper($children->value)
+                : '';
+    }
+
+    private static function reduceJoinConstraint(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        $children = \is_array($children) ? $children : [$children];
+
+            foreach ($children as $child) {
+                if ($child instanceof \Inilim\SqliteParser\Ast\Expression) {
+                    return new \Inilim\SqliteParser\Ast\Statement\JoinConstraint(on: $child);
+                }
+                if (\is_array($child)) {
+                    return new \Inilim\SqliteParser\Ast\Statement\JoinConstraint(using: $child);
+                }
+            }
+
+            return null;
+    }
+
+    private static function reduceGroupByClause(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        $children = \is_array($children) ? $children : [$children];
+
+            $expressions = [];
+            foreach ($children as $child) {
+                if ($child instanceof \Inilim\SqliteParser\Ast\Expression\ExpressionList) {
+                    $expressions = $child->items;
+                }
+            }
+
+            return new \Inilim\SqliteParser\Ast\Statement\GroupByClause($expressions);
+    }
+
+    private static function reduceCompoundOp(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        $children = \is_array($children) ? $children : [$children];
+            $v = '';
+            foreach ($children as $child) {
+                if ($child instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+                    $u = \strtoupper($child->value);
+                    if ($u === 'ALL') {
+                        $v .= ' ALL';
+                    } else {
+                        $v = $u;
+                    }
+                }
+            }
+            return \trim($v);
     }
 
     private static function reduceLimitClause(\Phplrt\Parser\Context $ctx, mixed $children): mixed
