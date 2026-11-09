@@ -1,6 +1,175 @@
 Структура проекта:
 
 sqlite-parser/
+├── files/
+│   └── syntaqlite/
+│       └── tests/
+│           ├── amalg_tests/
+│           │   ├── __init__.py
+│           │   ├── perfetto.py
+│           │   ├── perfetto_dialect_only.py
+│           │   ├── probe_create.c
+│           │   ├── probe_with_dialect.c
+│           │   ├── sqlite.py
+│           │   ├── sqlite_full.py
+│           │   ├── sqlite_ndebug.py
+│           │   ├── sqlite_omit_macros.py
+│           │   ├── sqlite_omit_runtime.py
+│           │   ├── sqlite_runtime_only.py
+│           │   ├── test_ast.c
+│           │   └── test_strict_warnings.cpp
+│           ├── ast_diff_tests/
+│           │   ├── __init__.py
+│           │   ├── aggregate_raise.py
+│           │   ├── cast_ptr_qnumber.py
+│           │   ├── column_refs.py
+│           │   ├── compound.py
+│           │   ├── conditionals.py
+│           │   ├── create_table.py
+│           │   ├── cte.py
+│           │   ├── dml.py
+│           │   ├── functions.py
+│           │   ├── misc_expr.py
+│           │   ├── schema_ops.py
+│           │   ├── select.py
+│           │   ├── select_clauses.py
+│           │   ├── table_source.py
+│           │   ├── trigger.py
+│           │   ├── utility_stmts.py
+│           │   ├── values.py
+│           │   ├── virtual_table.py
+│           │   └── window_functions.py
+│           ├── benches/
+│           │   ├── benches/
+│           │   │   └── main.rs
+│           │   └── Cargo.toml
+│           ├── c_api/
+│           │   ├── api-manifest.json
+│           │   ├── parser_library_smoke.c
+│           │   └── static_library_smoke.c
+│           ├── c_api_tests/
+│           │   ├── __init__.py
+│           │   ├── formatter.py
+│           │   ├── formatter_driver.c
+│           │   ├── parser.py
+│           │   ├── parser_driver.c
+│           │   ├── validator.py
+│           │   └── validator_driver.c
+│           ├── comparison/
+│           │   ├── formatter/
+│           │   │   └── _fmt_sqlglot.py
+│           │   ├── lsp/
+│           │   │   ├── _lsp_test.js
+│           │   │   ├── schema.sql
+│           │   │   ├── test.sql
+│           │   │   └── test_error.sql
+│           │   ├── parser/
+│           │   │   ├── src/
+│           │   │   │   ├── lemon_rs.rs
+│           │   │   │   └── sqlparser_rs.rs
+│           │   │   ├── .sqlfluff
+│           │   │   ├── _parse_cst.js
+│           │   │   ├── _parse_node.js
+│           │   │   ├── _parse_sqlglot.py
+│           │   │   ├── bench.sql
+│           │   │   ├── bench_30x.sql
+│           │   │   ├── Cargo.lock
+│           │   │   └── Cargo.toml
+│           │   ├── validator/
+│           │   │   ├── cases/
+│           │   │   │   ├── v01.sql
+│           │   │   │   ├── v02.sql
+│           │   │   │   ├── v03.sql
+│           │   │   │   ├── v04.sql
+│           │   │   │   ├── v05.sql
+│           │   │   │   ├── v06.sql
+│           │   │   │   ├── v07.sql
+│           │   │   │   ├── v08.sql
+│           │   │   │   ├── v09.sql
+│           │   │   │   └── v10.sql
+│           │   │   ├── _lsp_validate.js
+│           │   │   ├── bench_30x_with_schema.sql
+│           │   │   └── bench_with_schema.sql
+│           │   ├── .prettierrc
+│           │   ├── .python-version
+│           │   ├── .sqlfluff
+│           │   ├── .sqruff
+│           │   ├── bench_statements.sql
+│           │   ├── package-lock.json
+│           │   ├── package.json
+│           │   ├── pyproject.toml
+│           │   ├── README.md
+│           │   ├── schema.sql
+│           │   ├── test_statements.sql
+│           │   └── uv.lock
+│           ├── fmt_diff_tests/
+│           │   ├── __init__.py
+│           │   ├── comments.py
+│           │   ├── create_table.py
+│           │   ├── dml.py
+│           │   ├── misc.py
+│           │   ├── operator_precedence.py
+│           │   ├── schema_ops.py
+│           │   ├── select.py
+│           │   ├── utility_stmts.py
+│           │   └── window.py
+│           ├── lineage_diff_tests/
+│           │   ├── __init__.py
+│           │   ├── ctas.py
+│           │   ├── cte.py
+│           │   ├── direct.py
+│           │   ├── errors.py
+│           │   ├── expressions.py
+│           │   ├── joins.py
+│           │   ├── star.py
+│           │   ├── union.py
+│           │   └── view.py
+│           ├── lsp_diff_tests/
+│           │   ├── __init__.py
+│           │   ├── completion.py
+│           │   ├── definition.py
+│           │   ├── diagnostics.py
+│           │   ├── hover.py
+│           │   ├── references.py
+│           │   ├── rename.py
+│           │   └── shell.py
+│           ├── lsp_tests/
+│           │   ├── query.sql
+│           │   └── schema.sql
+│           ├── perfetto_fmt_diff_tests/
+│           │   ├── __init__.py
+│           │   └── perfetto.py
+│           ├── perfetto_validation_diff_tests/
+│           │   ├── __init__.py
+│           │   └── perfetto.py
+│           ├── public-api/
+│           │   ├── syntaqlite-buildtools.txt
+│           │   ├── syntaqlite-syntax.txt
+│           │   └── syntaqlite.txt
+│           ├── semantic_diff_tests/
+│           │   ├── __init__.py
+│           │   ├── clauses.py
+│           │   ├── cte.py
+│           │   ├── ddl.py
+│           │   ├── dequoting.py
+│           │   ├── dml.py
+│           │   ├── functions.py
+│           │   ├── multi_statement.py
+│           │   ├── star.py
+│           │   ├── subqueries.py
+│           │   ├── unknown_column.py
+│           │   └── unknown_table.py
+│           ├── token_preservation/
+│           │   └── baseline.json
+│           ├── upstream/
+│           │   ├── csrc/
+│           │   │   └── tclsyntaqlite.c
+│           │   └── tcl/
+│           │       └── tester.tcl
+│           ├── upstream_baselines/
+│           │   ├── parse_acceptance.darwin.json
+│           │   └── parse_acceptance.linux.json
+│           └── __init__.py
 ├── grammar/
 │   ├── ddl.pp3
 │   ├── dml.pp3
@@ -90,13 +259,16 @@ sqlite-parser/
 ├── tests/
 │   ├── Ast/
 │   │   └── ScriptTest.php
-│   └── Grammar/
-│       ├── AdvancedSelectTest.php
-│       ├── DdlTest.php
-│       ├── DmlTest.php
-│       ├── ExpressionTest.php
-│       ├── SelectTest.php
-│       └── UtilityTest.php
+│   ├── Grammar/
+│   │   ├── AdvancedSelectTest.php
+│   │   ├── DdlTest.php
+│   │   ├── DmlTest.php
+│   │   ├── ExpressionTest.php
+│   │   ├── FullScriptTest.php
+│   │   ├── SelectTest.php
+│   │   └── UtilityTest.php
+│   └── Parser/
+│       └── SqliteParserTest.php
 ├── .gitattributes
 ├── .phpunit.result.cache
 ├── composer.json

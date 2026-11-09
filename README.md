@@ -77,16 +77,3 @@ composer tests           # PHPUnit
 composer stan            # PHPStan (level 8)
 composer ci              # весь пайплайн: check + diff + tests + stan
 ```
-
-### CI
-
-GitHub Actions (`.github/workflows/ci.yml`) на каждый push/PR выполняет:
-
-1. `composer grammar:check` — валидация грамматики.
-2. `composer grammar:build` + `git diff --exit-code -- src/Parser/SqliteParser.php` —
-   проверка, что скомпилированный парсер соответствует исходной грамматике
-   (ловит устаревший `src/Parser/SqliteParser.php`).
-3. `composer tests` — PHPUnit.
-4. `composer stan` — статический анализ (PHPStan).
-
-Полный поэтапный roadmap — в [`PLAN.md`](PLAN.md).
