@@ -520,7 +520,6 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
         false,
         false,
         false,
-        false,
         true,
         true,
         false,
@@ -688,9 +687,6 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
             138 => true,
         ],
         null,
-        [
-            143 => true,
-        ],
         [
             143 => true,
         ],
@@ -867,7 +863,7 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
                 -29,
             ],
         ],
-        41 => [
+        40 => [
             123 => [
                 -18,
             ],
@@ -881,16 +877,16 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
     private const array PARSER_SEQUENCE_PREDICTION_TABLE = [
         3 => [
             4,
-            -62,
-            -64,
+            -61,
+            -63,
         ],
         [
             5,
             6,
-            -39,
-            -44,
-            -47,
-            -55,
+            -38,
+            -43,
+            -46,
+            -54,
         ],
         6 => [
             7,
@@ -904,20 +900,20 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
             10,
             -21,
         ],
-        40 => [
-            41,
+        39 => [
+            40,
             -31,
         ],
-        46 => [
+        45 => [
+            46,
             47,
             48,
-            49,
-            -52,
+            -51,
         ],
-        54 => [
+        53 => [
+            54,
             55,
-            56,
-            -59,
+            -58,
         ],
     ];
 
@@ -1096,8 +1092,8 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
                 new \Phplrt\Parser\Grammar\Alternation([1, 2]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_SEMICOLON, true),
                 new \Phplrt\Parser\Grammar\Optional(3),
-                new \Phplrt\Parser\Grammar\Concatenation([4, 60, 64]),
-                new \Phplrt\Parser\Grammar\Concatenation([5, 6, 37, 42, 45, 53]),
+                new \Phplrt\Parser\Grammar\Concatenation([4, 59, 63]),
+                new \Phplrt\Parser\Grammar\Concatenation([5, 6, 36, 41, 44, 52]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_SELECT, false),
                 new \Phplrt\Parser\Grammar\Concatenation([7, 33]),
                 new \Phplrt\Parser\Grammar\Alternation([8, 32]),
@@ -1127,37 +1123,36 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_AS, false),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_STAR, true),
                 new \Phplrt\Parser\Grammar\Optional(34),
-                new \Phplrt\Parser\Grammar\Repetition(35, 1, \INF),
-                new \Phplrt\Parser\Grammar\Concatenation([36, 7]),
+                new \Phplrt\Parser\Grammar\Concatenation([35, 6]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_COMMA, false),
-                new \Phplrt\Parser\Grammar\Optional(38),
-                new \Phplrt\Parser\Grammar\Concatenation([39, 40]),
+                new \Phplrt\Parser\Grammar\Optional(37),
+                new \Phplrt\Parser\Grammar\Concatenation([38, 39]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_FROM, false),
-                new \Phplrt\Parser\Grammar\Concatenation([41, 29]),
+                new \Phplrt\Parser\Grammar\Concatenation([40, 29]),
                 new \Phplrt\Parser\Grammar\Alternation([17, 18]),
-                new \Phplrt\Parser\Grammar\Optional(43),
-                new \Phplrt\Parser\Grammar\Concatenation([44, 9]),
+                new \Phplrt\Parser\Grammar\Optional(42),
+                new \Phplrt\Parser\Grammar\Concatenation([43, 9]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_WHERE, false),
-                new \Phplrt\Parser\Grammar\Optional(46),
-                new \Phplrt\Parser\Grammar\Concatenation([47, 48, 49, 50]),
+                new \Phplrt\Parser\Grammar\Optional(45),
+                new \Phplrt\Parser\Grammar\Concatenation([46, 47, 48, 49]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_ORDER, false),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_BY, false),
                 new \Phplrt\Parser\Grammar\Concatenation([9]),
-                new \Phplrt\Parser\Grammar\Optional(51),
-                new \Phplrt\Parser\Grammar\Repetition(52, 1, \INF),
-                new \Phplrt\Parser\Grammar\Concatenation([36, 49]),
-                new \Phplrt\Parser\Grammar\Optional(54),
-                new \Phplrt\Parser\Grammar\Concatenation([55, 56, 57]),
+                new \Phplrt\Parser\Grammar\Optional(50),
+                new \Phplrt\Parser\Grammar\Repetition(51, 1, \INF),
+                new \Phplrt\Parser\Grammar\Concatenation([35, 48]),
+                new \Phplrt\Parser\Grammar\Optional(53),
+                new \Phplrt\Parser\Grammar\Concatenation([54, 55, 56]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_LIMIT, false),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_INT, true),
-                new \Phplrt\Parser\Grammar\Optional(58),
-                new \Phplrt\Parser\Grammar\Concatenation([59, 56]),
+                new \Phplrt\Parser\Grammar\Optional(57),
+                new \Phplrt\Parser\Grammar\Concatenation([58, 55]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_OFFSET, false),
-                new \Phplrt\Parser\Grammar\Optional(61),
-                new \Phplrt\Parser\Grammar\Repetition(62, 1, \INF),
-                new \Phplrt\Parser\Grammar\Concatenation([63, 4]),
+                new \Phplrt\Parser\Grammar\Optional(60),
+                new \Phplrt\Parser\Grammar\Repetition(61, 1, \INF),
+                new \Phplrt\Parser\Grammar\Concatenation([62, 4]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_SEMICOLON, false),
-                new \Phplrt\Parser\Grammar\Optional(63),
+                new \Phplrt\Parser\Grammar\Optional(62),
             ],
             initial: 0,
             reducers: [
@@ -1173,11 +1168,11 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
                 15 => self::reduceNullLiteral(...),
                 16 => self::reduceColumnReference(...),
                 22 => self::reduceCompareOp(...),
-                40 => self::reduceTableReference(...),
-                41 => self::reduceTableName(...),
-                46 => self::reduceOrderByClause(...),
-                49 => self::reduceOrderByItem(...),
-                54 => self::reduceLimitClause(...),
+                39 => self::reduceTableReference(...),
+                40 => self::reduceTableName(...),
+                45 => self::reduceOrderByClause(...),
+                48 => self::reduceOrderByItem(...),
+                53 => self::reduceLimitClause(...),
             ],
             expectations: self::PARSER_EXPECTATIONS,
             kept: self::PARSER_KEPT_TABLE,
@@ -1196,11 +1191,6 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
     {
         // Альтернатива <T_SEMICOLON> — одиночная `;` даёт пустую инструкцию.
             // Альтернатива StatementList()? — либо список инструкций, либо пусто.
-            //
-            // $children:
-            //   - Token  — когда сработала первая альтернатива `<T_SEMICOLON>`;
-            //   - array  — когда `StatementList()` вернул непустой список;
-            //   - null   — когда `StatementList()?` совпал по нулю (пустой ввод).
             if ($children === null) {
                 return new \Inilim\SqliteParser\Ast\Script([]);
             }
@@ -1216,9 +1206,7 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
 
     private static function reduceStatementList(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
-        // $children может прийти массивом [first, rest, trailingSemicolon]
-            // либо (из-за phplrt unwrap) одиночным значением — оборачиваем.
-            $children = \is_array($children) ? $children : [$children];
+        $children = \is_array($children) ? $children : [$children];
 
             $flat = [];
             \array_walk_recursive($children, static function ($item) use (&$flat): void {
@@ -1232,18 +1220,23 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
 
     private static function reduceSelectStatement(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
-        // phplrt может "схлопнуть" конкатенацию с единственным значимым
-            // ребёнком — поэтому $children[0] иногда приходит как одиночный
-            // ResultColumn (когда FromClause()? WhereClause()? и т.д. все null).
-            $children = \is_array($children) ? $children : [$children];
+        $children = \is_array($children) ? $children : [$children];
 
-            $columns_raw = $children[0] ?? [];
+            // Columns: максимально безопасный сбор ResultColumn из $children[0].
+            // phplrt может передать:
+            //   - ResultColumn (unwrap при одной колонке),
+            //   - [ResultColumn, ResultColumn, ...] (обычный массив),
+            //   - [[ResultColumn, ResultColumn, ...]] (двойная обёртка).
+            $columns = [];
+            $columns_raw = $children[0] ?? null;
             if ($columns_raw instanceof \Inilim\SqliteParser\Ast\Statement\ResultColumn) {
                 $columns = [$columns_raw];
             } elseif (\is_array($columns_raw)) {
-                $columns = $columns_raw;
-            } else {
-                $columns = [];
+                \array_walk_recursive($columns_raw, static function ($item) use (&$columns): void {
+                    if ($item instanceof \Inilim\SqliteParser\Ast\Statement\ResultColumn) {
+                        $columns[] = $item;
+                    }
+                });
             }
 
             $from_raw    = $children[1] ?? null;
@@ -1251,10 +1244,20 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
             $orderBy_raw = $children[3] ?? null;
             $limit_raw   = $children[4] ?? null;
 
-            $from    = $from_raw instanceof \Inilim\SqliteParser\Ast\Statement\TableReference ? $from_raw : null;
-            $where   = $where_raw instanceof \Inilim\SqliteParser\Ast\Expression ? $where_raw : null;
-            $orderBy = \is_array($orderBy_raw) ? $orderBy_raw : null;
-            $limit   = \is_array($limit_raw) ? $limit_raw : null;
+            $from  = $from_raw instanceof \Inilim\SqliteParser\Ast\Statement\TableReference ? $from_raw : null;
+            $where = $where_raw instanceof \Inilim\SqliteParser\Ast\Expression ? $where_raw : null;
+
+            $orderBy = null;
+            if (\is_array($orderBy_raw)) {
+                $orderBy = [];
+                \array_walk_recursive($orderBy_raw, static function ($item) use (&$orderBy): void {
+                    if ($item instanceof \Inilim\SqliteParser\Ast\Statement\OrderBy) {
+                        $orderBy[] = $item;
+                    }
+                });
+            }
+
+            $limit = \is_array($limit_raw) && isset($limit_raw['limit']) ? $limit_raw : null;
 
             return new \Inilim\SqliteParser\Ast\Statement\SelectStatement(
                 columns: $columns,
@@ -1267,16 +1270,28 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
 
     private static function reduceSelectList(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
-        $children = \is_array($children) ? $children : [$children];
+        // $children = [first] | [first, rest], где rest — либо массив RC,
+            // либо одиночный RC (unwrap), либо null.
+            $children = \is_array($children) ? $children : [$children];
+            $first = $children[0] ?? null;
+            $rest = $children[1] ?? null;
 
-            $flat = [];
-            \array_walk_recursive($children, static function ($item) use (&$flat): void {
-                if ($item instanceof \Inilim\SqliteParser\Ast\Statement\ResultColumn) {
-                    $flat[] = $item;
-                }
-            });
+            $list = [];
+            if ($first instanceof \Inilim\SqliteParser\Ast\Statement\ResultColumn) {
+                $list[] = $first;
+            }
 
-            return $flat;
+            if ($rest instanceof \Inilim\SqliteParser\Ast\Statement\ResultColumn) {
+                $list[] = $rest;
+            } elseif (\is_array($rest)) {
+                \array_walk_recursive($rest, static function ($item) use (&$list): void {
+                    if ($item instanceof \Inilim\SqliteParser\Ast\Statement\ResultColumn) {
+                        $list[] = $item;
+                    }
+                });
+            }
+
+            return $list;
     }
 
     private static function reduceResultColumn(\Phplrt\Parser\Context $ctx, mixed $children): mixed
@@ -1303,7 +1318,7 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
 
     private static function reduceComparison(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
-        // phplrt может вернуть структуру повторения в двух формах:
+        // phplrt может вернуть структуру повторения в нескольких формах:
             //   nested: [left, [[op1, primary1], [op2, primary2], ...]]
             //   flat:   [left, op1, primary1, op2, primary2, ...]
             //   flat-inner (1 итерация): [left, [op, primary]]
@@ -1314,7 +1329,6 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
             $rest = $children[1] ?? [];
 
             if (\is_string($rest)) {
-                // Полностью "плоская" форма: [left, op, primary, op, primary, ...]
                 $items = \array_slice($children, 1);
                 for ($i = 0; $i + 1 < \count($items); $i += 2) {
                     $op = $items[$i];
@@ -1326,7 +1340,6 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
             } elseif (\is_array($rest)) {
                 $isFlat = !empty($rest) && \is_string($rest[0] ?? null);
                 if ($isFlat) {
-                    // Плоская форма: [op1, primary1, op2, primary2, ...]
                     for ($i = 0; $i + 1 < \count($rest); $i += 2) {
                         $op = $rest[$i];
                         $right = $rest[$i + 1];
@@ -1335,7 +1348,6 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
                         }
                     }
                 } else {
-                    // Вложенная форма: [[op1, primary1], [op2, primary2], ...]
                     foreach ($rest as $pair) {
                         if (\is_array($pair) && \count($pair) >= 2 && \is_string($pair[0])) {
                             $left = new \Inilim\SqliteParser\Ast\Expression\BinaryOperation($pair[0], $left, $pair[1]);

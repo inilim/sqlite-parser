@@ -199,11 +199,11 @@
 // размещать внутри альтернативы (`| pattern -> { ... }` недопустимо —
 // PP3 воспринимает `->` как T_PHP и падает с UnexpectedTokenException).
 //
-// ВАЖНО (phplrt 4.x gotcha): когда правило-конкатенация сводится к одному
-// "значимому" ребёнку (остальные — опциональные и не совпали), парсер
-// возвращает этого ребёнка напрямую, БЕЗ обёртки в массив. Поэтому все
-// редукторы обязаны быть терпимы к обоим формам `$children` — массиву и
-// одиночному значению.
+// ВАЖНО (phplrt 4.x gotcha): если правило-конкатенация возвращает голый array
+// из нескольких элементов, родительское правило при unwrap "схлопывает" этот
+// массив в плоский `$children`. Поэтому СПИСКИ узлов (columns, orderBy, ...)
+// оборачиваются в объекты-контейнеры (ResultColumnList, OrderByList) — они
+// служат "barrier" против флаттенинга (см. PHPLRT_GUIDE.md, §3.4 и SKILL.md).
 // ============================================================================
 
 // ----------------------------------------------------------------------------
@@ -212,13 +212,15 @@
 
 Script
     -> {
-        // Альтернатива <T_SEMICOLON> — одиночная `;` даёт пустую инструкцию.
-        // Альтернатива StatementList()? — либо список инструкций, либо пусто.
         if ($children === null) {
             return new \Inilim\SqliteParser\Ast\Script([]);
         }
         if (\is_array($children)) {
             return new \Inilim\SqliteParser\Ast\Script($children);
+        }
+        // Одиночный Statement (unwrap-случай) — оборачиваем в массив.
+        if ($children instanceof \Inilim\SqliteParser\Ast\Statement) {
+            return new \Inilim\SqliteParser\Ast\Script([$children]);
         }
 
         // Сюда попадаем только для одиночного `;` — это EmptyStatement.
@@ -262,41 +264,23 @@ SelectStatement
     -> {
         $children = \is_array($children) ? $children : [$children];
 
-        // Columns: максимально безопасный сбор ResultColumn из $children[0].
-        // phplrt может передать:
-        //   - ResultColumn (unwrap при одной колонке),
-        //   - [ResultColumn, ResultColumn, ...] (обычный массив),
-        //   - [[ResultColumn, ResultColumn, ...]] (двойная обёртка).
-        $columns = [];
+        // ResultColumnList — объект-контейнер (не массив), значит SelectList
+        // не был развёрнут unwrap-флаттенингом на уровне этого правила.
         $columns_raw = $children[0] ?? null;
-        if ($columns_raw instanceof \Inilim\SqliteParser\Ast\Statement\ResultColumn) {
-            $columns = [$columns_raw];
-        } elseif (\is_array($columns_raw)) {
-            \array_walk_recursive($columns_raw, static function ($item) use (&$columns): void {
-                if ($item instanceof \Inilim\SqliteParser\Ast\Statement\ResultColumn) {
-                    $columns[] = $item;
-                }
-            });
-        }
+        $columns = $columns_raw instanceof \Inilim\SqliteParser\Ast\Statement\ResultColumnList
+            ? $columns_raw->items
+            : [];
 
-        $from_raw    = $children[1] ?? null;
-        $where_raw   = $children[2] ?? null;
-        $orderBy_raw = $children[3] ?? null;
-        $limit_raw   = $children[4] ?? null;
+        $from_raw  = $children[1] ?? null;
+        $where_raw = $children[2] ?? null;
+        $order_raw = $children[3] ?? null;
+        $limit_raw = $children[4] ?? null;
 
         $from  = $from_raw instanceof \Inilim\SqliteParser\Ast\Statement\TableReference ? $from_raw : null;
         $where = $where_raw instanceof \Inilim\SqliteParser\Ast\Expression ? $where_raw : null;
-
-        $orderBy = null;
-        if (\is_array($orderBy_raw)) {
-            $orderBy = [];
-            \array_walk_recursive($orderBy_raw, static function ($item) use (&$orderBy): void {
-                if ($item instanceof \Inilim\SqliteParser\Ast\Statement\OrderBy) {
-                    $orderBy[] = $item;
-                }
-            });
-        }
-
+        $orderBy = $order_raw instanceof \Inilim\SqliteParser\Ast\Statement\OrderByList
+            ? $order_raw->items
+            : null;
         $limit = \is_array($limit_raw) && isset($limit_raw['limit']) ? $limit_raw : null;
 
         return new \Inilim\SqliteParser\Ast\Statement\SelectStatement(
@@ -310,33 +294,30 @@ SelectStatement
     : ::T_SELECT:: SelectList() FromClause()? WhereClause()? OrderByClause()? LimitClause()?
     ;
 
-// SelectList построен через ПРАВУЮ рекурсию (ResultColumn() (::T_COMMA:: SelectList())?).
-// Это позволяет unwrap-логике phplrt корректно отдавать вложенные RC без
-// потери элементов при unwrap-е repetition.
+// Список выборки строится через правую рекурсию — редуктор гарантированно
+// получает массив `[first, rest]`, где `rest` — либо `ResultColumnList`
+// (результат рекурсивного вызова), либо null. Возвращается объект
+// ResultColumnList — barrier против unwrap-флаттенинга в SelectStatement.
 SelectList
     -> {
-        // $children = [first] | [first, rest], где rest — либо массив RC,
-        // либо одиночный RC (unwrap), либо null.
         $children = \is_array($children) ? $children : [$children];
+
         $first = $children[0] ?? null;
-        $rest = $children[1] ?? null;
+        $rest  = $children[1] ?? null;
 
         $list = [];
         if ($first instanceof \Inilim\SqliteParser\Ast\Statement\ResultColumn) {
             $list[] = $first;
         }
-
-        if ($rest instanceof \Inilim\SqliteParser\Ast\Statement\ResultColumn) {
+        if ($rest instanceof \Inilim\SqliteParser\Ast\Statement\ResultColumnList) {
+            foreach ($rest->items as $rc) {
+                $list[] = $rc;
+            }
+        } elseif ($rest instanceof \Inilim\SqliteParser\Ast\Statement\ResultColumn) {
             $list[] = $rest;
-        } elseif (\is_array($rest)) {
-            \array_walk_recursive($rest, static function ($item) use (&$list): void {
-                if ($item instanceof \Inilim\SqliteParser\Ast\Statement\ResultColumn) {
-                    $list[] = $item;
-                }
-            });
         }
 
-        return $list;
+        return new \Inilim\SqliteParser\Ast\Statement\ResultColumnList($list);
     }
     : ResultColumn() (::T_COMMA:: SelectList())?
     ;
@@ -406,7 +387,7 @@ OrderByClause
             }
         });
 
-        return $flat;
+        return new \Inilim\SqliteParser\Ast\Statement\OrderByList($flat);
     }
     : ::T_ORDER:: ::T_BY:: OrderByItem() (::T_COMMA:: OrderByItem())*
     ;
