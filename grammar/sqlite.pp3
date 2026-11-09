@@ -326,7 +326,8 @@ SelectCore
         $from     = null;
         $joins    = [];
         $groupBy  = null;
-        $exprs    = [];
+        $where    = null;
+        $having   = null;
 
         foreach ($children as $child) {
             if (\is_string($child)) {
@@ -340,13 +341,12 @@ SelectCore
                 $joins = $child->joins;
             } elseif ($child instanceof \Inilim\SqliteParser\Ast\Statement\GroupByClause) {
                 $groupBy = $child;
-            } elseif ($child instanceof \Inilim\SqliteParser\Ast\Expression) {
-                $exprs[] = $child;
+            } elseif ($child instanceof \Inilim\SqliteParser\Ast\Statement\WhereClause) {
+                $where = $child->expression;
+            } elseif ($child instanceof \Inilim\SqliteParser\Ast\Statement\HavingClause) {
+                $having = $child->expression;
             }
         }
-
-        $where  = $exprs[0] ?? null;
-        $having = $exprs[1] ?? null;
 
         return new \Inilim\SqliteParser\Ast\Statement\SelectStatement(
             columns: $columns,
@@ -387,7 +387,7 @@ CompoundOp
         }
         return \trim($v);
     }
-    : <T_UNION> (::T_ALL::)?
+    : <T_UNION> (<T_ALL>)?
     | <T_INTERSECT>
     | <T_EXCEPT>
     ;
@@ -401,17 +401,21 @@ WithClause
         $children = \is_array($children) ? $children : [$children];
 
         $recursive = false;
-        $ctes      = [];
 
         foreach ($children as $child) {
             if ($child instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
                 if (\strtoupper($child->value) === 'RECURSIVE') {
                     $recursive = true;
                 }
-            } elseif (\is_array($child)) {
-                $ctes = $child;
             }
         }
+
+        $ctes = [];
+        \array_walk_recursive($children, static function ($item) use (&$ctes): void {
+            if ($item instanceof \Inilim\SqliteParser\Ast\Statement\CommonTableExpression) {
+                $ctes[] = $item;
+            }
+        });
 
         return new \Inilim\SqliteParser\Ast\Statement\WithClause($recursive, $ctes);
     }
@@ -617,12 +621,25 @@ JoinConstraint
             if ($child instanceof \Inilim\SqliteParser\Ast\Expression) {
                 return new \Inilim\SqliteParser\Ast\Statement\JoinConstraint(on: $child);
             }
-            if (\is_array($child)) {
-                return new \Inilim\SqliteParser\Ast\Statement\JoinConstraint(using: $child);
-            }
         }
 
-        return null;
+        $using = [];
+        $collect = static function ($items) use (&$collect, &$using): void {
+            foreach ($items as $item) {
+                if (\is_string($item)) {
+                    $using[] = $item;
+                } elseif (\is_array($item)) {
+                    $collect($item);
+                } elseif ($item instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+                    $using[] = $item->value;
+                }
+            }
+        };
+        $collect($children);
+
+        return $using === []
+            ? null
+            : new \Inilim\SqliteParser\Ast\Statement\JoinConstraint(using: $using);
     }
     : ::T_ON:: Expression()
     | ::T_USING:: ::T_LPAREN:: IdentList() ::T_RPAREN::
@@ -635,24 +652,32 @@ TableReference
         $name          = null;
         $alias         = null;
         $subquery      = null;
-        $columnAliases = null;
-        $index         = 0;
+        $columnAliases = [];
 
-        foreach ($children as $child) {
-            if ($index === 0) {
-                if (\is_string($child)) {
-                    $name = $child;
-                } elseif ($child instanceof \Inilim\SqliteParser\Ast\Statement) {
-                    $subquery = $child;
+        $first = $children[0] ?? null;
+        if (\is_string($first)) {
+            $name = $first;
+        } elseif ($first instanceof \Inilim\SqliteParser\Ast\Statement) {
+            $subquery = $first;
+        }
+
+        $collectAliases = static function ($items) use (&$collectAliases, &$columnAliases): void {
+            foreach ($items as $item) {
+                if (\is_string($item)) {
+                    $columnAliases[] = $item;
+                } elseif (\is_array($item)) {
+                    $collectAliases($item);
                 }
-                $index = 1;
-                continue;
             }
+        };
 
+        foreach (\array_slice($children, 1) as $child) {
             if ($child instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
                 $alias = $child->value;
+            } elseif (\is_string($child)) {
+                $columnAliases[] = $child;
             } elseif (\is_array($child)) {
-                $columnAliases = $child;
+                $collectAliases($child);
             }
         }
 
@@ -660,7 +685,7 @@ TableReference
             name: $name,
             alias: $alias,
             subquery: $subquery,
-            columnAliases: $columnAliases,
+            columnAliases: $columnAliases === [] ? null : $columnAliases,
         );
     }
     : TableName() (::T_AS:: <T_IDENT>)? (::T_LPAREN:: IdentList() ::T_RPAREN::)?
@@ -678,6 +703,23 @@ TableName
 // ----------------------------------------------------------------------------
 
 WhereClause
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+
+        $expression = null;
+        foreach ($children as $child) {
+            if ($child instanceof \Inilim\SqliteParser\Ast\Expression) {
+                $expression = $child;
+                break;
+            }
+        }
+
+        if (!$expression instanceof \Inilim\SqliteParser\Ast\Expression) {
+            throw new \LogicException('WHERE clause without expression');
+        }
+
+        return new \Inilim\SqliteParser\Ast\Statement\WhereClause($expression);
+    }
     : ::T_WHERE:: Expression()
     ;
 
@@ -698,6 +740,23 @@ GroupByClause
     ;
 
 HavingClause
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+
+        $expression = null;
+        foreach ($children as $child) {
+            if ($child instanceof \Inilim\SqliteParser\Ast\Expression) {
+                $expression = $child;
+                break;
+            }
+        }
+
+        if (!$expression instanceof \Inilim\SqliteParser\Ast\Expression) {
+            throw new \LogicException('HAVING clause without expression');
+        }
+
+        return new \Inilim\SqliteParser\Ast\Statement\HavingClause($expression);
+    }
     : ::T_HAVING:: Expression()
     ;
 
