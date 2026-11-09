@@ -15,16 +15,13 @@ composer require inilim/sqlite-parser
 ## Usage
 
 ```php
-use Inilim\SqliteParser\Parser\SqliteParser;
+use Inilim\SqliteParser\Parser\Parser;
 use Inilim\SqliteParser\Ast\Script;
-use Phplrt\Source\StringSource;
 
-$parser = new SqliteParser();
+$parser = new Parser();
 
 /** @var Script $script */
-$script = $parser->parse(StringSource::createFromString(
-    'SELECT id, name FROM users WHERE active = 1;'
-));
+$script = $parser->parse('SELECT id, name FROM users WHERE active = 1;');
 
 foreach ($script->statements as $statement) {
     // $statement — SelectStatement, InsertStatement, CreateTableStatement...
@@ -36,6 +33,28 @@ foreach ($script->statements as $statement) {
 
 Все AST-узлы реализуют `JsonSerializable`, поэтому `json_encode($script)`
 даёт готовое к сравнению / сериализации представление для тестов и отладки.
+
+### Низкоуровневый API
+
+Если нужен полный контроль над источником (файл, поток, произвольная
+реализация `ReadableInterface`), используйте сгенерированный
+`Inilim\SqliteParser\Parser\SqliteParser` напрямую:
+
+```php
+use Inilim\SqliteParser\Parser\SqliteParser;
+use Phplrt\Source\FileSource;
+
+$parser = new SqliteParser();
+$script = $parser->parse(FileSource::createFromPath(__DIR__ . '/schema.sql'));
+```
+
+Экземпляр `SqliteParser` можно передать в `Parser` через конструктор,
+если требуется переиспользовать один и тот же низкоуровневый парсер:
+
+```php
+$parser = new \Inilim\SqliteParser\Parser\Parser(new \Inilim\SqliteParser\Parser\SqliteParser());
+$script = $parser->parse('SELECT 1;');
+```
 
 ## Supported SQL
 
