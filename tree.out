@@ -30,6 +30,7 @@ sqlite-parser/
 │   │   │   ├── FrameSpec.php
 │   │   │   ├── FromClause.php
 │   │   │   ├── GroupByClause.php
+│   │   │   ├── HavingClause.php
 │   │   │   ├── JoinClause.php
 │   │   │   ├── JoinConstraint.php
 │   │   │   ├── OrderBy.php
@@ -38,6 +39,7 @@ sqlite-parser/
 │   │   │   ├── ResultColumnList.php
 │   │   │   ├── SelectStatement.php
 │   │   │   ├── TableReference.php
+│   │   │   ├── WhereClause.php
 │   │   │   ├── WindowSpecification.php
 │   │   │   └── WithClause.php
 │   │   ├── Expression.php

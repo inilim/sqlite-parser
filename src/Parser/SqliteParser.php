@@ -691,7 +691,10 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
         true,
         false,
         false,
+        true,
         false,
+        false,
+        true,
         false,
         false,
         true,
@@ -699,12 +702,8 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
         false,
         false,
         false,
-        false,
-        false,
-        false,
         true,
         true,
-        false,
         false,
         false,
         false,
@@ -1639,9 +1638,6 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
         ],
         null,
         [
-            13 => true,
-        ],
-        [
             41 => true,
         ],
         [
@@ -2151,10 +2147,10 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
                 222,
             ],
             [
-                -227,
+                -226,
             ],
             [
-                -228,
+                -227,
             ],
         ],
     ];
@@ -2163,15 +2159,15 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
     private const array PARSER_SEQUENCE_PREDICTION_TABLE = [
         3 => [
             4,
-            -237,
-            -239,
+            -236,
+            -238,
         ],
         [
             -7,
             28,
             -220,
             -90,
-            -230,
+            -229,
         ],
         6 => [
             7,
@@ -2324,12 +2320,12 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
         ],
         222 => [
             223,
-            -226,
+            -34,
         ],
-        229 => [
+        228 => [
+            229,
             230,
-            231,
-            -234,
+            -233,
         ],
     ];
 
@@ -2508,8 +2504,8 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
                 new \Phplrt\Parser\Grammar\Alternation([1, 2]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_SEMICOLON, true),
                 new \Phplrt\Parser\Grammar\Optional(3),
-                new \Phplrt\Parser\Grammar\Concatenation([4, 235, 239]),
-                new \Phplrt\Parser\Grammar\Concatenation([5, 28, 218, 88, 228]),
+                new \Phplrt\Parser\Grammar\Concatenation([4, 234, 238]),
+                new \Phplrt\Parser\Grammar\Concatenation([5, 28, 218, 88, 227]),
                 new \Phplrt\Parser\Grammar\Optional(6),
                 new \Phplrt\Parser\Grammar\Concatenation([7, 8, 10]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_WITH, false),
@@ -2726,25 +2722,24 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
                 new \Phplrt\Parser\Grammar\Optional(219),
                 new \Phplrt\Parser\Grammar\Repetition(220, 1, \INF),
                 new \Phplrt\Parser\Grammar\Concatenation([221, 28]),
-                new \Phplrt\Parser\Grammar\Alternation([222, 226, 227]),
+                new \Phplrt\Parser\Grammar\Alternation([222, 225, 226]),
                 new \Phplrt\Parser\Grammar\Concatenation([223, 224]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_UNION, true),
-                new \Phplrt\Parser\Grammar\Optional(225),
-                new \Phplrt\Parser\Grammar\Lexeme(self::T_ALL, false),
+                new \Phplrt\Parser\Grammar\Optional(33),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_INTERSECT, true),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_EXCEPT, true),
-                new \Phplrt\Parser\Grammar\Optional(229),
-                new \Phplrt\Parser\Grammar\Concatenation([230, 231, 232]),
+                new \Phplrt\Parser\Grammar\Optional(228),
+                new \Phplrt\Parser\Grammar\Concatenation([229, 230, 231]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_LIMIT, false),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_INT, true),
-                new \Phplrt\Parser\Grammar\Optional(233),
-                new \Phplrt\Parser\Grammar\Concatenation([234, 231]),
+                new \Phplrt\Parser\Grammar\Optional(232),
+                new \Phplrt\Parser\Grammar\Concatenation([233, 230]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_OFFSET, false),
-                new \Phplrt\Parser\Grammar\Optional(236),
-                new \Phplrt\Parser\Grammar\Repetition(237, 1, \INF),
-                new \Phplrt\Parser\Grammar\Concatenation([238, 4]),
+                new \Phplrt\Parser\Grammar\Optional(235),
+                new \Phplrt\Parser\Grammar\Repetition(236, 1, \INF),
+                new \Phplrt\Parser\Grammar\Concatenation([237, 4]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_SEMICOLON, false),
-                new \Phplrt\Parser\Grammar\Optional(238),
+                new \Phplrt\Parser\Grammar\Optional(237),
             ],
             initial: 0,
             reducers: [
@@ -2797,9 +2792,11 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
                 190 => self::reduceJoinClause(...),
                 194 => self::reduceJoinType(...),
                 204 => self::reduceJoinConstraint(...),
+                210 => self::reduceWhereClause(...),
                 213 => self::reduceGroupByClause(...),
+                216 => self::reduceHavingClause(...),
                 221 => self::reduceCompoundOp(...),
-                229 => self::reduceLimitClause(...),
+                228 => self::reduceLimitClause(...),
             ],
             expectations: self::PARSER_EXPECTATIONS,
             kept: self::PARSER_KEPT_TABLE,
@@ -2901,17 +2898,21 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
         $children = \is_array($children) ? $children : [$children];
 
             $recursive = false;
-            $ctes      = [];
 
             foreach ($children as $child) {
                 if ($child instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
                     if (\strtoupper($child->value) === 'RECURSIVE') {
                         $recursive = true;
                     }
-                } elseif (\is_array($child)) {
-                    $ctes = $child;
                 }
             }
+
+            $ctes = [];
+            \array_walk_recursive($children, static function ($item) use (&$ctes): void {
+                if ($item instanceof \Inilim\SqliteParser\Ast\Statement\CommonTableExpression) {
+                    $ctes[] = $item;
+                }
+            });
 
             return new \Inilim\SqliteParser\Ast\Statement\WithClause($recursive, $ctes);
     }
@@ -2983,7 +2984,8 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
             $from     = null;
             $joins    = [];
             $groupBy  = null;
-            $exprs    = [];
+            $where    = null;
+            $having   = null;
 
             foreach ($children as $child) {
                 if (\is_string($child)) {
@@ -2997,13 +2999,12 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
                     $joins = $child->joins;
                 } elseif ($child instanceof \Inilim\SqliteParser\Ast\Statement\GroupByClause) {
                     $groupBy = $child;
-                } elseif ($child instanceof \Inilim\SqliteParser\Ast\Expression) {
-                    $exprs[] = $child;
+                } elseif ($child instanceof \Inilim\SqliteParser\Ast\Statement\WhereClause) {
+                    $where = $child->expression;
+                } elseif ($child instanceof \Inilim\SqliteParser\Ast\Statement\HavingClause) {
+                    $having = $child->expression;
                 }
             }
-
-            $where  = $exprs[0] ?? null;
-            $having = $exprs[1] ?? null;
 
             return new \Inilim\SqliteParser\Ast\Statement\SelectStatement(
                 columns: $columns,
@@ -3663,24 +3664,32 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
             $name          = null;
             $alias         = null;
             $subquery      = null;
-            $columnAliases = null;
-            $index         = 0;
+            $columnAliases = [];
 
-            foreach ($children as $child) {
-                if ($index === 0) {
-                    if (\is_string($child)) {
-                        $name = $child;
-                    } elseif ($child instanceof \Inilim\SqliteParser\Ast\Statement) {
-                        $subquery = $child;
+            $first = $children[0] ?? null;
+            if (\is_string($first)) {
+                $name = $first;
+            } elseif ($first instanceof \Inilim\SqliteParser\Ast\Statement) {
+                $subquery = $first;
+            }
+
+            $collectAliases = static function ($items) use (&$collectAliases, &$columnAliases): void {
+                foreach ($items as $item) {
+                    if (\is_string($item)) {
+                        $columnAliases[] = $item;
+                    } elseif (\is_array($item)) {
+                        $collectAliases($item);
                     }
-                    $index = 1;
-                    continue;
                 }
+            };
 
+            foreach (\array_slice($children, 1) as $child) {
                 if ($child instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
                     $alias = $child->value;
+                } elseif (\is_string($child)) {
+                    $columnAliases[] = $child;
                 } elseif (\is_array($child)) {
-                    $columnAliases = $child;
+                    $collectAliases($child);
                 }
             }
 
@@ -3688,7 +3697,7 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
                 name: $name,
                 alias: $alias,
                 subquery: $subquery,
-                columnAliases: $columnAliases,
+                columnAliases: $columnAliases === [] ? null : $columnAliases,
             );
     }
 
@@ -3749,12 +3758,44 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
                 if ($child instanceof \Inilim\SqliteParser\Ast\Expression) {
                     return new \Inilim\SqliteParser\Ast\Statement\JoinConstraint(on: $child);
                 }
-                if (\is_array($child)) {
-                    return new \Inilim\SqliteParser\Ast\Statement\JoinConstraint(using: $child);
+            }
+
+            $using = [];
+            $collect = static function ($items) use (&$collect, &$using): void {
+                foreach ($items as $item) {
+                    if (\is_string($item)) {
+                        $using[] = $item;
+                    } elseif (\is_array($item)) {
+                        $collect($item);
+                    } elseif ($item instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+                        $using[] = $item->value;
+                    }
+                }
+            };
+            $collect($children);
+
+            return $using === []
+                ? null
+                : new \Inilim\SqliteParser\Ast\Statement\JoinConstraint(using: $using);
+    }
+
+    private static function reduceWhereClause(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        $children = \is_array($children) ? $children : [$children];
+
+            $expression = null;
+            foreach ($children as $child) {
+                if ($child instanceof \Inilim\SqliteParser\Ast\Expression) {
+                    $expression = $child;
+                    break;
                 }
             }
 
-            return null;
+            if (!$expression instanceof \Inilim\SqliteParser\Ast\Expression) {
+                throw new \LogicException('WHERE clause without expression');
+            }
+
+            return new \Inilim\SqliteParser\Ast\Statement\WhereClause($expression);
     }
 
     private static function reduceGroupByClause(\Phplrt\Parser\Context $ctx, mixed $children): mixed
@@ -3769,6 +3810,25 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
             }
 
             return new \Inilim\SqliteParser\Ast\Statement\GroupByClause($expressions);
+    }
+
+    private static function reduceHavingClause(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        $children = \is_array($children) ? $children : [$children];
+
+            $expression = null;
+            foreach ($children as $child) {
+                if ($child instanceof \Inilim\SqliteParser\Ast\Expression) {
+                    $expression = $child;
+                    break;
+                }
+            }
+
+            if (!$expression instanceof \Inilim\SqliteParser\Ast\Expression) {
+                throw new \LogicException('HAVING clause without expression');
+            }
+
+            return new \Inilim\SqliteParser\Ast\Statement\HavingClause($expression);
     }
 
     private static function reduceCompoundOp(\Phplrt\Parser\Context $ctx, mixed $children): mixed
