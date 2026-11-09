@@ -169,6 +169,12 @@
 // Синтаксис редукторов phplrt 4.x: RuleName -> { ... } : ... ;
 // Пустая альтернатива выражается через ? (zero or one) или * (zero or more),
 // а не через %empty — директива %empty в PP3 не поддерживается.
+//
+// ВАЖНО: редуктор ставится ОДИН раз на правило, на уровне `:` — его нельзя
+// размещать внутри альтернативы (`| pattern -> { ... }` недопустимо —
+// PP3 воспринимает `->` как T_PHP и падает с UnexpectedTokenException).
+// Поэтому вся логика "какая альтернатива сработала" переносится в общий
+// редуктор правила.
 // ============================================================================
 
 Statement
@@ -178,22 +184,42 @@ Statement
 
 Script
     -> {
-        // $children может быть пустым массивом (при StatementList()? -> zero)
-        // либо массивом Statement'ов (при успешном StatementList()).
+        // Альтернатива <T_SEMICOLON> — одиночная `;` даёт пустую инструкцию.
+        // Альтернатива StatementList()? — либо список инструкций, либо пусто.
+        //
+        // $children:
+        //   - Token  — когда сработала первая альтернатива `<T_SEMICOLON>`;
+        //   - array  — когда `StatementList()` вернул непустой список;
+        //   - null   — когда `StatementList()?` совпал по нулю (пустой ввод).
+        if ($children === null) {
+            return new \Inilim\SqliteParser\Ast\Script([]);
+        }
+        if (\is_array($children)) {
+            return new \Inilim\SqliteParser\Ast\Script($children);
+        }
+
+        // Сюда попадаем только для одиночного `;` — это EmptyStatement.
         return new \Inilim\SqliteParser\Ast\Script(
-            \is_array($children) ? $children : []
+            [new \Inilim\SqliteParser\Ast\Statement\EmptyStatement()]
         );
     }
-    : StatementList()?
-    | ::T_SEMICOLON::
-        -> {
-            return new \Inilim\SqliteParser\Ast\Script(
-                [new \Inilim\SqliteParser\Ast\Statement\EmptyStatement()]
-            );
-        }
+    : <T_SEMICOLON>
+    | StatementList()?
     ;
 
 StatementList
-    -> { return $children; }
+    -> {
+        // $children = [first, rest], где `rest` — массив итераций
+        // `(::T_SEMICOLON:: Statement())*`. В зависимости от того, как
+        // phplrt оборачивает итерацию с discard-токеном, элементы `rest`
+        // могут быть как одиночными Statement, так и массивами [Statement].
+        // Поэтому разворачиваем рекурсивно — итог всегда list<Statement>.
+        $flat = [];
+        \array_walk_recursive($children, static function ($item) use (&$flat): void {
+            $flat[] = $item;
+        });
+
+        return $flat;
+    }
     : Statement() (::T_SEMICOLON:: Statement())*
     ;

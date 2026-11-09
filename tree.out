@@ -17,6 +17,7 @@ sqlite-parser/
 ├── .gitattributes
 ├── .phpunit.result.cache
 ├── composer.json
+├── PHPLRT_GUIDE.md
 ├── phpstan.neon
 ├── phpstan.neon.dist
 ├── phpunit.xml.dist
