@@ -13,7 +13,9 @@ sqlite-parser/
 │   │   ├── Statement/
 │   │   │   ├── EmptyStatement.php
 │   │   │   ├── OrderBy.php
+│   │   │   ├── OrderByList.php
 │   │   │   ├── ResultColumn.php
+│   │   │   ├── ResultColumnList.php
 │   │   │   ├── SelectStatement.php
 │   │   │   └── TableReference.php
 │   │   ├── Expression.php
