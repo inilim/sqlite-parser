@@ -35,7 +35,7 @@
             "php vendor/bin/phplrt check grammar/sqlite.pp3 -v"
         ],
         "grammar:build": [
-            "php vendor/bin/phplrt compile grammar/sqlite.pp3 src/Parser/SqliteParser.php --class=SqliteParser --namespace='Inilim\\SqliteParser\\Parser'"
+            "php vendor/bin/phplrt compile grammar/sqlite.pp3 src/Parser/SqliteParser.php --class=SqliteParser --namespace=\"Inilim\\SqliteParser\\Parser\""
         ]
     },
     "require": {
