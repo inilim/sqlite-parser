@@ -1,175 +1,6 @@
 Структура проекта:
 
 sqlite-parser/
-├── files/
-│   └── syntaqlite/
-│       └── tests/
-│           ├── amalg_tests/
-│           │   ├── __init__.py (0 байт)
-│           │   ├── perfetto.py (27372 байт)
-│           │   ├── perfetto_dialect_only.py (2518 байт)
-│           │   ├── probe_create.c (879 байт)
-│           │   ├── probe_with_dialect.c (769 байт)
-│           │   ├── sqlite.py (6489 байт)
-│           │   ├── sqlite_full.py (4093 байт)
-│           │   ├── sqlite_ndebug.py (1389 байт)
-│           │   ├── sqlite_omit_macros.py (4129 байт)
-│           │   ├── sqlite_omit_runtime.py (4253 байт)
-│           │   ├── sqlite_runtime_only.py (3659 байт)
-│           │   ├── test_ast.c (3884 байт)
-│           │   └── test_strict_warnings.cpp (1075 байт)
-│           ├── ast_diff_tests/
-│           │   ├── __init__.py (135 байт)
-│           │   ├── aggregate_raise.py (21025 байт)
-│           │   ├── cast_ptr_qnumber.py (15140 байт)
-│           │   ├── column_refs.py (9273 байт)
-│           │   ├── compound.py (24563 байт)
-│           │   ├── conditionals.py (29619 байт)
-│           │   ├── create_table.py (108529 байт)
-│           │   ├── cte.py (27742 байт)
-│           │   ├── dml.py (70485 байт)
-│           │   ├── functions.py (10064 байт)
-│           │   ├── misc_expr.py (8200 байт)
-│           │   ├── schema_ops.py (15148 байт)
-│           │   ├── select.py (33786 байт)
-│           │   ├── select_clauses.py (22318 байт)
-│           │   ├── table_source.py (42537 байт)
-│           │   ├── trigger.py (34375 байт)
-│           │   ├── utility_stmts.py (21750 байт)
-│           │   ├── values.py (4232 байт)
-│           │   ├── virtual_table.py (3008 байт)
-│           │   └── window_functions.py (47003 байт)
-│           ├── benches/
-│           │   ├── benches/
-│           │   │   └── main.rs (8848 байт)
-│           │   └── Cargo.toml (560 байт)
-│           ├── c_api/
-│           │   ├── api-manifest.json (166091 байт)
-│           │   ├── parser_library_smoke.c (1067 байт)
-│           │   └── static_library_smoke.c (1168 байт)
-│           ├── c_api_tests/
-│           │   ├── __init__.py (0 байт)
-│           │   ├── formatter.py (4289 байт)
-│           │   ├── formatter_driver.c (4596 байт)
-│           │   ├── parser.py (27139 байт)
-│           │   ├── parser_driver.c (17856 байт)
-│           │   ├── validator.py (9210 байт)
-│           │   └── validator_driver.c (16330 байт)
-│           ├── comparison/
-│           │   ├── formatter/
-│           │   │   └── _fmt_sqlglot.py (157 байт)
-│           │   ├── lsp/
-│           │   │   ├── _lsp_test.js (9409 байт)
-│           │   │   ├── schema.sql (153 байт)
-│           │   │   ├── test.sql (52 байт)
-│           │   │   └── test_error.sql (53 байт)
-│           │   ├── parser/
-│           │   │   ├── src/
-│           │   │   │   ├── lemon_rs.rs (1084 байт)
-│           │   │   │   └── sqlparser_rs.rs (874 байт)
-│           │   │   ├── .sqlfluff (42 байт)
-│           │   │   ├── _parse_cst.js (131 байт)
-│           │   │   ├── _parse_node.js (159 байт)
-│           │   │   ├── _parse_sqlglot.py (82 байт)
-│           │   │   ├── bench.sql (3547 байт)
-│           │   │   ├── bench_30x.sql (106410 байт)
-│           │   │   ├── Cargo.lock (9841 байт)
-│           │   │   └── Cargo.toml (287 байт)
-│           │   ├── validator/
-│           │   │   ├── cases/
-│           │   │   │   ├── v01.sql (20 байт)
-│           │   │   │   ├── v02.sql (42 байт)
-│           │   │   │   ├── v03.sql (29 байт)
-│           │   │   │   ├── v04.sql (41 байт)
-│           │   │   │   ├── v05.sql (31 байт)
-│           │   │   │   ├── v06.sql (45 байт)
-│           │   │   │   ├── v07.sql (50 байт)
-│           │   │   │   ├── v08.sql (48 байт)
-│           │   │   │   ├── v09.sql (36 байт)
-│           │   │   │   └── v10.sql (33 байт)
-│           │   │   ├── _lsp_validate.js (4719 байт)
-│           │   │   ├── bench_30x_with_schema.sql (106802 байт)
-│           │   │   └── bench_with_schema.sql (3939 байт)
-│           │   ├── .prettierrc (119 байт)
-│           │   ├── .python-version (5 байт)
-│           │   ├── .sqlfluff (42 байт)
-│           │   ├── .sqruff (40 байт)
-│           │   ├── bench_statements.sql (3547 байт)
-│           │   ├── package-lock.json (316244 байт)
-│           │   ├── package.json (542 байт)
-│           │   ├── pyproject.toml (237 байт)
-│           │   ├── README.md (1902 байт)
-│           │   ├── schema.sql (2279 байт)
-│           │   ├── test_statements.sql (8101 байт)
-│           │   └── uv.lock (42730 байт)
-│           ├── fmt_diff_tests/
-│           │   ├── __init__.py (113 байт)
-│           │   ├── comments.py (29763 байт)
-│           │   ├── create_table.py (28067 байт)
-│           │   ├── dml.py (13628 байт)
-│           │   ├── misc.py (29070 байт)
-│           │   ├── operator_precedence.py (25785 байт)
-│           │   ├── schema_ops.py (6174 байт)
-│           │   ├── select.py (15481 байт)
-│           │   ├── utility_stmts.py (5630 байт)
-│           │   └── window.py (13660 байт)
-│           ├── lineage_diff_tests/
-│           │   ├── __init__.py (112 байт)
-│           │   ├── ctas.py (2515 байт)
-│           │   ├── cte.py (1975 байт)
-│           │   ├── direct.py (2583 байт)
-│           │   ├── errors.py (553 байт)
-│           │   ├── expressions.py (3052 байт)
-│           │   ├── joins.py (2708 байт)
-│           │   ├── star.py (3439 байт)
-│           │   ├── union.py (1388 байт)
-│           │   └── view.py (1623 байт)
-│           ├── lsp_diff_tests/
-│           │   ├── __init__.py (112 байт)
-│           │   ├── completion.py (10760 байт)
-│           │   ├── definition.py (4374 байт)
-│           │   ├── diagnostics.py (3250 байт)
-│           │   ├── hover.py (1217 байт)
-│           │   ├── references.py (5421 байт)
-│           │   ├── rename.py (4970 байт)
-│           │   └── shell.py (5572 байт)
-│           ├── lsp_tests/
-│           │   ├── query.sql (24 байт)
-│           │   └── schema.sql (285 байт)
-│           ├── perfetto_fmt_diff_tests/
-│           │   ├── __init__.py (112 байт)
-│           │   └── perfetto.py (23116 байт)
-│           ├── perfetto_validation_diff_tests/
-│           │   ├── __init__.py (112 байт)
-│           │   └── perfetto.py (4715 байт)
-│           ├── public-api/
-│           │   ├── syntaqlite-buildtools.txt (15852 байт)
-│           │   ├── syntaqlite-syntax.txt (290823 байт)
-│           │   └── syntaqlite.txt (40159 байт)
-│           ├── semantic_diff_tests/
-│           │   ├── __init__.py (112 байт)
-│           │   ├── clauses.py (6570 байт)
-│           │   ├── cte.py (3663 байт)
-│           │   ├── ddl.py (31591 байт)
-│           │   ├── dequoting.py (6257 байт)
-│           │   ├── dml.py (5810 байт)
-│           │   ├── functions.py (2899 байт)
-│           │   ├── multi_statement.py (1799 байт)
-│           │   ├── star.py (4066 байт)
-│           │   ├── subqueries.py (12632 байт)
-│           │   ├── unknown_column.py (4036 байт)
-│           │   └── unknown_table.py (4112 байт)
-│           ├── token_preservation/
-│           │   └── baseline.json (3 байт)
-│           ├── upstream/
-│           │   ├── csrc/
-│           │   │   └── tclsyntaqlite.c (14535 байт)
-│           │   └── tcl/
-│           │       └── tester.tcl (6066 байт)
-│           ├── upstream_baselines/
-│           │   ├── parse_acceptance.darwin.json (6614 байт)
-│           │   └── parse_acceptance.linux.json (5722 байт)
-│           └── __init__.py (112 байт)
 ├── grammar/
 │   ├── ddl.pp3 (31480 байт)
 │   ├── dml.pp3 (11795 байт)
@@ -259,8 +90,6 @@ sqlite-parser/
 ├── tests/
 │   ├── Ast/
 │   │   └── ScriptTest.php (1536 байт)
-│   ├── External/
-│   │   └── PLAN.md (14940 байт)
 │   ├── Grammar/
 │   │   ├── AdvancedSelectTest.php (8898 байт)
 │   │   ├── DdlTest.php (9593 байт)
@@ -274,9 +103,7 @@ sqlite-parser/
 ├── .gitattributes (108 байт)
 ├── .phpunit.result.cache (9754 байт)
 ├── composer.json (1783 байт)
-├── PHPLRT_GUIDE.md (15136 байт)
 ├── phpstan.neon (225 байт)
 ├── phpstan.neon.dist (225 байт)
 ├── phpunit.xml.dist (562 байт)
-├── PLAN.md (30649 байт)
 └── README.md (3428 байт)
