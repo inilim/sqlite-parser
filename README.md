@@ -38,7 +38,7 @@ foreach ($script->statements as $statement) {
 
 Целевой диалект — SQLite **3.54.\***.
 
-Запланировано (по этапам, см. [`PLAN.md`](PLAN.md)):
+Реализовано:
 
 - **SELECT** — выражения, функции, `CAST`, `CASE`, `JOIN`, `GROUP BY`/`HAVING`,
   `DISTINCT`, `UNION`/`INTERSECT`/`EXCEPT`, CTE (`WITH [RECURSIVE]`),
@@ -49,8 +49,19 @@ foreach ($script->statements as $statement) {
 - **DDL** — `CREATE TABLE` (с `WITHOUT ROWID`, `STRICT`, `AUTOINCREMENT`,
   `REFERENCES`, `CHECK`, `DEFAULT`), `CREATE INDEX`, `CREATE VIEW`,
   `CREATE TRIGGER`, `ALTER TABLE`, `DROP TABLE|INDEX|VIEW|TRIGGER`.
-- **Utility** — `PRAGMA`, `ATTACH`/`DETACH`, `BEGIN`/`COMMIT`/`ROLLBACK`,
-  `SAVEPOINT`/`RELEASE`/`ROLLBACK TO`, `EXPLAIN [QUERY PLAN]`.
+- **Utility** — `PRAGMA` (в формах `= value` и `(value)`), `ATTACH`/`DETACH`,
+  `BEGIN`/`COMMIT`/`ROLLBACK`/`END TRANSACTION`, `SAVEPOINT`/`RELEASE`/
+  `ROLLBACK TO`, `EXPLAIN [QUERY PLAN]`.
+
+### Известные ограничения
+
+- `END;` без `TRANSACTION` не поддерживается — конфликтует с `BEGIN ... END`
+  (тело триггера) и `CASE ... END`. Для закрытия транзакции используйте
+  `COMMIT` либо `END TRANSACTION [name]`.
+- Функции с ключевыми именами (`REPLACE`, `LEFT`, `RIGHT`) в `FunctionCall`
+  не поддерживаются.
+- Параметризованные типы в `CAST` (`VARCHAR(10)`) не поддерживаются — только
+  одно слово.
 
 ## Development
 

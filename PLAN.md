@@ -356,15 +356,45 @@ tests/
 
 ---
 
-### Этап 8 — Утилитарные инструкции (0.5–1 день)
+### Этап 8 — Утилитарные инструкции (0.5–1 день) ✅ ВЫПОЛНЕНО
 
-- [ ] `PRAGMA name [(value)]` / `PRAGMA name = value`
-- [ ] `ATTACH [DATABASE] expr AS ident` / `DETACH [DATABASE] ident`
-- [ ] `BEGIN [DEFERRED|IMMEDIATE|EXCLUSIVE] [TRANSACTION]` / `COMMIT` / `END` / `ROLLBACK`
-- [ ] `SAVEPOINT name` / `RELEASE [SAVEPOINT] name` / `ROLLBACK TO [SAVEPOINT] name`
-- [ ] `EXPLAIN [QUERY PLAN] statement`
-- [ ] AST: `PragmaStatement`, `AttachStatement`, `DetachStatement`, `TransactionStatement`,
+**Цель:** PRAGMA, ATTACH/DETACH, транзакции, SAVEPOINT, EXPLAIN.
+
+- [x] `PRAGMA name [(value)]` / `PRAGMA name = value` (с опциональным `schema.`).
+- [x] `ATTACH [DATABASE] expr AS ident` / `DETACH [DATABASE] ident`.
+- [x] `BEGIN [DEFERRED|IMMEDIATE|EXCLUSIVE] [TRANSACTION [name]]` / `COMMIT` /
+  `END TRANSACTION [name]` / `ROLLBACK [TRANSACTION]` /
+  `ROLLBACK TO [SAVEPOINT] name`.
+- [x] `SAVEPOINT name` / `RELEASE [SAVEPOINT] name`.
+- [x] `EXPLAIN [QUERY PLAN] statement`.
+- [x] AST: `PragmaStatement`, `AttachStatement`, `DetachStatement`, `TransactionStatement`,
   `SavepointStatement`, `ExplainStatement`.
+- [x] Грамматика `grammar/utility.pp3`, подключена в `grammar/sqlite.pp3`.
+- [x] `Statement` в `statement.pp3` расширен утилитарными инструкциями.
+
+**Проверки (через `tests/Grammar/UtilityTest.php`):**
+- [x] `PRAGMA user_version;` → `PragmaStatement(name: 'user_version')`.
+- [x] `PRAGMA foreign_keys = ON;` → `PragmaStatement` с `Literal('ON')`.
+- [x] `PRAGMA cache_size(1000);` → функциональная форма.
+- [x] `PRAGMA main.cache_size = 2000;` → с schema = 'main'.
+- [x] `ATTACH 'extra.db' AS extra;` → `AttachStatement`.
+- [x] `DETACH extra;` → `DetachStatement`.
+- [x] `BEGIN;` / `BEGIN IMMEDIATE TRANSACTION;` → `TransactionStatement`.
+- [x] `COMMIT;` → `TransactionStatement('COMMIT')`.
+- [x] `END TRANSACTION;` → `TransactionStatement('END')`.
+- [x] `ROLLBACK;` / `ROLLBACK TO SAVEPOINT sp1;` → `TransactionStatement`.
+- [x] `SAVEPOINT sp1;` / `RELEASE sp1;` / `RELEASE SAVEPOINT sp1;` → `SavepointStatement`.
+- [x] `EXPLAIN SELECT 1;` / `EXPLAIN QUERY PLAN SELECT 1;` → `ExplainStatement`.
+- [x] Скрипт `BEGIN; INSERT ...; COMMIT;` → три инструкции в `Script`.
+
+**Ограничения этапа 8:**
+- `END;` (без `TRANSACTION`) не является самостоятельной инструкцией — конфликтует
+  с `TriggerBody` (`BEGIN ... END`) и `CASE ... END`. Для закрытия транзакции
+  используйте `COMMIT` либо `END TRANSACTION [name]`.
+- Значения PRAGMA ограничены типами `Literal` (числа, строки, `NULL`, `TRUE`, `FALSE`)
+  и идентификаторами (`T_IDENT`, `T_QUOTED_IDENT`, `T_ON`, `T_DELETE`, ...).
+  Малоиспользуемые ключевые слова-значения (например, `PRAGMA x = GLOB`)
+  могут требовать расширения списка альтернатив в `PragmaValue`.
 
 ---
 
@@ -383,7 +413,7 @@ tests/
 
 ### Этап 10 — Тесты и CI (постоянно)
 
-- [ ] `tests/Grammar/*Test.php` — один файл на группу синтаксиса (SELECT, DML, DDL, ...).
+- [ ] `tests/Grammar/*Test.php` — один файл на группу синтаксиса (SELECT, DML, DDL, Utility, ...).
 - [ ] `tests/Ast/*Test.php` — тесты на отдельные узлы (конструкторы, геттеры).
 - [ ] Snapshot-тесты: `json_encode($ast)` сравнивается с ожидаемым `*.json`.
 - [ ] `tests/Parser/SqliteParserTest.php` — **инстанцирует именно `new SqliteParser()`** (сгенерированный), не билдеры.
@@ -436,6 +466,7 @@ tests/
 | `v0.3.0`       | 5           | JOIN, CTE, UNION, оконные функции                            |
 | `v0.4.0`       | 6           | DML (INSERT/UPDATE/DELETE/UPSERT)                            |
 | `v0.5.0`       | 7           | DDL (CREATE/ALTER/DROP)                                      |
+| `v0.6.0`       | 8           | PRAGMA, ATTACH/DETACH, транзакции, SAVEPOINT, EXPLAIN        |
 | `v1.0.0`       | 10          | Полное покрытие SQLite 3.54.* + CI + стабильный API          |
 
 

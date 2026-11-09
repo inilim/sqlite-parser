@@ -47,7 +47,8 @@ StatementList
     ;
 
 // ----------------------------------------------------------------------------
-// Statement: SELECT, INSERT, UPDATE, DELETE, CREATE, ALTER, DROP.
+// Statement: SELECT, INSERT, UPDATE, DELETE, CREATE, ALTER, DROP,
+//            PRAGMA, ATTACH/DETACH, транзакции, SAVEPOINT, EXPLAIN.
 // ----------------------------------------------------------------------------
 
 Statement
@@ -61,4 +62,10 @@ Statement
     | CreateTriggerStatement()
     | AlterTableStatement()
     | DropStatement()
+    | PragmaStatement()
+    | AttachStatement()
+    | DetachStatement()
+    | TransactionStatement()
+    | SavepointStatement()
+    | ExplainStatement()
     ;

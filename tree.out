@@ -8,7 +8,8 @@ sqlite-parser/
 │   ├── select.pp3
 │   ├── sqlite.pp3
 │   ├── statement.pp3
-│   └── tokens.pp3
+│   ├── tokens.pp3
+│   └── utility.pp3
 ├── src/
 │   ├── Ast/
 │   │   ├── Expression/
@@ -32,6 +33,7 @@ sqlite-parser/
 │   │   │   ├── AlterTableStatement.php
 │   │   │   ├── Assignment.php
 │   │   │   ├── AssignmentList.php
+│   │   │   ├── AttachStatement.php
 │   │   │   ├── ColumnConstraint.php
 │   │   │   ├── ColumnDefinition.php
 │   │   │   ├── CommonTableExpression.php
@@ -41,8 +43,10 @@ sqlite-parser/
 │   │   │   ├── CreateTriggerStatement.php
 │   │   │   ├── CreateViewStatement.php
 │   │   │   ├── DeleteStatement.php
+│   │   │   ├── DetachStatement.php
 │   │   │   ├── DropStatement.php
 │   │   │   ├── EmptyStatement.php
+│   │   │   ├── ExplainStatement.php
 │   │   │   ├── ForeignKeyAction.php
 │   │   │   ├── ForeignKeyClause.php
 │   │   │   ├── FrameBound.php
@@ -58,13 +62,16 @@ sqlite-parser/
 │   │   │   ├── JoinConstraint.php
 │   │   │   ├── OrderBy.php
 │   │   │   ├── OrderByList.php
+│   │   │   ├── PragmaStatement.php
 │   │   │   ├── ResultColumn.php
 │   │   │   ├── ResultColumnList.php
 │   │   │   ├── ReturningClause.php
+│   │   │   ├── SavepointStatement.php
 │   │   │   ├── SelectStatement.php
 │   │   │   ├── TableConstraint.php
 │   │   │   ├── TableOptions.php
 │   │   │   ├── TableReference.php
+│   │   │   ├── TransactionStatement.php
 │   │   │   ├── TriggerBody.php
 │   │   │   ├── TriggerEventInfo.php
 │   │   │   ├── UpdateStatement.php
@@ -88,7 +95,8 @@ sqlite-parser/
 │       ├── DdlTest.php
 │       ├── DmlTest.php
 │       ├── ExpressionTest.php
-│       └── SelectTest.php
+│       ├── SelectTest.php
+│       └── UtilityTest.php
 ├── .gitattributes
 ├── .phpunit.result.cache
 ├── composer.json

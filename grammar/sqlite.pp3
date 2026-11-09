@@ -12,6 +12,7 @@
 //   expression.pp3  — выражения, приоритеты, функции, CAST, CASE, литералы
 //   dml.pp3         — INSERT / UPDATE / DELETE / UPSERT
 //   ddl.pp3         — CREATE / ALTER / DROP
+//   utility.pp3     — PRAGMA, ATTACH/DETACH, транзакции, SAVEPOINT, EXPLAIN
 //
 // Порядок включения важен только для лексера: токены объявляются первыми,
 // чтобы многосимвольные операторы и ключевые слова выигрывали у T_IDENT.
@@ -23,3 +24,4 @@
 %include expression.pp3
 %include dml.pp3
 %include ddl.pp3
+%include utility.pp3

@@ -1,0 +1,330 @@
+// ============================================================================
+// Утилитарные инструкции SQLite 3.54
+//
+//   PRAGMA name [(value)] | PRAGMA name = value | PRAGMA schema.name ...
+//   ATTACH [DATABASE] expr AS schema-name
+//   DETACH [DATABASE] schema-name
+//   BEGIN [DEFERRED|IMMEDIATE|EXCLUSIVE] [TRANSACTION [name]]
+//   COMMIT [TRANSACTION [name]]
+//   END TRANSACTION [name]        (bare END не поддерживается: конфликтует
+//                                  с TriggerBody / CASE ... END)
+//   ROLLBACK [TRANSACTION] [TO [SAVEPOINT] name]
+//   SAVEPOINT name
+//   RELEASE [SAVEPOINT] name
+//   EXPLAIN [QUERY PLAN] statement
+//
+// Опирается на:
+//   - tokens.pp3  — T_PRAGMA, T_ATTACH, T_DETACH, T_DATABASE, T_AS,
+//                   T_BEGIN, T_COMMIT, T_END, T_ROLLBACK, T_DEFERRED,
+//                   T_IMMEDIATE, T_EXCLUSIVE, T_TRANSACTION, T_TO,
+//                   T_SAVEPOINT, T_RELEASE, T_EXPLAIN, T_QUERY, T_PLAN,
+//                   T_EQ, T_LPAREN, T_RPAREN, T_DOT, T_PLUS, T_MINUS
+//   - expression.pp3  — Expression, Literal
+//   - select.pp3      — IdentListWrapper (используется как барьер)
+// ============================================================================
+
+// ----------------------------------------------------------------------------
+// PRAGMA
+// ----------------------------------------------------------------------------
+
+PragmaStatement
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+
+        $schema = null;
+        $name   = '';
+        $value  = null;
+
+        foreach ($children as $child) {
+            if ($child instanceof \Inilim\SqliteParser\Ast\Statement\IdentListWrapper) {
+                $items = $child->items;
+                if (\count($items) === 2) {
+                    $schema = $items[0];
+                    $name   = $items[1];
+                } elseif (\count($items) === 1) {
+                    $name = $items[0];
+                }
+                continue;
+            }
+            if ($child instanceof \Inilim\SqliteParser\Ast\Expression) {
+                $value = $child;
+                continue;
+            }
+        }
+
+        return new \Inilim\SqliteParser\Ast\Statement\PragmaStatement(
+            name: $name,
+            value: $value,
+            schema: $schema,
+        );
+    }
+    : ::T_PRAGMA:: PragmaName()
+      (
+          ::T_EQ:: PragmaValue()
+        | ::T_LPAREN:: PragmaValue()? ::T_RPAREN::
+      )?
+    ;
+
+PragmaName
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+
+        $flat = [];
+        $collect = static function ($items) use (&$collect, &$flat): void {
+            foreach ($items as $item) {
+                if (\is_array($item)) {
+                    $collect($item);
+                } elseif ($item instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+                    $v = $item->value;
+                    $len = \strlen($v);
+                    if ($len >= 2) {
+                        $first = $v[0];
+                        $last  = $v[$len - 1];
+                        if ($first === '"' && $last === '"') {
+                            $v = \substr($v, 1, -1);
+                            $v = \str_replace('""', '"', $v);
+                        } elseif ($first === '`' && $last === '`') {
+                            $v = \substr($v, 1, -1);
+                            $v = \str_replace('``', '`', $v);
+                        } elseif ($first === '[' && $last === ']') {
+                            $v = \substr($v, 1, -1);
+                        }
+                    }
+                    $flat[] = $v;
+                }
+            }
+        };
+        $collect($children);
+
+        return new \Inilim\SqliteParser\Ast\Statement\IdentListWrapper($flat);
+    }
+    : <T_IDENT> (::T_DOT:: <T_IDENT>)?
+    | <T_QUOTED_IDENT> (::T_DOT:: <T_QUOTED_IDENT>)?
+    ;
+
+PragmaValue
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+
+        if (isset($children[0]) && $children[0] instanceof \Inilim\SqliteParser\Ast\Expression) {
+            return $children[0];
+        }
+
+        if (\count($children) === 2
+            && $children[0] instanceof \Phplrt\Contracts\Lexer\TokenInterface
+            && $children[1] instanceof \Phplrt\Contracts\Lexer\TokenInterface
+        ) {
+            $sign = (string) $children[0]->value;
+            $num  = (string) $children[1]->value;
+            $combined = $sign . $num;
+            if (\str_contains($num, '.') || \stripos($num, 'e') !== false) {
+                return new \Inilim\SqliteParser\Ast\Expression\Literal((float) $combined, 'float');
+            }
+            return new \Inilim\SqliteParser\Ast\Expression\Literal((int) $combined, 'int');
+        }
+
+        $first = $children[0] ?? null;
+        if ($first instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+            return new \Inilim\SqliteParser\Ast\Expression\Literal($first->value, 'string');
+        }
+
+        return null;
+    }
+    : Literal()
+    | <T_IDENT>
+    | <T_QUOTED_IDENT>
+    | <T_ON>
+    | <T_DELETE>
+    | <T_MINUS> <T_INT>
+    | <T_PLUS> <T_INT>
+    | <T_MINUS> <T_FLOAT>
+    | <T_PLUS> <T_FLOAT>
+    ;
+
+// ----------------------------------------------------------------------------
+// ATTACH / DETACH
+// ----------------------------------------------------------------------------
+
+AttachStatement
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+
+        $expression = null;
+        $schemaName = '';
+
+        foreach ($children as $child) {
+            if ($child instanceof \Inilim\SqliteParser\Ast\Expression) {
+                $expression = $child;
+                continue;
+            }
+            if ($child instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+                $schemaName = $child->value;
+                continue;
+            }
+        }
+
+        return new \Inilim\SqliteParser\Ast\Statement\AttachStatement(
+            expression: $expression,
+            schemaName: $schemaName,
+        );
+    }
+    : ::T_ATTACH:: (::T_DATABASE::)? Expression() ::T_AS:: (<T_IDENT> | <T_QUOTED_IDENT>)
+    ;
+
+DetachStatement
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+
+        $schemaName = '';
+        foreach ($children as $child) {
+            if ($child instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+                $schemaName = $child->value;
+                break;
+            }
+        }
+
+        return new \Inilim\SqliteParser\Ast\Statement\DetachStatement($schemaName);
+    }
+    : ::T_DETACH:: (::T_DATABASE::)? (<T_IDENT> | <T_QUOTED_IDENT>)
+    ;
+
+// ----------------------------------------------------------------------------
+// Транзакции: BEGIN / COMMIT / END / ROLLBACK
+//
+// ВАЖНО: `END` без последующего `TRANSACTION` не считается самостоятельной
+// инструкцией — иначе возникает неоднозначность с `TriggerBody` (`BEGIN ... END`)
+// и `CASE ... END`. Для закрытия транзакции используйте `COMMIT` либо
+// `END TRANSACTION [name]`.
+// ----------------------------------------------------------------------------
+
+TransactionStatement
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+
+        $flat = [];
+        $collect = static function ($items) use (&$collect, &$flat): void {
+            foreach ($items as $item) {
+                if (\is_array($item)) {
+                    $collect($item);
+                } else {
+                    $flat[] = $item;
+                }
+            }
+        };
+        $collect($children);
+
+        $type        = '';
+        $mode        = '';
+        $name        = null;
+        $toSavepoint = false;
+
+        foreach ($flat as $item) {
+            if (!$item instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+                continue;
+            }
+            $u = \strtoupper((string) $item->value);
+
+            if (\in_array($u, ['BEGIN', 'COMMIT', 'END', 'ROLLBACK'], true)) {
+                if ($type === '') {
+                    $type = $u;
+                }
+                continue;
+            }
+            if (\in_array($u, ['DEFERRED', 'IMMEDIATE', 'EXCLUSIVE'], true)) {
+                $mode = $u;
+                continue;
+            }
+            if ($u === 'TO') {
+                $toSavepoint = true;
+                continue;
+            }
+            if ($u === 'TRANSACTION' || $u === 'SAVEPOINT') {
+                continue;
+            }
+            if ($name === null) {
+                $name = (string) $item->value;
+            }
+        }
+
+        return new \Inilim\SqliteParser\Ast\Statement\TransactionStatement(
+            type: $type,
+            mode: $mode,
+            name: $name,
+            toSavepoint: $toSavepoint,
+        );
+    }
+    : <T_BEGIN> (<T_DEFERRED> | <T_IMMEDIATE> | <T_EXCLUSIVE>)?
+      (::T_TRANSACTION:: (<T_IDENT> | <T_QUOTED_IDENT>)?)?
+    | <T_COMMIT> (::T_TRANSACTION:: (<T_IDENT> | <T_QUOTED_IDENT>)?)?
+    | <T_END> ::T_TRANSACTION:: (<T_IDENT> | <T_QUOTED_IDENT>)?
+    | <T_ROLLBACK> (::T_TRANSACTION::)?
+      (
+          <T_TO> (::T_SAVEPOINT::)? (<T_IDENT> | <T_QUOTED_IDENT>)
+        | ::T_TO:: ::T_SAVEPOINT:: (<T_IDENT> | <T_QUOTED_IDENT>)
+      )?
+    ;
+
+// ----------------------------------------------------------------------------
+// SAVEPOINT / RELEASE
+// ----------------------------------------------------------------------------
+
+SavepointStatement
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+
+        $type = '';
+        $name = '';
+
+        foreach ($children as $child) {
+            if (!$child instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+                continue;
+            }
+            $u = \strtoupper((string) $child->value);
+            if ($u === 'SAVEPOINT' || $u === 'RELEASE') {
+                $type = $u;
+                continue;
+            }
+            $name = (string) $child->value;
+        }
+
+        return new \Inilim\SqliteParser\Ast\Statement\SavepointStatement($type, $name);
+    }
+    : <T_SAVEPOINT> (<T_IDENT> | <T_QUOTED_IDENT>)
+    | <T_RELEASE> (::T_SAVEPOINT::)? (<T_IDENT> | <T_QUOTED_IDENT>)
+    ;
+
+// ----------------------------------------------------------------------------
+// EXPLAIN
+// ----------------------------------------------------------------------------
+
+ExplainStatement
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+
+        $statement = null;
+        $queryPlan = false;
+
+        foreach ($children as $child) {
+            if ($child instanceof \Inilim\SqliteParser\Ast\Statement) {
+                $statement = $child;
+                continue;
+            }
+            if ($child instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+                $u = \strtoupper((string) $child->value);
+                if ($u === 'QUERY' || $u === 'PLAN') {
+                    $queryPlan = true;
+                }
+            }
+        }
+
+        if (!$statement instanceof \Inilim\SqliteParser\Ast\Statement) {
+            throw new \LogicException('EXPLAIN without statement');
+        }
+
+        return new \Inilim\SqliteParser\Ast\Statement\ExplainStatement(
+            statement: $statement,
+            queryPlan: $queryPlan,
+        );
+    }
+    : ::T_EXPLAIN:: (::T_QUERY:: ::T_PLAN::)? Statement()
+    ;
