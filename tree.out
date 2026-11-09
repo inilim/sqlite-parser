@@ -2,7 +2,11 @@
 
 sqlite-parser/
 ├── grammar/
-│   └── sqlite.pp3
+│   ├── expression.pp3
+│   ├── select.pp3
+│   ├── sqlite.pp3
+│   ├── statement.pp3
+│   └── tokens.pp3
 ├── src/
 │   ├── Ast/
 │   │   ├── Expression/
