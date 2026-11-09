@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Inilim\SqliteParser\Ast\Statement;
 
+use Inilim\SqliteParser\Ast\Expression;
 use Inilim\SqliteParser\Ast\Statement;
 
 /**
@@ -19,19 +20,19 @@ use Inilim\SqliteParser\Ast\Statement;
  *
  * Одно из полей $rows / $select / $defaultValues === true будет задано.
  *
- * @property-read list<string>|null        $columns
+ * @property-read list<string>|null         $columns
  * @property-read list<list<Expression>>|null $rows
- * @property-read ?Statement               $select
- * @property-read bool                     $defaultValues
- * @property-read ?string                  $orAction
- * @property-read ?UpsertClause            $upsert
- * @property-read ?ReturningClause         $returning
+ * @property-read ?Statement                $select
+ * @property-read bool                      $defaultValues
+ * @property-read ?string                   $orAction
+ * @property-read ?UpsertClause             $upsert
+ * @property-read ?ReturningClause          $returning
  */
 final class InsertStatement extends Statement
 {
     /**
-     * @param list<string>|null                   $columns
-     * @param list<list<\Inilim\SqliteParser\Ast\Expression>>|null $rows
+     * @param list<string>|null             $columns
+     * @param list<list<Expression>>|null   $rows
      */
     public function __construct(
         public readonly string $table,

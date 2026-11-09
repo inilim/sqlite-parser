@@ -198,8 +198,8 @@ CommonTableExpression
         foreach ($children as $child) {
             if (\is_string($child) && $name === null) {
                 $name = $child;
-            } elseif (\is_array($child)) {
-                $columns = $child;
+            } elseif ($child instanceof \Inilim\SqliteParser\Ast\Statement\IdentListWrapper) {
+                $columns = $child->items;
             } elseif ($child instanceof \Inilim\SqliteParser\Ast\Statement) {
                 $query = $child;
             }
@@ -214,7 +214,7 @@ CommonTableExpression
     : TableName() (::T_LPAREN:: IdentList() ::T_RPAREN::)? ::T_AS:: ::T_LPAREN:: SelectStatement() ::T_RPAREN::
     ;
 
-// Список идентификаторов через запятую — возвращает list<string>.
+// Список идентификаторов через запятую — возвращает IdentListWrapper.
 IdentList
     -> {
         $children = \is_array($children) ? $children : [$children];
@@ -226,7 +226,7 @@ IdentList
             }
         });
 
-        return $flat;
+        return new \Inilim\SqliteParser\Ast\Statement\IdentListWrapper($flat);
     }
     : <T_IDENT> (::T_COMMA:: <T_IDENT>)*
     ;
@@ -370,25 +370,12 @@ JoinConstraint
             if ($child instanceof \Inilim\SqliteParser\Ast\Expression) {
                 return new \Inilim\SqliteParser\Ast\Statement\JoinConstraint(on: $child);
             }
+            if ($child instanceof \Inilim\SqliteParser\Ast\Statement\IdentListWrapper) {
+                return new \Inilim\SqliteParser\Ast\Statement\JoinConstraint(using: $child->items);
+            }
         }
 
-        $using = [];
-        $collect = static function ($items) use (&$collect, &$using): void {
-            foreach ($items as $item) {
-                if (\is_string($item)) {
-                    $using[] = $item;
-                } elseif (\is_array($item)) {
-                    $collect($item);
-                } elseif ($item instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
-                    $using[] = $item->value;
-                }
-            }
-        };
-        $collect($children);
-
-        return $using === []
-            ? null
-            : new \Inilim\SqliteParser\Ast\Statement\JoinConstraint(using: $using);
+        return null;
     }
     : ::T_ON:: Expression()
     | ::T_USING:: ::T_LPAREN:: IdentList() ::T_RPAREN::
@@ -423,6 +410,8 @@ TableReference
         foreach (\array_slice($children, 1) as $child) {
             if ($child instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
                 $alias = $child->value;
+            } elseif ($child instanceof \Inilim\SqliteParser\Ast\Statement\IdentListWrapper) {
+                $columnAliases = $child->items;
             } elseif (\is_string($child)) {
                 $columnAliases[] = $child;
             } elseif (\is_array($child)) {

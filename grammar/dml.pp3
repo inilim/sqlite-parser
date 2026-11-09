@@ -6,7 +6,7 @@
 //                      T_DEFAULT, T_RETURNING, T_CONFLICT, T_DO, T_NOTHING,
 //                      T_OR, T_REPLACE, T_IGNORE, T_ABORT, T_FAIL, T_ROLLBACK
 //   - select.pp3     — SelectStatement, SelectList, TableName, IdentList,
-//                      WhereClause, ResultColumnList
+//                      WhereClause, ResultColumnList, IdentListWrapper
 //   - expression.pp3 — Expression, ExprList
 // ============================================================================
 
@@ -42,10 +42,8 @@ InsertStatement
                 continue;
             }
 
-            if (\is_array($child)) {
-                if ($columns === null) {
-                    $columns = $child;
-                }
+            if ($child instanceof \Inilim\SqliteParser\Ast\Statement\IdentListWrapper) {
+                $columns = $child->items;
                 continue;
             }
 
@@ -156,10 +154,8 @@ UpsertClause
         $doNothing      = false;
 
         foreach ($children as $child) {
-            if (\is_array($child)) {
-                if ($conflictTarget === null) {
-                    $conflictTarget = $child;
-                }
+            if ($child instanceof \Inilim\SqliteParser\Ast\Statement\IdentListWrapper) {
+                $conflictTarget = $child->items;
                 continue;
             }
 

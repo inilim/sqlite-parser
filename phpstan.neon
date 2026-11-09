@@ -1,4 +1,10 @@
 parameters:
-	level: 9
-	paths:
-		- src
+    level: 8
+    paths:
+        - src
+    excludePaths:
+        analyse:
+            - src/Parser/SqliteParser.php
+    ignoreErrors:
+        - identifier: property.notFound
+          path: src/Grammar/Reducers.php

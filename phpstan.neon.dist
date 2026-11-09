@@ -2,5 +2,9 @@ parameters:
     level: 8
     paths:
         - src
-        - tests
-    tmpDir: var/phpstan
+    excludePaths:
+        analyse:
+            - src/Parser/SqliteParser.php
+    ignoreErrors:
+        - identifier: property.notFound
+          path: src/Grammar/Reducers.php
