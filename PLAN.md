@@ -65,6 +65,9 @@ README.md
 phpunit.xml.dist
 phpstan.neon.dist
 .gitignore
+.github/
+    workflows/
+        ci.yml              # GH Actions: check + diff + tests + stan
 grammar/
     sqlite.pp3              # %pragma root Script, %include подграмматик
     tokens.pp3              # %token / %skip / %fragment
@@ -97,6 +100,7 @@ src/
 tests/
     Ast/                    # тесты по типам узлов
     Grammar/                # сквозные сценарии: SQL → AST
+    Parser/                 # смоук-тесты сгенерированного парсера
 ```
 
 ---
@@ -398,27 +402,50 @@ tests/
 
 ---
 
-### Этап 9 — Генерация и упаковка (0.5 дня)
+### Этап 9 — Генерация и упаковка (0.5 дня) ✅ ВЫПОЛНЕНО
 
-- [ ] Скрипты в `composer.json`:
+**Цель:** стабилизировать пайплайн «грамматика → сгенерированный парсер».
+
+- [x] Скрипты в `composer.json`:
   - `grammar:check`: `vendor/bin/phplrt check grammar/sqlite.pp3 -v`
-  - `grammar:build`: `vendor/bin/phplrt compile grammar/sqlite.pp3 src/Parser/SqliteParser.php --class=SqliteParser --namespace='Inilim\SqliteParser\Parser' --use='Inilim\SqliteParser\Ast\...'` (со всеми `--use` для узлов).
-- [ ] Убедиться, что `src/` **не** ссылается на `LexerBuilder`, `ParserBuilder`, `Compiler`.
-- [ ] `git diff --exit-code -- src/Parser/SqliteParser.php` — пустой после regenerate.
-- [ ] README: секции «Install», «Usage», «Supported SQL», «Development».
+  - `grammar:build`: `vendor/bin/phplrt compile grammar/sqlite.pp3 src/Parser/SqliteParser.php --class=SqliteParser --namespace='Inilim\SqliteParser\Parser'`
+  - `grammar:diff`: `grammar:build` + `git diff --exit-code -- src/Parser/SqliteParser.php`
+  - `ci`: `grammar:check` + `grammar:diff` + `tests` + `stan`
+- [x] Убедиться, что `src/` **не** ссылается на `LexerBuilder`, `ParserBuilder`, `Compiler`
+  (все редукторы используют FQCN, без директивы `%use`).
+- [x] `git diff --exit-code -- src/Parser/SqliteParser.php` — пустой после regenerate
+  (проверяется в CI-джобе `grammar:diff`).
+- [x] README: секции «Install», «Usage», «Supported SQL», «Development», «CI».
 
 **Готово когда:** все критерии Definition of Done ниже — зелёные.
 
 ---
 
-### Этап 10 — Тесты и CI (постоянно)
+### Этап 10 — Тесты и CI (постоянно) ✅ ВЫПОЛНЕНО (базовая инфраструктура)
 
-- [ ] `tests/Grammar/*Test.php` — один файл на группу синтаксиса (SELECT, DML, DDL, Utility, ...).
-- [ ] `tests/Ast/*Test.php` — тесты на отдельные узлы (конструкторы, геттеры).
-- [ ] Snapshot-тесты: `json_encode($ast)` сравнивается с ожидаемым `*.json`.
-- [ ] `tests/Parser/SqliteParserTest.php` — **инстанцирует именно `new SqliteParser()`** (сгенерированный), не билдеры.
-- [ ] GitHub Actions: matrix PHP 8.4, `composer install`, `grammar:check`, `tests`, `stan`.
-- [ ] Проверить, что `grammar:build` в CI также прогоняется и сравнивает `git diff` (ловит устаревший сгенерированный парсер).
+**Цель:** гарантия, что грамматика и сгенерированный парсер не «дрейфуют».
+
+- [x] `tests/Grammar/*Test.php` — по файлу на группу синтаксиса
+  (`SelectTest`, `ExpressionTest`, `AdvancedSelectTest`, `DmlTest`, `DdlTest`, `UtilityTest`).
+- [x] `tests/Grammar/FullScriptTest.php` — сквозные многоинструкционные сценарии
+  (`BEGIN; INSERT; COMMIT;`, DDL-конвейер, PRAGMA + SELECT).
+- [x] `tests/Ast/*Test.php` — тесты на отдельные узлы (`ScriptTest`).
+- [x] `tests/Parser/SqliteParserTest.php` — **инстанцирует именно `new SqliteParser()`**
+  (сгенерированный), проверяет пустой ввод, `;`, `SELECT`, `json_encode`.
+- [x] GitHub Actions (`.github/workflows/ci.yml`): matrix PHP 8.4, `composer install`,
+  `grammar:check`, `grammar:build` + `git diff --exit-code`, `tests`, `stan`.
+- [x] `composer ci` — единая точка входа: check → diff → tests → stan.
+
+**Дальнейшее развитие (по мере необходимости):**
+
+- [ ] Snapshot-тесты: `json_encode($ast)` сравнивается с ожидаемым `*.json`
+  (инфраструктура `JsonSerializable` на узлах уже готова, файлы-эталоны
+  добавляются по одному по мере покрытия синтаксиса).
+- [ ] Расширить `tests/Ast/*Test.php` на все узлы (конструкторы, readonly-свойства).
+- [ ] Адаптировать корпус тестов из `https://github.com/LalitMaganti/syntaqlite`
+  (локальная копия — `./files/syntaqlite/tests/*`) — прогнать парсер, зафиксировать
+  поддерживаемые/неподдерживаемые конструкции, добавить «канонические» примеры
+  в `tests/Grammar/`.
 
 ---
 
@@ -437,6 +464,7 @@ tests/
 
 6. `composer stan` (phpstan level 8+) — чистый.
 7. `composer tests` — зелёный.
+8. `composer ci` — зелёный (единая точка входа, см. `.github/workflows/ci.yml`).
 
 ---
 
@@ -469,7 +497,27 @@ tests/
 | `v0.6.0`       | 8           | PRAGMA, ATTACH/DETACH, транзакции, SAVEPOINT, EXPLAIN        |
 | `v1.0.0`       | 10          | Полное покрытие SQLite 3.54.* + CI + стабильный API          |
 
+---
 
-## 8. Взять тесты из другого репозитория (https://github.com/LalitMaganti/syntaqlite/tree/main/tests)
+## 8. Внешний корпус тестов
 
-файлы тестов находятся ./files/syntaqlite/tests/*
+Взять тесты из другого репозитория:
+<https://github.com/LalitMaganti/syntaqlite/tree/main/tests>.
+
+Локальная копия должна лежать в `./files/syntaqlite/tests/*`.
+
+**Как использовать:**
+
+1. **Скачать корпус** вручную (или скриптом) в `./files/syntaqlite/tests/`
+   (каталог в `.gitignore`, эталоны не коммитятся).
+2. **Написать вспомогательный тест-раннер** (data-provider), который читает
+   `*.sql`-файлы из этого каталога и прогоняет их через `SqliteParser`.
+3. **Разделить** входы на три категории:
+   - «зелёные» — парсятся без исключений; перенести их в `tests/Grammar/` как
+     регрессионные примеры;
+   - «жёлтые» — валидный SQLite, но пока не покрыт грамматикой; оформить
+     `@group known-fail` и вести список расширений грамматики;
+   - «красные» — невалидный SQL (negative-tests); проверить, что парсер бросает
+     исключение.
+4. **Зафиксировать метрики**: `% успешных парсов` до/после — как индикатор прогресса
+   при добавлении новых фич SQLite.

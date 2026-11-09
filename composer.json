@@ -36,6 +36,16 @@
         ],
         "grammar:build": [
             "php vendor/bin/phplrt compile grammar/sqlite.pp3 src/Parser/SqliteParser.php --class=SqliteParser --namespace=\"Inilim\\SqliteParser\\Parser\""
+        ],
+        "grammar:diff": [
+            "@grammar:build",
+            "git diff --exit-code -- src/Parser/SqliteParser.php"
+        ],
+        "ci": [
+            "@grammar:check",
+            "@grammar:diff",
+            "@tests",
+            "@stan"
         ]
     },
     "require": {

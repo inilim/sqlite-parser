@@ -34,6 +34,9 @@ foreach ($script->statements as $statement) {
 Корневой узел — `Script` (список инструкций, разделённых `;`).
 Одиночная инструкция — `$script->statements[0]`.
 
+Все AST-узлы реализуют `JsonSerializable`, поэтому `json_encode($script)`
+даёт готовое к сравнению / сериализации представление для тестов и отладки.
+
 ## Supported SQL
 
 Целевой диалект — SQLite **3.54.\***.
@@ -69,8 +72,21 @@ foreach ($script->statements as $statement) {
 composer install
 composer grammar:check   # валидация грамматики
 composer grammar:build   # регенерация src/Parser/SqliteParser.php
+composer grammar:diff    # build + проверка, что сгенерированный парсер не «дрейфует»
 composer tests           # PHPUnit
 composer stan            # PHPStan (level 8)
+composer ci              # весь пайплайн: check + diff + tests + stan
 ```
+
+### CI
+
+GitHub Actions (`.github/workflows/ci.yml`) на каждый push/PR выполняет:
+
+1. `composer grammar:check` — валидация грамматики.
+2. `composer grammar:build` + `git diff --exit-code -- src/Parser/SqliteParser.php` —
+   проверка, что скомпилированный парсер соответствует исходной грамматике
+   (ловит устаревший `src/Parser/SqliteParser.php`).
+3. `composer tests` — PHPUnit.
+4. `composer stan` — статический анализ (PHPStan).
 
 Полный поэтапный roadmap — в [`PLAN.md`](PLAN.md).
