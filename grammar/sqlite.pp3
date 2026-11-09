@@ -2,6 +2,12 @@
 
 // ============================================================================
 // Токены SQLite 3.54
+//
+// Порядок объявления важен:
+// 1. Многосимвольные операторы ДО односимвольных префиксов.
+// 2. Ключевые слова ДО T_IDENT (с \b на конце, чтобы SELECTED != SELECT).
+// 3. Литералы (T_FLOAT ДО T_INT; T_BLOB ДО T_IDENT).
+// 4. Комментарии ДО операторов (чтобы -- и /* не путались с -, /).
 // ============================================================================
 
 %skip T_COMMENT_BLOCK /\/\*[\s\S]*?\*\//
@@ -159,20 +165,30 @@
 
 // ============================================================================
 // Правила
+//
+// %use намеренно не используется: на phplrt 4.2 %use вызывал ошибку парсинга
+// секции деклараций. Вместо него используем FQCN прямо в reducer-действиях.
 // ============================================================================
 
-%use Inilim\SqliteParser\Ast\Script
-%use Inilim\SqliteParser\Ast\Statement\EmptyStatement
-
 Statement
-    : ::T_IDENT:: => new EmptyStatement()
+    : ::T_IDENT::
+        => new \Inilim\SqliteParser\Ast\Statement\EmptyStatement()
     ;
 
 Script
-    : Statement() (::T_SEMICOLON:: Statement())* ::T_SEMICOLON::?
-        => new Script(\array_merge([$1], \array_map(static fn (array $pair) => $pair[1], $2)))
+    : %empty
+        => new \Inilim\SqliteParser\Ast\Script([])
+
     | ::T_SEMICOLON::
-        => new Script([new EmptyStatement()])
-    | %empty
-        => new Script([])
+        => new \Inilim\SqliteParser\Ast\Script(
+            [new \Inilim\SqliteParser\Ast\Statement\EmptyStatement()]
+        )
+
+    | Statement() (::T_SEMICOLON:: Statement())* (::T_SEMICOLON::)?
+        => new \Inilim\SqliteParser\Ast\Script(
+            \array_merge(
+                [$1],
+                \array_map(static fn (array $pair) => $pair[1], $2)
+            )
+        )
     ;

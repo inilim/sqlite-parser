@@ -28,6 +28,9 @@
         "stan": [
             "php vendor/bin/phpstan analyze"
         ],
+        "tool:tree": [
+            "php cli-tools/tree.php ./ > tree.out"
+        ],
         "grammar:check": [
             "php vendor/bin/phplrt check grammar/sqlite.pp3 -v"
         ],
@@ -43,7 +46,8 @@
     "require-dev": {
         "phplrt/compiler": "^4.2",
         "phpunit/phpunit": "^9.6",
-        "phpstan/phpstan": "^2.2"
+        "phpstan/phpstan": "^2.2",
+        "symfony/finder": "^8.1"
     },
     "config": {
         "platform": {

@@ -1,0 +1,24 @@
+Структура проекта:
+
+sqlite-parser/
+├── grammar/
+│   └── sqlite.pp3
+├── src/
+│   └── Ast/
+│       ├── Statement/
+│       │   └── EmptyStatement.php
+│       ├── Expression.php
+│       ├── Node.php
+│       ├── Script.php
+│       └── Statement.php
+├── tests/
+│   └── Ast/
+│       └── ScriptTest.php
+├── .gitattributes
+├── .phpunit.result.cache
+├── composer.json
+├── phpstan.neon
+├── phpstan.neon.dist
+├── phpunit.xml.dist
+├── PLAN.md
+└── README.md
