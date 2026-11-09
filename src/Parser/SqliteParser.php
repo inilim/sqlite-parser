@@ -6,7 +6,7 @@
 
 declare(strict_types=1);
 
-namespace 'Inilim\SqliteParser\Parser';
+namespace Inilim\SqliteParser\Parser;
 
 \interface_exists(\Phplrt\Contracts\Source\Exception\SourceExceptionInterface::class);
 \interface_exists(\Phplrt\Contracts\Source\ReadableInterface::class);
