@@ -5,276 +5,278 @@ sqlite-parser/
 │   └── syntaqlite/
 │       └── tests/
 │           ├── amalg_tests/
-│           │   ├── __init__.py
-│           │   ├── perfetto.py
-│           │   ├── perfetto_dialect_only.py
-│           │   ├── probe_create.c
-│           │   ├── probe_with_dialect.c
-│           │   ├── sqlite.py
-│           │   ├── sqlite_full.py
-│           │   ├── sqlite_ndebug.py
-│           │   ├── sqlite_omit_macros.py
-│           │   ├── sqlite_omit_runtime.py
-│           │   ├── sqlite_runtime_only.py
-│           │   ├── test_ast.c
-│           │   └── test_strict_warnings.cpp
+│           │   ├── __init__.py (0 байт)
+│           │   ├── perfetto.py (27372 байт)
+│           │   ├── perfetto_dialect_only.py (2518 байт)
+│           │   ├── probe_create.c (879 байт)
+│           │   ├── probe_with_dialect.c (769 байт)
+│           │   ├── sqlite.py (6489 байт)
+│           │   ├── sqlite_full.py (4093 байт)
+│           │   ├── sqlite_ndebug.py (1389 байт)
+│           │   ├── sqlite_omit_macros.py (4129 байт)
+│           │   ├── sqlite_omit_runtime.py (4253 байт)
+│           │   ├── sqlite_runtime_only.py (3659 байт)
+│           │   ├── test_ast.c (3884 байт)
+│           │   └── test_strict_warnings.cpp (1075 байт)
 │           ├── ast_diff_tests/
-│           │   ├── __init__.py
-│           │   ├── aggregate_raise.py
-│           │   ├── cast_ptr_qnumber.py
-│           │   ├── column_refs.py
-│           │   ├── compound.py
-│           │   ├── conditionals.py
-│           │   ├── create_table.py
-│           │   ├── cte.py
-│           │   ├── dml.py
-│           │   ├── functions.py
-│           │   ├── misc_expr.py
-│           │   ├── schema_ops.py
-│           │   ├── select.py
-│           │   ├── select_clauses.py
-│           │   ├── table_source.py
-│           │   ├── trigger.py
-│           │   ├── utility_stmts.py
-│           │   ├── values.py
-│           │   ├── virtual_table.py
-│           │   └── window_functions.py
+│           │   ├── __init__.py (135 байт)
+│           │   ├── aggregate_raise.py (21025 байт)
+│           │   ├── cast_ptr_qnumber.py (15140 байт)
+│           │   ├── column_refs.py (9273 байт)
+│           │   ├── compound.py (24563 байт)
+│           │   ├── conditionals.py (29619 байт)
+│           │   ├── create_table.py (108529 байт)
+│           │   ├── cte.py (27742 байт)
+│           │   ├── dml.py (70485 байт)
+│           │   ├── functions.py (10064 байт)
+│           │   ├── misc_expr.py (8200 байт)
+│           │   ├── schema_ops.py (15148 байт)
+│           │   ├── select.py (33786 байт)
+│           │   ├── select_clauses.py (22318 байт)
+│           │   ├── table_source.py (42537 байт)
+│           │   ├── trigger.py (34375 байт)
+│           │   ├── utility_stmts.py (21750 байт)
+│           │   ├── values.py (4232 байт)
+│           │   ├── virtual_table.py (3008 байт)
+│           │   └── window_functions.py (47003 байт)
 │           ├── benches/
 │           │   ├── benches/
-│           │   │   └── main.rs
-│           │   └── Cargo.toml
+│           │   │   └── main.rs (8848 байт)
+│           │   └── Cargo.toml (560 байт)
 │           ├── c_api/
-│           │   ├── api-manifest.json
-│           │   ├── parser_library_smoke.c
-│           │   └── static_library_smoke.c
+│           │   ├── api-manifest.json (166091 байт)
+│           │   ├── parser_library_smoke.c (1067 байт)
+│           │   └── static_library_smoke.c (1168 байт)
 │           ├── c_api_tests/
-│           │   ├── __init__.py
-│           │   ├── formatter.py
-│           │   ├── formatter_driver.c
-│           │   ├── parser.py
-│           │   ├── parser_driver.c
-│           │   ├── validator.py
-│           │   └── validator_driver.c
+│           │   ├── __init__.py (0 байт)
+│           │   ├── formatter.py (4289 байт)
+│           │   ├── formatter_driver.c (4596 байт)
+│           │   ├── parser.py (27139 байт)
+│           │   ├── parser_driver.c (17856 байт)
+│           │   ├── validator.py (9210 байт)
+│           │   └── validator_driver.c (16330 байт)
 │           ├── comparison/
 │           │   ├── formatter/
-│           │   │   └── _fmt_sqlglot.py
+│           │   │   └── _fmt_sqlglot.py (157 байт)
 │           │   ├── lsp/
-│           │   │   ├── _lsp_test.js
-│           │   │   ├── schema.sql
-│           │   │   ├── test.sql
-│           │   │   └── test_error.sql
+│           │   │   ├── _lsp_test.js (9409 байт)
+│           │   │   ├── schema.sql (153 байт)
+│           │   │   ├── test.sql (52 байт)
+│           │   │   └── test_error.sql (53 байт)
 │           │   ├── parser/
 │           │   │   ├── src/
-│           │   │   │   ├── lemon_rs.rs
-│           │   │   │   └── sqlparser_rs.rs
-│           │   │   ├── .sqlfluff
-│           │   │   ├── _parse_cst.js
-│           │   │   ├── _parse_node.js
-│           │   │   ├── _parse_sqlglot.py
-│           │   │   ├── bench.sql
-│           │   │   ├── bench_30x.sql
-│           │   │   ├── Cargo.lock
-│           │   │   └── Cargo.toml
+│           │   │   │   ├── lemon_rs.rs (1084 байт)
+│           │   │   │   └── sqlparser_rs.rs (874 байт)
+│           │   │   ├── .sqlfluff (42 байт)
+│           │   │   ├── _parse_cst.js (131 байт)
+│           │   │   ├── _parse_node.js (159 байт)
+│           │   │   ├── _parse_sqlglot.py (82 байт)
+│           │   │   ├── bench.sql (3547 байт)
+│           │   │   ├── bench_30x.sql (106410 байт)
+│           │   │   ├── Cargo.lock (9841 байт)
+│           │   │   └── Cargo.toml (287 байт)
 │           │   ├── validator/
 │           │   │   ├── cases/
-│           │   │   │   ├── v01.sql
-│           │   │   │   ├── v02.sql
-│           │   │   │   ├── v03.sql
-│           │   │   │   ├── v04.sql
-│           │   │   │   ├── v05.sql
-│           │   │   │   ├── v06.sql
-│           │   │   │   ├── v07.sql
-│           │   │   │   ├── v08.sql
-│           │   │   │   ├── v09.sql
-│           │   │   │   └── v10.sql
-│           │   │   ├── _lsp_validate.js
-│           │   │   ├── bench_30x_with_schema.sql
-│           │   │   └── bench_with_schema.sql
-│           │   ├── .prettierrc
-│           │   ├── .python-version
-│           │   ├── .sqlfluff
-│           │   ├── .sqruff
-│           │   ├── bench_statements.sql
-│           │   ├── package-lock.json
-│           │   ├── package.json
-│           │   ├── pyproject.toml
-│           │   ├── README.md
-│           │   ├── schema.sql
-│           │   ├── test_statements.sql
-│           │   └── uv.lock
+│           │   │   │   ├── v01.sql (20 байт)
+│           │   │   │   ├── v02.sql (42 байт)
+│           │   │   │   ├── v03.sql (29 байт)
+│           │   │   │   ├── v04.sql (41 байт)
+│           │   │   │   ├── v05.sql (31 байт)
+│           │   │   │   ├── v06.sql (45 байт)
+│           │   │   │   ├── v07.sql (50 байт)
+│           │   │   │   ├── v08.sql (48 байт)
+│           │   │   │   ├── v09.sql (36 байт)
+│           │   │   │   └── v10.sql (33 байт)
+│           │   │   ├── _lsp_validate.js (4719 байт)
+│           │   │   ├── bench_30x_with_schema.sql (106802 байт)
+│           │   │   └── bench_with_schema.sql (3939 байт)
+│           │   ├── .prettierrc (119 байт)
+│           │   ├── .python-version (5 байт)
+│           │   ├── .sqlfluff (42 байт)
+│           │   ├── .sqruff (40 байт)
+│           │   ├── bench_statements.sql (3547 байт)
+│           │   ├── package-lock.json (316244 байт)
+│           │   ├── package.json (542 байт)
+│           │   ├── pyproject.toml (237 байт)
+│           │   ├── README.md (1902 байт)
+│           │   ├── schema.sql (2279 байт)
+│           │   ├── test_statements.sql (8101 байт)
+│           │   └── uv.lock (42730 байт)
 │           ├── fmt_diff_tests/
-│           │   ├── __init__.py
-│           │   ├── comments.py
-│           │   ├── create_table.py
-│           │   ├── dml.py
-│           │   ├── misc.py
-│           │   ├── operator_precedence.py
-│           │   ├── schema_ops.py
-│           │   ├── select.py
-│           │   ├── utility_stmts.py
-│           │   └── window.py
+│           │   ├── __init__.py (113 байт)
+│           │   ├── comments.py (29763 байт)
+│           │   ├── create_table.py (28067 байт)
+│           │   ├── dml.py (13628 байт)
+│           │   ├── misc.py (29070 байт)
+│           │   ├── operator_precedence.py (25785 байт)
+│           │   ├── schema_ops.py (6174 байт)
+│           │   ├── select.py (15481 байт)
+│           │   ├── utility_stmts.py (5630 байт)
+│           │   └── window.py (13660 байт)
 │           ├── lineage_diff_tests/
-│           │   ├── __init__.py
-│           │   ├── ctas.py
-│           │   ├── cte.py
-│           │   ├── direct.py
-│           │   ├── errors.py
-│           │   ├── expressions.py
-│           │   ├── joins.py
-│           │   ├── star.py
-│           │   ├── union.py
-│           │   └── view.py
+│           │   ├── __init__.py (112 байт)
+│           │   ├── ctas.py (2515 байт)
+│           │   ├── cte.py (1975 байт)
+│           │   ├── direct.py (2583 байт)
+│           │   ├── errors.py (553 байт)
+│           │   ├── expressions.py (3052 байт)
+│           │   ├── joins.py (2708 байт)
+│           │   ├── star.py (3439 байт)
+│           │   ├── union.py (1388 байт)
+│           │   └── view.py (1623 байт)
 │           ├── lsp_diff_tests/
-│           │   ├── __init__.py
-│           │   ├── completion.py
-│           │   ├── definition.py
-│           │   ├── diagnostics.py
-│           │   ├── hover.py
-│           │   ├── references.py
-│           │   ├── rename.py
-│           │   └── shell.py
+│           │   ├── __init__.py (112 байт)
+│           │   ├── completion.py (10760 байт)
+│           │   ├── definition.py (4374 байт)
+│           │   ├── diagnostics.py (3250 байт)
+│           │   ├── hover.py (1217 байт)
+│           │   ├── references.py (5421 байт)
+│           │   ├── rename.py (4970 байт)
+│           │   └── shell.py (5572 байт)
 │           ├── lsp_tests/
-│           │   ├── query.sql
-│           │   └── schema.sql
+│           │   ├── query.sql (24 байт)
+│           │   └── schema.sql (285 байт)
 │           ├── perfetto_fmt_diff_tests/
-│           │   ├── __init__.py
-│           │   └── perfetto.py
+│           │   ├── __init__.py (112 байт)
+│           │   └── perfetto.py (23116 байт)
 │           ├── perfetto_validation_diff_tests/
-│           │   ├── __init__.py
-│           │   └── perfetto.py
+│           │   ├── __init__.py (112 байт)
+│           │   └── perfetto.py (4715 байт)
 │           ├── public-api/
-│           │   ├── syntaqlite-buildtools.txt
-│           │   ├── syntaqlite-syntax.txt
-│           │   └── syntaqlite.txt
+│           │   ├── syntaqlite-buildtools.txt (15852 байт)
+│           │   ├── syntaqlite-syntax.txt (290823 байт)
+│           │   └── syntaqlite.txt (40159 байт)
 │           ├── semantic_diff_tests/
-│           │   ├── __init__.py
-│           │   ├── clauses.py
-│           │   ├── cte.py
-│           │   ├── ddl.py
-│           │   ├── dequoting.py
-│           │   ├── dml.py
-│           │   ├── functions.py
-│           │   ├── multi_statement.py
-│           │   ├── star.py
-│           │   ├── subqueries.py
-│           │   ├── unknown_column.py
-│           │   └── unknown_table.py
+│           │   ├── __init__.py (112 байт)
+│           │   ├── clauses.py (6570 байт)
+│           │   ├── cte.py (3663 байт)
+│           │   ├── ddl.py (31591 байт)
+│           │   ├── dequoting.py (6257 байт)
+│           │   ├── dml.py (5810 байт)
+│           │   ├── functions.py (2899 байт)
+│           │   ├── multi_statement.py (1799 байт)
+│           │   ├── star.py (4066 байт)
+│           │   ├── subqueries.py (12632 байт)
+│           │   ├── unknown_column.py (4036 байт)
+│           │   └── unknown_table.py (4112 байт)
 │           ├── token_preservation/
-│           │   └── baseline.json
+│           │   └── baseline.json (3 байт)
 │           ├── upstream/
 │           │   ├── csrc/
-│           │   │   └── tclsyntaqlite.c
+│           │   │   └── tclsyntaqlite.c (14535 байт)
 │           │   └── tcl/
-│           │       └── tester.tcl
+│           │       └── tester.tcl (6066 байт)
 │           ├── upstream_baselines/
-│           │   ├── parse_acceptance.darwin.json
-│           │   └── parse_acceptance.linux.json
-│           └── __init__.py
+│           │   ├── parse_acceptance.darwin.json (6614 байт)
+│           │   └── parse_acceptance.linux.json (5722 байт)
+│           └── __init__.py (112 байт)
 ├── grammar/
-│   ├── ddl.pp3
-│   ├── dml.pp3
-│   ├── expression.pp3
-│   ├── select.pp3
-│   ├── sqlite.pp3
-│   ├── statement.pp3
-│   ├── tokens.pp3
-│   └── utility.pp3
+│   ├── ddl.pp3 (31480 байт)
+│   ├── dml.pp3 (11795 байт)
+│   ├── expression.pp3 (21538 байт)
+│   ├── select.pp3 (17520 байт)
+│   ├── sqlite.pp3 (1440 байт)
+│   ├── statement.pp3 (2461 байт)
+│   ├── tokens.pp3 (6589 байт)
+│   └── utility.pp3 (12107 байт)
 ├── src/
 │   ├── Ast/
 │   │   ├── Expression/
-│   │   │   ├── BetweenExpression.php
-│   │   │   ├── BinaryOperation.php
-│   │   │   ├── CaseExpression.php
-│   │   │   ├── CastExpression.php
-│   │   │   ├── ColumnReference.php
-│   │   │   ├── ExpressionList.php
-│   │   │   ├── FunctionCall.php
-│   │   │   ├── InExpression.php
-│   │   │   ├── IsNullExpression.php
-│   │   │   ├── LikeExpression.php
-│   │   │   ├── Literal.php
-│   │   │   ├── Star.php
-│   │   │   ├── Subquery.php
-│   │   │   ├── UnaryOperation.php
-│   │   │   ├── WhenClause.php
-│   │   │   └── WindowFunction.php
+│   │   │   ├── BetweenExpression.php (570 байт)
+│   │   │   ├── BinaryOperation.php (829 байт)
+│   │   │   ├── CaseExpression.php (1064 байт)
+│   │   │   ├── CastExpression.php (677 байт)
+│   │   │   ├── ColumnReference.php (837 байт)
+│   │   │   ├── ExpressionList.php (1113 байт)
+│   │   │   ├── FunctionCall.php (1103 байт)
+│   │   │   ├── InExpression.php (871 байт)
+│   │   │   ├── IsNullExpression.php (458 байт)
+│   │   │   ├── LikeExpression.php (680 байт)
+│   │   │   ├── Literal.php (539 байт)
+│   │   │   ├── Star.php (510 байт)
+│   │   │   ├── Subquery.php (643 байт)
+│   │   │   ├── UnaryOperation.php (800 байт)
+│   │   │   ├── WhenClause.php (634 байт)
+│   │   │   └── WindowFunction.php (702 байт)
 │   │   ├── Statement/
-│   │   │   ├── AlterTableStatement.php
-│   │   │   ├── Assignment.php
-│   │   │   ├── AssignmentList.php
-│   │   │   ├── AttachStatement.php
-│   │   │   ├── ColumnConstraint.php
-│   │   │   ├── ColumnDefinition.php
-│   │   │   ├── CommonTableExpression.php
-│   │   │   ├── CompoundSelect.php
-│   │   │   ├── CreateIndexStatement.php
-│   │   │   ├── CreateTableStatement.php
-│   │   │   ├── CreateTriggerStatement.php
-│   │   │   ├── CreateViewStatement.php
-│   │   │   ├── DeleteStatement.php
-│   │   │   ├── DetachStatement.php
-│   │   │   ├── DropStatement.php
-│   │   │   ├── EmptyStatement.php
-│   │   │   ├── ExplainStatement.php
-│   │   │   ├── ForeignKeyAction.php
-│   │   │   ├── ForeignKeyClause.php
-│   │   │   ├── FrameBound.php
-│   │   │   ├── FrameSpec.php
-│   │   │   ├── FromClause.php
-│   │   │   ├── GroupByClause.php
-│   │   │   ├── HavingClause.php
-│   │   │   ├── IdentListWrapper.php
-│   │   │   ├── InsertDefaultBody.php
-│   │   │   ├── InsertStatement.php
-│   │   │   ├── InsertValuesBody.php
-│   │   │   ├── JoinClause.php
-│   │   │   ├── JoinConstraint.php
-│   │   │   ├── OrderBy.php
-│   │   │   ├── OrderByList.php
-│   │   │   ├── PragmaStatement.php
-│   │   │   ├── ResultColumn.php
-│   │   │   ├── ResultColumnList.php
-│   │   │   ├── ReturningClause.php
-│   │   │   ├── SavepointStatement.php
-│   │   │   ├── SelectStatement.php
-│   │   │   ├── TableConstraint.php
-│   │   │   ├── TableOptions.php
-│   │   │   ├── TableReference.php
-│   │   │   ├── TransactionStatement.php
-│   │   │   ├── TriggerBody.php
-│   │   │   ├── TriggerEventInfo.php
-│   │   │   ├── UpdateStatement.php
-│   │   │   ├── UpsertClause.php
-│   │   │   ├── WhereClause.php
-│   │   │   ├── WindowSpecification.php
-│   │   │   └── WithClause.php
-│   │   ├── Expression.php
-│   │   ├── Node.php
-│   │   ├── Script.php
-│   │   └── Statement.php
+│   │   │   ├── AlterTableStatement.php (768 байт)
+│   │   │   ├── Assignment.php (538 байт)
+│   │   │   ├── AssignmentList.php (580 байт)
+│   │   │   ├── AttachStatement.php (592 байт)
+│   │   │   ├── ColumnConstraint.php (1144 байт)
+│   │   │   ├── ColumnDefinition.php (619 байт)
+│   │   │   ├── CommonTableExpression.php (569 байт)
+│   │   │   ├── CompoundSelect.php (1178 байт)
+│   │   │   ├── CreateIndexStatement.php (792 байт)
+│   │   │   ├── CreateTableStatement.php (1160 байт)
+│   │   │   ├── CreateTriggerStatement.php (1220 байт)
+│   │   │   ├── CreateViewStatement.php (716 байт)
+│   │   │   ├── DeleteStatement.php (572 байт)
+│   │   │   ├── DetachStatement.php (368 байт)
+│   │   │   ├── DropStatement.php (521 байт)
+│   │   │   ├── EmptyStatement.php (474 байт)
+│   │   │   ├── ExplainStatement.php (531 байт)
+│   │   │   ├── ForeignKeyAction.php (546 байт)
+│   │   │   ├── ForeignKeyClause.php (775 байт)
+│   │   │   ├── FrameBound.php (685 байт)
+│   │   │   ├── FrameSpec.php (531 байт)
+│   │   │   ├── FromClause.php (707 байт)
+│   │   │   ├── GroupByClause.php (478 байт)
+│   │   │   ├── HavingClause.php (646 байт)
+│   │   │   ├── IdentListWrapper.php (985 байт)
+│   │   │   ├── InsertDefaultBody.php (262 байт)
+│   │   │   ├── InsertStatement.php (1592 байт)
+│   │   │   ├── InsertValuesBody.php (806 байт)
+│   │   │   ├── JoinClause.php (1243 байт)
+│   │   │   ├── JoinConstraint.php (805 байт)
+│   │   │   ├── OrderBy.php (607 байт)
+│   │   │   ├── OrderByList.php (757 байт)
+│   │   │   ├── PragmaStatement.php (774 байт)
+│   │   │   ├── ResultColumn.php (743 байт)
+│   │   │   ├── ResultColumnList.php (1178 байт)
+│   │   │   ├── ReturningClause.php (548 байт)
+│   │   │   ├── SavepointStatement.php (477 байт)
+│   │   │   ├── SelectStatement.php (1894 байт)
+│   │   │   ├── TableConstraint.php (1113 байт)
+│   │   │   ├── TableOptions.php (421 байт)
+│   │   │   ├── TableReference.php (1140 байт)
+│   │   │   ├── TransactionStatement.php (1362 байт)
+│   │   │   ├── TriggerBody.php (513 байт)
+│   │   │   ├── TriggerEventInfo.php (961 байт)
+│   │   │   ├── UpdateStatement.php (997 байт)
+│   │   │   ├── UpsertClause.php (910 байт)
+│   │   │   ├── WhereClause.php (785 байт)
+│   │   │   ├── WindowSpecification.php (776 байт)
+│   │   │   └── WithClause.php (521 байт)
+│   │   ├── Expression.php (277 байт)
+│   │   ├── Node.php (1679 байт)
+│   │   ├── Script.php (531 байт)
+│   │   └── Statement.php (277 байт)
 │   ├── Grammar/
-│   │   └── Reducers.php
+│   │   └── Reducers.php (5538 байт)
 │   └── Parser/
-│       └── SqliteParser.php
+│       └── SqliteParser.php (211297 байт)
 ├── tests/
 │   ├── Ast/
-│   │   └── ScriptTest.php
+│   │   └── ScriptTest.php (1536 байт)
+│   ├── External/
+│   │   └── PLAN.md (14940 байт)
 │   ├── Grammar/
-│   │   ├── AdvancedSelectTest.php
-│   │   ├── DdlTest.php
-│   │   ├── DmlTest.php
-│   │   ├── ExpressionTest.php
-│   │   ├── FullScriptTest.php
-│   │   ├── SelectTest.php
-│   │   └── UtilityTest.php
+│   │   ├── AdvancedSelectTest.php (8898 байт)
+│   │   ├── DdlTest.php (9593 байт)
+│   │   ├── DmlTest.php (8478 байт)
+│   │   ├── ExpressionTest.php (10857 байт)
+│   │   ├── FullScriptTest.php (3505 байт)
+│   │   ├── SelectTest.php (3687 байт)
+│   │   └── UtilityTest.php (8828 байт)
 │   └── Parser/
-│       └── SqliteParserTest.php
-├── .gitattributes
-├── .phpunit.result.cache
-├── composer.json
-├── PHPLRT_GUIDE.md
-├── phpstan.neon
-├── phpstan.neon.dist
-├── phpunit.xml.dist
-├── PLAN.md
-└── README.md
+│       └── SqliteParserTest.php (2502 байт)
+├── .gitattributes (108 байт)
+├── .phpunit.result.cache (9754 байт)
+├── composer.json (1783 байт)
+├── PHPLRT_GUIDE.md (15136 байт)
+├── phpstan.neon (225 байт)
+├── phpstan.neon.dist (225 байт)
+├── phpunit.xml.dist (562 байт)
+├── PLAN.md (30649 байт)
+└── README.md (3428 байт)
