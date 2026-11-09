@@ -66,6 +66,7 @@ sqlite-parser/
 │   │   │   ├── TableOptions.php
 │   │   │   ├── TableReference.php
 │   │   │   ├── TriggerBody.php
+│   │   │   ├── TriggerEventInfo.php
 │   │   │   ├── UpdateStatement.php
 │   │   │   ├── UpsertClause.php
 │   │   │   ├── WhereClause.php
