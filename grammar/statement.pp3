@@ -1,0 +1,15 @@
+%use Inilim\SqliteParser\Ast\Script
+%use Inilim\SqliteParser\Ast\Statement\EmptyStatement
+
+Statement
+    : ::T_IDENT:: => new EmptyStatement()
+    ;
+
+Script
+    : Statement() (::T_SEMICOLON:: Statement())* ::T_SEMICOLON::?
+        => new Script(\array_merge([$1], \array_map(static fn (array $pair) => $pair[1], $2)))
+    | ::T_SEMICOLON::
+        => new Script([new EmptyStatement()])
+    | %empty
+        => new Script([])
+    ;

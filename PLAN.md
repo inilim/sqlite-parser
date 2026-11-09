@@ -84,6 +84,7 @@ src/
             SelectStatement.php
             InsertStatement.php
             CreateTableStatement.php
+            EmptyStatement.php
             ...
         Expression/
             Literal.php
@@ -140,37 +141,44 @@ tests/
 
 ---
 
-### Этап 2 — Лексер и токены (1 день)
+### Этап 2 — Лексер и токены (1 день) ✅ ВЫПОЛНЕНО
 
 **Цель:** полный набор токенов SQLite в `grammar/tokens.pp3`.
 
-- [ ] Ключевые слова (`SELECT`, `FROM`, `WHERE`, `CREATE`, `TABLE`, ...) —
-  **регистронезависимо** (`RegexModifier::Caseless` в builder-API, флаг `i` в `.pp3`).
-  Порядок объявления: многословные ключевые слова (`ORDER BY`) — **до** однословных
-  (`ORDER`, `BY`); ключевые слова — до `T_IDENT`.
-- [ ] Идентификаторы:
+- [x] Ключевые слова (`SELECT`, `FROM`, `WHERE`, `CREATE`, `TABLE`, ...) —
+  **регистронезависимо** (`(?i)` флаг в регулярке).
+  Порядок объявления: многословные ключевые слова — **до** однословных;
+  ключевые слова — до `T_IDENT`, у всех используется `\b` (граница слова).
+- [x] Идентификаторы:
   - `T_IDENT` — `[A-Za-z_][A-Za-z0-9_]*`;
   - `T_QUOTED_IDENT` — `"..."`, `` `...` ``, `[...]`;
-- [ ] Литералы:
+- [x] Литералы:
   - `T_INT` (десятичный, `0x...`, `0b...`), `T_FLOAT`;
   - `T_STRING` — `'...'` с `''` как экранирование;
   - `T_BLOB` — `X'...'`;
-  - `T_NULL`, `T_TRUE`, `T_FALSE`;
-- [ ] Операторы: `+ - * / %`, `= <> != < <= > >=`, `||`, `& | ~ << >>`,
+  - `T_NULL`, `T_TRUE`, `T_FALSE` (как ключевые слова);
+- [x] Операторы: `+ - * / %`, `= <> != < <= > >=`, `||`, `& | ~ << >>`,
   `AND OR NOT IS IN LIKE GLOB BETWEEN EXISTS`.
-- [ ] Пунктуация: `( ) , . ; :`.
-- [ ] `%skip T_WHITESPACE \s++`, `%skip T_COMMENT --[^\n]*`, `%skip T_COMMENT_BLOCK /\*.*?\*/s`
-  (многострочный комментарий — не-DotAll режим, `.*?` ленивый).
-- [ ] `grammar/statement.pp3` — скелет: `Script : Statement() (::T_SEMICOLON:: Statement())* ;`,
-  `Statement : ...` (пока с одной заглушкой `Empty`).
-- [ ] `grammar/sqlite.pp3` — `%pragma root Script`, `%include tokens`, `%include statement`.
+- [x] Пунктуация: `( ) , . ; :`.
+- [x] `%skip T_WHITESPACE \s++`, `%skip T_COMMENT --[^\n]*`,
+  `%skip T_COMMENT_BLOCK /\*[\s\S]*?\*/` (регекс `[\s\S]*?` покрывает многострочный
+  комментарий без DotAll-флага).
+- [x] `grammar/statement.pp3` — скелет: `Script`, `Statement` с заглушкой `EmptyStatement`
+  (через `%use Inilim\SqliteParser\Ast\Statement\EmptyStatement`).
+- [x] `grammar/sqlite.pp3` — `%pragma root Script`, `%include "tokens.pp3"`,
+  `%include "statement.pp3"`.
+- [x] `src/Ast/Statement/EmptyStatement.php` — заглушка для `;` без содержимого.
 
-**Проверки:**
+**Проверки (на стороне пользователя):**
 - [ ] `vendor/bin/phplrt check grammar/sqlite.pp3 -v` → exit 0, `Rules: Loaded/After` не схлопывается до 1.
 - [ ] Парсер возвращает `Script` без ошибок на пустой строке и на `;`.
 
 **Готово когда:** `check` зелёный, базовый парсер генерируется и возвращает `Script([])`
-для пустого ввода и `Script([Empty])` для `;`.
+для пустого ввода и `Script([EmptyStatement])` для `;`.
+
+> Пользователю: после `composer install` выполнить
+> `composer grammar:check`, затем `composer grammar:build`,
+> затем `composer tests` — сгенерированный `src/Parser/SqliteParser.php` закоммитить.
 
 ---
 
