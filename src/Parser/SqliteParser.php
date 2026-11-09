@@ -1189,13 +1189,15 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
 
     private static function reduceScript(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
-        // Альтернатива <T_SEMICOLON> — одиночная `;` даёт пустую инструкцию.
-            // Альтернатива StatementList()? — либо список инструкций, либо пусто.
-            if ($children === null) {
+        if ($children === null) {
                 return new \Inilim\SqliteParser\Ast\Script([]);
             }
             if (\is_array($children)) {
                 return new \Inilim\SqliteParser\Ast\Script($children);
+            }
+            // Одиночный Statement (unwrap-случай) — оборачиваем в массив.
+            if ($children instanceof \Inilim\SqliteParser\Ast\Statement) {
+                return new \Inilim\SqliteParser\Ast\Script([$children]);
             }
 
             // Сюда попадаем только для одиночного `;` — это EmptyStatement.
@@ -1222,41 +1224,23 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
     {
         $children = \is_array($children) ? $children : [$children];
 
-            // Columns: максимально безопасный сбор ResultColumn из $children[0].
-            // phplrt может передать:
-            //   - ResultColumn (unwrap при одной колонке),
-            //   - [ResultColumn, ResultColumn, ...] (обычный массив),
-            //   - [[ResultColumn, ResultColumn, ...]] (двойная обёртка).
-            $columns = [];
+            // ResultColumnList — объект-контейнер (не массив), значит SelectList
+            // не был развёрнут unwrap-флаттенингом на уровне этого правила.
             $columns_raw = $children[0] ?? null;
-            if ($columns_raw instanceof \Inilim\SqliteParser\Ast\Statement\ResultColumn) {
-                $columns = [$columns_raw];
-            } elseif (\is_array($columns_raw)) {
-                \array_walk_recursive($columns_raw, static function ($item) use (&$columns): void {
-                    if ($item instanceof \Inilim\SqliteParser\Ast\Statement\ResultColumn) {
-                        $columns[] = $item;
-                    }
-                });
-            }
+            $columns = $columns_raw instanceof \Inilim\SqliteParser\Ast\Statement\ResultColumnList
+                ? $columns_raw->items
+                : [];
 
-            $from_raw    = $children[1] ?? null;
-            $where_raw   = $children[2] ?? null;
-            $orderBy_raw = $children[3] ?? null;
-            $limit_raw   = $children[4] ?? null;
+            $from_raw  = $children[1] ?? null;
+            $where_raw = $children[2] ?? null;
+            $order_raw = $children[3] ?? null;
+            $limit_raw = $children[4] ?? null;
 
             $from  = $from_raw instanceof \Inilim\SqliteParser\Ast\Statement\TableReference ? $from_raw : null;
             $where = $where_raw instanceof \Inilim\SqliteParser\Ast\Expression ? $where_raw : null;
-
-            $orderBy = null;
-            if (\is_array($orderBy_raw)) {
-                $orderBy = [];
-                \array_walk_recursive($orderBy_raw, static function ($item) use (&$orderBy): void {
-                    if ($item instanceof \Inilim\SqliteParser\Ast\Statement\OrderBy) {
-                        $orderBy[] = $item;
-                    }
-                });
-            }
-
+            $orderBy = $order_raw instanceof \Inilim\SqliteParser\Ast\Statement\OrderByList
+                ? $order_raw->items
+                : null;
             $limit = \is_array($limit_raw) && isset($limit_raw['limit']) ? $limit_raw : null;
 
             return new \Inilim\SqliteParser\Ast\Statement\SelectStatement(
@@ -1270,28 +1254,24 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
 
     private static function reduceSelectList(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
-        // $children = [first] | [first, rest], где rest — либо массив RC,
-            // либо одиночный RC (unwrap), либо null.
-            $children = \is_array($children) ? $children : [$children];
+        $children = \is_array($children) ? $children : [$children];
+
             $first = $children[0] ?? null;
-            $rest = $children[1] ?? null;
+            $rest  = $children[1] ?? null;
 
             $list = [];
             if ($first instanceof \Inilim\SqliteParser\Ast\Statement\ResultColumn) {
                 $list[] = $first;
             }
-
-            if ($rest instanceof \Inilim\SqliteParser\Ast\Statement\ResultColumn) {
+            if ($rest instanceof \Inilim\SqliteParser\Ast\Statement\ResultColumnList) {
+                foreach ($rest->items as $rc) {
+                    $list[] = $rc;
+                }
+            } elseif ($rest instanceof \Inilim\SqliteParser\Ast\Statement\ResultColumn) {
                 $list[] = $rest;
-            } elseif (\is_array($rest)) {
-                \array_walk_recursive($rest, static function ($item) use (&$list): void {
-                    if ($item instanceof \Inilim\SqliteParser\Ast\Statement\ResultColumn) {
-                        $list[] = $item;
-                    }
-                });
             }
 
-            return $list;
+            return new \Inilim\SqliteParser\Ast\Statement\ResultColumnList($list);
     }
 
     private static function reduceResultColumn(\Phplrt\Parser\Context $ctx, mixed $children): mixed
@@ -1418,7 +1398,7 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
                 }
             });
 
-            return $flat;
+            return new \Inilim\SqliteParser\Ast\Statement\OrderByList($flat);
     }
 
     private static function reduceOrderByItem(\Phplrt\Parser\Context $ctx, mixed $children): mixed
