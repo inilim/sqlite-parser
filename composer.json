@@ -50,14 +50,14 @@
     },
     "require": {
         "php": "^8.4 | ^8.5 | ^8.6",
-        "inilim/tools": "^0.1",
         "phplrt/runtime": "^4.2"
     },
     "require-dev": {
         "phplrt/compiler": "^4.2",
         "phpunit/phpunit": "^9.6",
         "phpstan/phpstan": "^2.2",
-        "symfony/finder": "^8.1"
+        "symfony/finder": "^8.1",
+        "inilim/tools": "^0.1.20261104"
     },
     "config": {
         "platform": {
