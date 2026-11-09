@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Inilim\SqliteParser\Ast;
 
 use JsonSerializable;
+use ReflectionObject;
+use ReflectionProperty;
 
 /**
  * Базовый абстрактный узел AST.
@@ -26,10 +28,25 @@ abstract class Node implements JsonSerializable
 
     public function __construct()
     {
-        $vars = get_object_vars($this);
-        unset($vars['attributes']);
+        $reflection = new ReflectionObject($this);
 
         /** @var array<string, mixed> $vars */
+        $vars = [];
+
+        foreach ($reflection->getProperties(ReflectionProperty::IS_PUBLIC) as $property) {
+            $name = $property->getName();
+
+            if ($name === 'attributes') {
+                continue;
+            }
+
+            if (!$property->isInitialized($this)) {
+                continue;
+            }
+
+            $vars[$name] = $property->getValue($this);
+        }
+
         $this->attributes = $vars;
     }
 
