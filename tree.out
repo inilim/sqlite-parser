@@ -6,10 +6,20 @@ sqlite-parser/
 ├── src/
 │   ├── Ast/
 │   │   ├── Expression/
+│   │   │   ├── BetweenExpression.php
 │   │   │   ├── BinaryOperation.php
+│   │   │   ├── CaseExpression.php
+│   │   │   ├── CastExpression.php
 │   │   │   ├── ColumnReference.php
+│   │   │   ├── ExpressionList.php
+│   │   │   ├── FunctionCall.php
+│   │   │   ├── InExpression.php
+│   │   │   ├── IsNullExpression.php
+│   │   │   ├── LikeExpression.php
 │   │   │   ├── Literal.php
-│   │   │   └── Star.php
+│   │   │   ├── Star.php
+│   │   │   ├── UnaryOperation.php
+│   │   │   └── WhenClause.php
 │   │   ├── Statement/
 │   │   │   ├── EmptyStatement.php
 │   │   │   ├── OrderBy.php
@@ -22,12 +32,15 @@ sqlite-parser/
 │   │   ├── Node.php
 │   │   ├── Script.php
 │   │   └── Statement.php
+│   ├── Grammar/
+│   │   └── Reducers.php
 │   └── Parser/
 │       └── SqliteParser.php
 ├── tests/
 │   ├── Ast/
 │   │   └── ScriptTest.php
 │   └── Grammar/
+│       ├── ExpressionTest.php
 │       └── SelectTest.php
 ├── .gitattributes
 ├── .phpunit.result.cache
