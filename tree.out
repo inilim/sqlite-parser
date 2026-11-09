@@ -4,13 +4,15 @@ sqlite-parser/
 ├── grammar/
 │   └── sqlite.pp3
 ├── src/
-│   └── Ast/
-│       ├── Statement/
-│       │   └── EmptyStatement.php
-│       ├── Expression.php
-│       ├── Node.php
-│       ├── Script.php
-│       └── Statement.php
+│   ├── Ast/
+│   │   ├── Statement/
+│   │   │   └── EmptyStatement.php
+│   │   ├── Expression.php
+│   │   ├── Node.php
+│   │   ├── Script.php
+│   │   └── Statement.php
+│   └── Parser/
+│       └── SqliteParser.php
 ├── tests/
 │   └── Ast/
 │       └── ScriptTest.php
