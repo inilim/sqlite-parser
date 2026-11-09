@@ -196,20 +196,13 @@
 // а не через %empty — директива %empty в PP3 не поддерживается.
 //
 // ВАЖНО: редуктор ставится ОДИН раз на правило, на уровне `:` — его нельзя
-// размещать внутри альтернативы (`| pattern -> { ... }` недопустимо —
-// PP3 воспринимает `->` как T_PHP и падает с UnexpectedTokenException).
+// размещать внутри альтернативы (`| pattern -> { ... }` недопустимо).
 //
 // ВАЖНО (phplrt 4.x gotcha): результат повтора `(A B)*` приходит в $children
 // в одной из нескольких форм (плоская, вложенная парами, «одна пара без
 // обёртки»). Поэтому редукторы, работающие со списками, должны передавать в
 // Reducers::foldLeftBinaryChain ВСЁ содержимое начиная с индекса 1 — через
-// `\array_slice($children, 1)`, а не `$children[1]`. Иначе теряются элементы
-// при «плоском» ответе парсера.
-//
-// ВАЖНО (phplrt 4.x gotcha): списки AST-узлов (columns, orderBy, ...) внутри
-// конкатенации оборачиваются в объекты-контейнеры (ResultColumnList,
-// OrderByList, ExpressionList) — они служат "barrier" против флаттенинга
-// при unwrap (см. PHPLRT_GUIDE.md, §3.4 и SKILL.md).
+// `\array_slice($children, 1)`.
 // ============================================================================
 
 // ----------------------------------------------------------------------------
@@ -224,12 +217,10 @@ Script
         if (\is_array($children)) {
             return new \Inilim\SqliteParser\Ast\Script($children);
         }
-        // Одиночный Statement (unwrap-случай) — оборачиваем в массив.
         if ($children instanceof \Inilim\SqliteParser\Ast\Statement) {
             return new \Inilim\SqliteParser\Ast\Script([$children]);
         }
 
-        // Сюда попадаем только для одиночного `;` — это EmptyStatement.
         return new \Inilim\SqliteParser\Ast\Script(
             [new \Inilim\SqliteParser\Ast\Statement\EmptyStatement()]
         );
@@ -255,7 +246,7 @@ StatementList
     ;
 
 // ----------------------------------------------------------------------------
-// Statement: на этапе 3 — только SELECT.
+// Statement: на этапе 5 — SELECT (одиночный и составной).
 // ----------------------------------------------------------------------------
 
 Statement
@@ -263,47 +254,234 @@ Statement
     ;
 
 // ----------------------------------------------------------------------------
-// SELECT (MVP, этап 3)
+// SELECT (этап 5)
+//
+// SelectStatement (грамматика) — точка входа для SELECT-запроса. Может быть
+// как одиночным SelectStatement, так и CompoundSelect (несколько ядер
+// объединены UNION/INTERSECT/EXCEPT).
+//
+// SelectCore — одно "ядро" SELECT без WITH/ORDER BY/LIMIT. На этапе редьюсера
+// возвращает объект SelectStatement с пустыми with/orderBy/limit.
 // ----------------------------------------------------------------------------
 
 SelectStatement
     -> {
         $children = \is_array($children) ? $children : [$children];
 
-        // ResultColumnList — объект-контейнер (не массив), значит SelectList
-        // не был развёрнут unwrap-флаттенингом на уровне этого правила.
-        $columns_raw = $children[0] ?? null;
-        $columns = $columns_raw instanceof \Inilim\SqliteParser\Ast\Statement\ResultColumnList
-            ? $columns_raw->items
-            : [];
+        $with    = null;
+        $cores   = [];
+        $ops     = [];
+        $orderBy = null;
+        $limit   = null;
 
-        $from_raw  = $children[1] ?? null;
-        $where_raw = $children[2] ?? null;
-        $order_raw = $children[3] ?? null;
-        $limit_raw = $children[4] ?? null;
+        foreach ($children as $child) {
+            if ($child instanceof \Inilim\SqliteParser\Ast\Statement\WithClause) {
+                $with = $child;
+            } elseif ($child instanceof \Inilim\SqliteParser\Ast\Statement\SelectStatement) {
+                $cores[] = $child;
+            } elseif ($child instanceof \Inilim\SqliteParser\Ast\Statement\OrderByList) {
+                $orderBy = $child->items;
+            } elseif (\is_array($child) && isset($child['limit'])) {
+                $limit = $child;
+            } elseif (\is_string($child)
+                && \in_array(\strtoupper($child), ['UNION', 'UNION ALL', 'INTERSECT', 'EXCEPT'], true)
+            ) {
+                $ops[] = $child;
+            }
+        }
 
-        $from  = $from_raw instanceof \Inilim\SqliteParser\Ast\Statement\TableReference ? $from_raw : null;
-        $where = $where_raw instanceof \Inilim\SqliteParser\Ast\Expression ? $where_raw : null;
-        $orderBy = $order_raw instanceof \Inilim\SqliteParser\Ast\Statement\OrderByList
-            ? $order_raw->items
-            : null;
-        $limit = \is_array($limit_raw) && isset($limit_raw['limit']) ? $limit_raw : null;
+        if (\count($cores) === 1) {
+            $core = $cores[0];
+            return new \Inilim\SqliteParser\Ast\Statement\SelectStatement(
+                columns: $core->columns,
+                distinct: $core->distinct,
+                from: $core->from,
+                joins: $core->joins,
+                where: $core->where,
+                groupBy: $core->groupBy,
+                having: $core->having,
+                with: $with,
+                orderBy: $orderBy,
+                limit: $limit,
+            );
+        }
 
-        return new \Inilim\SqliteParser\Ast\Statement\SelectStatement(
-            columns: $columns,
-            from: $from,
-            where: $where,
+        return new \Inilim\SqliteParser\Ast\Statement\CompoundSelect(
+            selects: $cores,
+            operators: $ops,
+            with: $with,
             orderBy: $orderBy,
             limit: $limit,
         );
     }
-    : ::T_SELECT:: SelectList() FromClause()? WhereClause()? OrderByClause()? LimitClause()?
+    : WithClause()? SelectCore() (CompoundOp() SelectCore())* OrderByClause()? LimitClause()?
     ;
 
-// Список выборки строится через правую рекурсию — редуктор гарантированно
-// получает массив `[first, rest]`, где `rest` — либо `ResultColumnList`
-// (результат рекурсивного вызова), либо null. Возвращается объект
-// ResultColumnList — barrier против unwrap-флаттенинга в SelectStatement.
+SelectCore
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+
+        $distinct = false;
+        $columns  = [];
+        $from     = null;
+        $joins    = [];
+        $groupBy  = null;
+        $exprs    = [];
+
+        foreach ($children as $child) {
+            if (\is_string($child)) {
+                if (\strtoupper($child) === 'DISTINCT') {
+                    $distinct = true;
+                }
+            } elseif ($child instanceof \Inilim\SqliteParser\Ast\Statement\ResultColumnList) {
+                $columns = $child->items;
+            } elseif ($child instanceof \Inilim\SqliteParser\Ast\Statement\FromClause) {
+                $from  = $child->base;
+                $joins = $child->joins;
+            } elseif ($child instanceof \Inilim\SqliteParser\Ast\Statement\GroupByClause) {
+                $groupBy = $child;
+            } elseif ($child instanceof \Inilim\SqliteParser\Ast\Expression) {
+                $exprs[] = $child;
+            }
+        }
+
+        $where  = $exprs[0] ?? null;
+        $having = $exprs[1] ?? null;
+
+        return new \Inilim\SqliteParser\Ast\Statement\SelectStatement(
+            columns: $columns,
+            distinct: $distinct,
+            from: $from,
+            joins: $joins,
+            where: $where,
+            groupBy: $groupBy,
+            having: $having,
+        );
+    }
+    : ::T_SELECT:: DistinctModifier()? SelectList() FromClause()? WhereClause()? GroupByClause()? HavingClause()?
+    ;
+
+DistinctModifier
+    -> {
+        return $children instanceof \Phplrt\Contracts\Lexer\TokenInterface
+            ? \strtoupper($children->value)
+            : '';
+    }
+    : <T_DISTINCT>
+    | <T_ALL>
+    ;
+
+CompoundOp
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+        $v = '';
+        foreach ($children as $child) {
+            if ($child instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+                $u = \strtoupper($child->value);
+                if ($u === 'ALL') {
+                    $v .= ' ALL';
+                } else {
+                    $v = $u;
+                }
+            }
+        }
+        return \trim($v);
+    }
+    : <T_UNION> (::T_ALL::)?
+    | <T_INTERSECT>
+    | <T_EXCEPT>
+    ;
+
+// ----------------------------------------------------------------------------
+// WITH
+// ----------------------------------------------------------------------------
+
+WithClause
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+
+        $recursive = false;
+        $ctes      = [];
+
+        foreach ($children as $child) {
+            if ($child instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+                if (\strtoupper($child->value) === 'RECURSIVE') {
+                    $recursive = true;
+                }
+            } elseif (\is_array($child)) {
+                $ctes = $child;
+            }
+        }
+
+        return new \Inilim\SqliteParser\Ast\Statement\WithClause($recursive, $ctes);
+    }
+    : ::T_WITH:: (<T_RECURSIVE>)? CTEList()
+    ;
+
+CTEList
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+
+        $flat = [];
+        \array_walk_recursive($children, static function ($item) use (&$flat): void {
+            if ($item instanceof \Inilim\SqliteParser\Ast\Statement\CommonTableExpression) {
+                $flat[] = $item;
+            }
+        });
+
+        return $flat;
+    }
+    : CommonTableExpression() (::T_COMMA:: CommonTableExpression())*
+    ;
+
+CommonTableExpression
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+
+        $name    = null;
+        $columns = null;
+        $query   = null;
+
+        foreach ($children as $child) {
+            if (\is_string($child) && $name === null) {
+                $name = $child;
+            } elseif (\is_array($child)) {
+                $columns = $child;
+            } elseif ($child instanceof \Inilim\SqliteParser\Ast\Statement) {
+                $query = $child;
+            }
+        }
+
+        return new \Inilim\SqliteParser\Ast\Statement\CommonTableExpression(
+            name: $name ?? '',
+            columns: $columns,
+            query: $query,
+        );
+    }
+    : TableName() (::T_LPAREN:: IdentList() ::T_RPAREN::)? ::T_AS:: ::T_LPAREN:: SelectStatement() ::T_RPAREN::
+    ;
+
+// Список идентификаторов через запятую — возвращает list<string>.
+IdentList
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+
+        $flat = [];
+        \array_walk_recursive($children, static function ($item) use (&$flat): void {
+            if ($item instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+                $flat[] = $item->value;
+            }
+        });
+
+        return $flat;
+    }
+    : <T_IDENT> (::T_COMMA:: <T_IDENT>)*
+    ;
+
+// ----------------------------------------------------------------------------
+// SelectList / ResultColumn
+// ----------------------------------------------------------------------------
+
 SelectList
     -> {
         $children = \is_array($children) ? $children : [$children];
@@ -330,7 +508,6 @@ SelectList
 
 ResultColumn
     -> {
-        // Альтернатива <T_STAR> — одиночный Token.
         if ($children instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
             return new \Inilim\SqliteParser\Ast\Statement\ResultColumn(
                 new \Inilim\SqliteParser\Ast\Expression\Star(),
@@ -338,8 +515,6 @@ ResultColumn
             );
         }
 
-        // Альтернатива Expression() (::T_AS:: <T_IDENT>)? — массив [Expression]
-        // или [Expression, Token(alias)].
         $children = \is_array($children) ? $children : [$children];
         $expression = $children[0];
         $alias = null;
@@ -353,23 +528,143 @@ ResultColumn
     | <T_STAR>
     ;
 
+// ----------------------------------------------------------------------------
+// FROM + JOIN
+// ----------------------------------------------------------------------------
+
 FromClause
-    : ::T_FROM:: TableReference()
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+
+        $base  = null;
+        $joins = [];
+
+        foreach ($children as $child) {
+            if ($child instanceof \Inilim\SqliteParser\Ast\Statement\TableReference && $base === null) {
+                $base = $child;
+            } elseif ($child instanceof \Inilim\SqliteParser\Ast\Statement\JoinClause) {
+                $joins[] = $child;
+            }
+        }
+
+        return new \Inilim\SqliteParser\Ast\Statement\FromClause($base, $joins);
+    }
+    : ::T_FROM:: TableReference() (JoinClause())*
+    ;
+
+JoinClause
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+
+        $natural = false;
+        $type    = '';
+        $table   = null;
+        $on      = null;
+        $using   = null;
+
+        foreach ($children as $child) {
+            if ($child instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+                $u = \strtoupper($child->value);
+                if ($u === 'NATURAL') {
+                    $natural = true;
+                }
+                continue;
+            }
+            if (\is_string($child) && \in_array($child, ['INNER', 'LEFT', 'RIGHT', 'FULL', 'CROSS'], true)) {
+                $type = $child;
+                continue;
+            }
+            if ($child instanceof \Inilim\SqliteParser\Ast\Statement\TableReference) {
+                $table = $child;
+                continue;
+            }
+            if ($child instanceof \Inilim\SqliteParser\Ast\Statement\JoinConstraint) {
+                $on    = $child->on;
+                $using = $child->using;
+                continue;
+            }
+        }
+
+        return new \Inilim\SqliteParser\Ast\Statement\JoinClause(
+            type: $type,
+            table: $table,
+            on: $on,
+            using: $using,
+            natural: $natural,
+        );
+    }
+    : (<T_NATURAL>)? (JoinType()? (::T_OUTER::)?)? ::T_JOIN:: TableReference() (JoinConstraint()?)?
+    ;
+
+JoinType
+    -> {
+        return $children instanceof \Phplrt\Contracts\Lexer\TokenInterface
+            ? \strtoupper($children->value)
+            : '';
+    }
+    : <T_INNER>
+    | <T_LEFT>
+    | <T_RIGHT>
+    | <T_FULL>
+    | <T_CROSS>
+    ;
+
+JoinConstraint
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+
+        foreach ($children as $child) {
+            if ($child instanceof \Inilim\SqliteParser\Ast\Expression) {
+                return new \Inilim\SqliteParser\Ast\Statement\JoinConstraint(on: $child);
+            }
+            if (\is_array($child)) {
+                return new \Inilim\SqliteParser\Ast\Statement\JoinConstraint(using: $child);
+            }
+        }
+
+        return null;
+    }
+    : ::T_ON:: Expression()
+    | ::T_USING:: ::T_LPAREN:: IdentList() ::T_RPAREN::
     ;
 
 TableReference
     -> {
-        // $children = [name(string), aliasToken|null]
         $children = \is_array($children) ? $children : [$children];
-        $name = $children[0];
-        $alias = null;
-        if (isset($children[1]) && $children[1] instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
-            $alias = $children[1]->value;
+
+        $name          = null;
+        $alias         = null;
+        $subquery      = null;
+        $columnAliases = null;
+        $index         = 0;
+
+        foreach ($children as $child) {
+            if ($index === 0) {
+                if (\is_string($child)) {
+                    $name = $child;
+                } elseif ($child instanceof \Inilim\SqliteParser\Ast\Statement) {
+                    $subquery = $child;
+                }
+                $index = 1;
+                continue;
+            }
+
+            if ($child instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+                $alias = $child->value;
+            } elseif (\is_array($child)) {
+                $columnAliases = $child;
+            }
         }
 
-        return new \Inilim\SqliteParser\Ast\Statement\TableReference($name, $alias);
+        return new \Inilim\SqliteParser\Ast\Statement\TableReference(
+            name: $name,
+            alias: $alias,
+            subquery: $subquery,
+            columnAliases: $columnAliases,
+        );
     }
-    : TableName() (::T_AS:: <T_IDENT>)?
+    : TableName() (::T_AS:: <T_IDENT>)? (::T_LPAREN:: IdentList() ::T_RPAREN::)?
+    | ::T_LPAREN:: SelectStatement() ::T_RPAREN:: (::T_AS:: <T_IDENT>)? (::T_LPAREN:: IdentList() ::T_RPAREN::)?
     ;
 
 TableName
@@ -378,8 +673,32 @@ TableName
     | <T_QUOTED_IDENT>
     ;
 
+// ----------------------------------------------------------------------------
+// WHERE / GROUP BY / HAVING / ORDER BY / LIMIT
+// ----------------------------------------------------------------------------
+
 WhereClause
     : ::T_WHERE:: Expression()
+    ;
+
+GroupByClause
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+
+        $expressions = [];
+        foreach ($children as $child) {
+            if ($child instanceof \Inilim\SqliteParser\Ast\Expression\ExpressionList) {
+                $expressions = $child->items;
+            }
+        }
+
+        return new \Inilim\SqliteParser\Ast\Statement\GroupByClause($expressions);
+    }
+    : ::T_GROUP:: ::T_BY:: ExprList()
+    ;
+
+HavingClause
+    : ::T_HAVING:: Expression()
     ;
 
 OrderByClause
@@ -422,25 +741,15 @@ LimitClause
     ;
 
 // ----------------------------------------------------------------------------
-// Выражения (этап 4): полная грамматика SQLite.
+// Выражения: полная грамматика SQLite.
 //
 // Приоритеты (по возрастанию):
 //   OR < AND < NOT < Comparison(= <> != < <= > >=)
 //      < Additive(+ -) < Multiplicative(* / %)
 //      < Unary(+ - ~) < Primary
 //
-// Postfix-операции (IS [NOT] NULL, [NOT] LIKE/GLOB, [NOT] BETWEEN, [NOT] IN)
-// применяются на уровне Primary, потому что они ниже по приоритету, чем
-// бинарные арифметические/сравнительные операторы: `a = 1 AND b BETWEEN 2 AND 3`
-// должно давать `AND(Eq(a,1), Between(b,2,3))`.
-//
-// PostfixOp возвращает Closure(Expression $left): Expression — родитель
-// Primary-цикла применяет его последовательно к накопленному результату.
-//
 // ВАЖНО: во всех редукторах OrExpr / AndExpr / Comparison / Additive /
-// Multiplicative используется `\array_slice($children, 1)` — это покрывает
-// все формы, в которых phplrt возвращает результат повтора `(A B)*`,
-// включая полностью «плоский» вариант `[left, op, value, op, value]`.
+// Multiplicative используется `\array_slice($children, 1)`.
 // ----------------------------------------------------------------------------
 
 Expression
@@ -617,17 +926,156 @@ PrimaryBase
         $children = \is_array($children) ? $children : [$children];
         return $children[0] ?? null;
     }
-    : ::T_LPAREN:: Expression() ::T_RPAREN::
+    : Subquery()
+    | ::T_LPAREN:: Expression() ::T_RPAREN::
     | CastExpression()
     | CaseExpression()
-    | FunctionCall()
+    | FunctionCallWithOver()
     | Literal()
     | ColumnReference()
     ;
 
-// PostfixOp возвращает замыкание Expression → Expression. Так парсер может
-// применять операции IS NULL / LIKE / GLOB / BETWEEN / IN цепочкой
-// к накопленному результату Primary.
+Subquery
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+        foreach ($children as $child) {
+            if ($child instanceof \Inilim\SqliteParser\Ast\Statement) {
+                return new \Inilim\SqliteParser\Ast\Expression\Subquery($child);
+            }
+        }
+        return null;
+    }
+    : ::T_LPAREN:: SelectStatement() ::T_RPAREN::
+    ;
+
+FunctionCallWithOver
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+
+        $fn   = null;
+        $spec = null;
+        $name = null;
+
+        foreach ($children as $child) {
+            if ($child instanceof \Inilim\SqliteParser\Ast\Expression\FunctionCall) {
+                $fn = $child;
+            } elseif ($child instanceof \Inilim\SqliteParser\Ast\Statement\WindowSpecification) {
+                $spec = $child;
+            } elseif ($child instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+                if (\strtoupper($child->value) === 'OVER') {
+                    continue;
+                }
+                $name = $child->value;
+            }
+        }
+
+        if ($fn === null) {
+            return null;
+        }
+        if ($spec === null && $name === null) {
+            return $fn;
+        }
+
+        return new \Inilim\SqliteParser\Ast\Expression\WindowFunction($fn, $spec, $name);
+    }
+    : FunctionCall() ::T_OVER:: (WindowSpecification() | <T_IDENT>)
+    | FunctionCall()
+    ;
+
+WindowSpecification
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+
+        $partition = null;
+        $orderBy   = null;
+        $frame     = null;
+
+        foreach ($children as $child) {
+            if ($child instanceof \Inilim\SqliteParser\Ast\Expression\ExpressionList) {
+                $partition = $child->items;
+            } elseif ($child instanceof \Inilim\SqliteParser\Ast\Statement\OrderByList) {
+                $orderBy = $child->items;
+            } elseif ($child instanceof \Inilim\SqliteParser\Ast\Statement\FrameSpec) {
+                $frame = $child;
+            }
+        }
+
+        return new \Inilim\SqliteParser\Ast\Statement\WindowSpecification(
+            partitionBy: $partition,
+            orderBy: $orderBy,
+            frame: $frame,
+        );
+    }
+    : ::T_LPAREN:: (::T_PARTITION:: ::T_BY:: ExprList())? OrderByClause()? FrameSpec()? ::T_RPAREN::
+    ;
+
+FrameSpec
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+
+        $unit   = '';
+        $bounds = [];
+
+        foreach ($children as $child) {
+            if ($child instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+                $u = \strtoupper($child->value);
+                if (\in_array($u, ['ROWS', 'RANGE'], true)) {
+                    $unit = $u;
+                }
+            } elseif ($child instanceof \Inilim\SqliteParser\Ast\Statement\FrameBound) {
+                $bounds[] = $child;
+            }
+        }
+
+        return new \Inilim\SqliteParser\Ast\Statement\FrameSpec(
+            unit: $unit,
+            start: $bounds[0],
+            end: $bounds[1] ?? null,
+        );
+    }
+    : (<T_ROWS> | <T_RANGE>) FrameBound() (::T_AND:: FrameBound())?
+    ;
+
+FrameBound
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+
+        $prefix = '';
+        $expr   = null;
+
+        foreach ($children as $child) {
+            if ($child instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+                $u = \strtoupper($child->value);
+                if ($u === 'UNBOUNDED') {
+                    $prefix = 'UNBOUNDED';
+                } elseif ($u === 'CURRENT') {
+                    $prefix = 'CURRENT';
+                } elseif ($u === 'ROW') {
+                    $prefix .= '_ROW';
+                } elseif ($u === 'PRECEDING') {
+                    $prefix .= '_PRECEDING';
+                } elseif ($u === 'FOLLOWING') {
+                    $prefix .= '_FOLLOWING';
+                }
+            } elseif ($child instanceof \Inilim\SqliteParser\Ast\Expression) {
+                $expr = $child;
+            }
+        }
+
+        if ($expr !== null) {
+            $direction = \strpos($prefix, 'FOLLOWING') !== false ? 'FOLLOWING' : 'PRECEDING';
+            return new \Inilim\SqliteParser\Ast\Statement\FrameBound('EXPR_' . $direction, $expr);
+        }
+
+        return new \Inilim\SqliteParser\Ast\Statement\FrameBound($prefix);
+    }
+    : <T_UNBOUNDED> <T_PRECEDING>
+    | <T_UNBOUNDED> <T_FOLLOWING>
+    | <T_CURRENT> <T_ROW>
+    | Additive() <T_PRECEDING>
+    | Additive() <T_FOLLOWING>
+    ;
+
 PostfixOp
     -> {
         $children = \is_array($children) ? $children : [$children];
@@ -676,6 +1124,14 @@ PostfixOp
 
             if ($v === 'IN') {
                 $listRaw = $children[1] ?? null;
+                if ($listRaw instanceof \Inilim\SqliteParser\Ast\Statement) {
+                    return new \Inilim\SqliteParser\Ast\Expression\InExpression(
+                        $left,
+                        [],
+                        false,
+                        $listRaw,
+                    );
+                }
                 $items = $listRaw instanceof \Inilim\SqliteParser\Ast\Expression\ExpressionList
                     ? $listRaw->items
                     : [];
@@ -714,6 +1170,14 @@ PostfixOp
                 }
                 if ($v2 === 'IN') {
                     $listRaw = $children[2] ?? null;
+                    if ($listRaw instanceof \Inilim\SqliteParser\Ast\Statement) {
+                        return new \Inilim\SqliteParser\Ast\Expression\InExpression(
+                            $left,
+                            [],
+                            true,
+                            $listRaw,
+                        );
+                    }
                     $items = $listRaw instanceof \Inilim\SqliteParser\Ast\Expression\ExpressionList
                         ? $listRaw->items
                         : [];
@@ -730,14 +1194,14 @@ PostfixOp
     | <T_GLOB> Additive()
     | <T_BETWEEN> Additive() ::T_AND:: Additive()
     | <T_IN> ::T_LPAREN:: ExprList()? ::T_RPAREN::
+    | <T_IN> ::T_LPAREN:: SelectStatement() ::T_RPAREN::
     | <T_NOT> <T_LIKE> Additive()
     | <T_NOT> <T_GLOB> Additive()
     | <T_NOT> <T_BETWEEN> Additive() ::T_AND:: Additive()
     | <T_NOT> <T_IN> ::T_LPAREN:: ExprList()? ::T_RPAREN::
+    | <T_NOT> <T_IN> ::T_LPAREN:: SelectStatement() ::T_RPAREN::
     ;
 
-// Список выражений через запятую — обёрнут в объект-контейнер ExpressionList,
-// чтобы не «схлопнуться» при unwrap в родителе.
 ExprList
     -> {
         $children = \is_array($children) ? $children : [$children];
@@ -804,7 +1268,6 @@ ColumnReference
         $table = null;
         $name  = null;
 
-        // Форма с квалификацией: [Token(ident), Token(ident)] (точка отброшена).
         if (isset($children[1]) && $children[1] instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
             $table = $children[0]->value;
             $name  = $children[1]->value;

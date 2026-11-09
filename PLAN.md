@@ -263,28 +263,40 @@ tests/
 
 ---
 
-### Этап 5 — Продвинутый SELECT (2 дня)
+### Этап 5 — Продвинутый SELECT (2 дня) ✅ ВЫПОЛНЕНО
 
 **Цель:** JOIN, CTE, UNION, оконные функции.
 
-- [ ] `FROM` с несколькими источниками и `JOIN ... ON` / `USING`:
-  - `FromClause : TableRef() (JoinClause())* ;`
-  - `JoinClause : JoinType? ::T_JOIN:: TableRef() (::T_ON:: Expression() | ::T_USING:: '(' IdentList ')' )? ;`
-- [ ] `GROUP BY` + `HAVING`.
-- [ ] `DISTINCT` / `ALL` в `SELECT`.
-- [ ] `UNION [ALL]` / `INTERSECT` / `EXCEPT` — многоуровневая композиция (левая рекурсия запрещена,
-  реализовать как `QueryTerm (op QueryTerm)*`).
-- [ ] `WITH [RECURSIVE] name AS (subquery)` — CTE.
-- [ ] Оконные функции: `OVER (PARTITION BY ... ORDER BY ... ROWS/RANGE ...)`.
-- [ ] AST: `JoinClause`, `GroupBy`, `Having`, `CompoundSelect`, `CommonTableExpression`,
-  `WindowSpecification`.
-- [ ] `Subquery` в `FROM` (derived table).
+- [x] `FROM` с несколькими источниками и `JOIN ... ON` / `USING`:
+  - `FromClause : ::T_FROM:: TableReference() (JoinClause())* ;`
+  - `JoinClause : (<T_NATURAL>)? (JoinType()? (::T_OUTER::)?)? ::T_JOIN:: TableReference() (JoinConstraint()?)? ;`
+  - `JoinType` — INNER / LEFT / RIGHT / FULL / CROSS.
+  - `JoinConstraint : ::T_ON:: Expression() | ::T_USING:: ::T_LPAREN:: IdentList() ::T_RPAREN:: ;`
+- [x] `GROUP BY` + `HAVING`.
+- [x] `DISTINCT` / `ALL` в `SELECT`.
+- [x] `UNION [ALL]` / `INTERSECT` / `EXCEPT` — через `SelectCore (CompoundOp SelectCore)*`.
+- [x] `WITH [RECURSIVE] name [(columns)] AS (subquery)` — CTE.
+- [x] Оконные функции: `OVER (PARTITION BY ... ORDER BY ... ROWS/RANGE ...)`.
+- [x] AST: `JoinClause`, `JoinConstraint`, `FromClause`, `GroupByClause`, `CompoundSelect`,
+  `WithClause`, `CommonTableExpression`, `WindowSpecification`, `FrameSpec`, `FrameBound`.
+- [x] Subquery в `FROM` (derived table) и в выражениях/IN.
 
-**Проверки:**
-- [ ] `SELECT * FROM a JOIN b ON a.id = b.id` → `SelectStatement` с `JoinClause`.
-- [ ] `WITH c AS (SELECT 1) SELECT * FROM c` → `SelectStatement` с `ctes`.
-- [ ] `SELECT 1 UNION SELECT 2` → `CompoundSelect(union, [Select, Select])`.
-- [ ] `SUM(x) OVER (PARTITION BY g)` → `WindowFunction`.
+**Проверки (через `tests/Grammar/AdvancedSelectTest.php`):**
+- [x] `SELECT * FROM a JOIN b ON a.id = b.id` → `SelectStatement` с `joins`.
+- [x] `SELECT * FROM a LEFT OUTER JOIN b ON a.id = b.a_id` → join.type = LEFT.
+- [x] `SELECT * FROM a CROSS JOIN b` → join.type = CROSS.
+- [x] `SELECT * FROM a JOIN b USING (id)` → join.using = ['id'].
+- [x] `WITH c AS (SELECT 1) SELECT * FROM c` → `SelectStatement` с `with`.
+- [x] `WITH RECURSIVE c AS (SELECT 1) SELECT * FROM c` → with.recursive = true.
+- [x] `SELECT 1 UNION SELECT 2` → `CompoundSelect('UNION', [Select, Select])`.
+- [x] `SELECT 1 UNION ALL SELECT 2` → op = 'UNION ALL'.
+- [x] `SELECT 1 INTERSECT SELECT 2` → op = 'INTERSECT'.
+- [x] `SUM(x) OVER (PARTITION BY g)` → `WindowFunction`.
+- [x] `SUM(x) OVER (ORDER BY y)` → WindowFunction с orderBy в спецификации.
+- [x] `SELECT * FROM (SELECT 1) AS t` → subquery в TableReference.
+- [x] `SELECT * FROM (SELECT 1, 2) AS t (a, b)` → columnAliases = ['a','b'].
+- [x] `SELECT (SELECT 1) AS x` → Subquery в выражении.
+- [x] `SELECT * FROM t WHERE id IN (SELECT id FROM u)` → InExpression с subquery.
 
 ---
 
@@ -392,20 +404,16 @@ tests/
 
 1. **`composer.json`**: ✅ **ЗАКРЫТ** — пользователь подтвердил переход на
    `phplrt/runtime` (require) + `phplrt/compiler` (require-dev).
-   `composer require phplrt/runtime` + `composer remove phplrt/phplrt` +
-   `composer require --dev phplrt/compiler` выполнены (см. Этап 0).
 
 2. **Обратный рендер AST → SQL** (`->toSql()`): нужен? Если да — выносится отдельным
    этапом после Этапа 8. **Ожидает решения.**
 
-3. **Парсинг «частичного» SQL**: разрешать ли неполные выражения (например, `SELECT id FROM`
-   без завершения) или всегда строгий PEG (весь вход должен быть съеден)? **По умолчанию — строгий.**
+3. **Парсинг «частичного» SQL**: разрешать ли неполные выражения? **По умолчанию — строгий.**
 
 4. **Уровень детализации типов**: различать `INTEGER` / `TEXT` / `REAL` / `BLOB` в
    `ColumnDefinition`, или хранить `type` строкой как пришло из SQL? **По умолчанию — строкой.**
 
 5. **Версионирование SQLite**: ✅ **ЗАКРЫТ** — целевая версия диалекта **3.54.\***.
-   Включает `RETURNING`, `STRICT`, `ON CONFLICT DO UPDATE`, все фичи SQLite 3.54.
 
 ---
 
