@@ -427,3 +427,8 @@ tests/
 | `v0.4.0`       | 6           | DML (INSERT/UPDATE/DELETE/UPSERT)                            |
 | `v0.5.0`       | 7           | DDL (CREATE/ALTER/DROP)                                      |
 | `v1.0.0`       | 10          | Полное покрытие SQLite 3.54.* + CI + стабильный API          |
+
+
+## 8. Взять тесты из другого репозитория (https://github.com/LalitMaganti/syntaqlite/tree/main/tests)
+
+файлы тестов находятся ./files/syntaqlite/tests/*
