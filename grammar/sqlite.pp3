@@ -166,29 +166,38 @@
 // ============================================================================
 // Правила
 //
-// %use намеренно не используется: на phplrt 4.2 %use вызывал ошибку парсинга
-// секции деклараций. Вместо него используем FQCN прямо в reducer-действиях.
+// Синтаксис редукторов phplrt 4.x: RuleName -> { ... } : ... ;
+// Для альтернатив используем отдельные подправила, чтобы у каждого
+// был свой редуктор. Корневое Script просто возвращает результат подправила.
 // ============================================================================
 
 Statement
+    -> { return new \Inilim\SqliteParser\Ast\Statement\EmptyStatement(); }
     : ::T_IDENT::
-        => new \Inilim\SqliteParser\Ast\Statement\EmptyStatement()
     ;
 
 Script
+    -> { return $children; }
+    : EmptyScript() | SemicolonScript() | StatementsScript()
+    ;
+
+EmptyScript
+    -> { return new \Inilim\SqliteParser\Ast\Script([]); }
     : %empty
-        => new \Inilim\SqliteParser\Ast\Script([])
+    ;
 
-    | ::T_SEMICOLON::
-        => new \Inilim\SqliteParser\Ast\Script(
+SemicolonScript
+    -> {
+        return new \Inilim\SqliteParser\Ast\Script(
             [new \Inilim\SqliteParser\Ast\Statement\EmptyStatement()]
-        )
+        );
+    }
+    : ::T_SEMICOLON::
+    ;
 
-    | Statement() (::T_SEMICOLON:: Statement())* (::T_SEMICOLON::)?
-        => new \Inilim\SqliteParser\Ast\Script(
-            \array_merge(
-                [$1],
-                \array_map(static fn (array $pair) => $pair[1], $2)
-            )
-        )
+StatementsScript
+    -> {
+        return new \Inilim\SqliteParser\Ast\Script($children);
+    }
+    : Statement() (::T_SEMICOLON:: Statement())* (::T_SEMICOLON::)?
     ;

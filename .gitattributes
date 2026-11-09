@@ -1,5 +1,6 @@
 /tests export-ignore
 /.git* export-ignore
+/cli-tools export-ignore
 
 # files
 /phpstan.neon export-ignore
