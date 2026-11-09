@@ -4658,8 +4658,8 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_EXPLAIN, false),
                 new \Phplrt\Parser\Grammar\Optional(472),
                 new \Phplrt\Parser\Grammar\Concatenation([473, 474]),
-                new \Phplrt\Parser\Grammar\Lexeme(self::T_QUERY, false),
-                new \Phplrt\Parser\Grammar\Lexeme(self::T_PLAN, false),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_QUERY, true),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_PLAN, true),
                 new \Phplrt\Parser\Grammar\Optional(395),
             ],
             initial: 0,
@@ -7167,10 +7167,22 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
     {
         $children = \is_array($children) ? $children : [$children];
 
+            $flat = [];
+            $collect = static function ($items) use (&$collect, &$flat): void {
+                foreach ($items as $item) {
+                    if (\is_array($item)) {
+                        $collect($item);
+                    } else {
+                        $flat[] = $item;
+                    }
+                }
+            };
+            $collect($children);
+
             $statement = null;
             $queryPlan = false;
 
-            foreach ($children as $child) {
+            foreach ($flat as $child) {
                 if ($child instanceof \Inilim\SqliteParser\Ast\Statement) {
                     $statement = $child;
                     continue;
