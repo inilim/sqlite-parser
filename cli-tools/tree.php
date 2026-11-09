@@ -66,8 +66,11 @@ class TreeBuilder
             foreach ($parts as $i => $part) {
                 $acc = $acc === '' ? $part : $acc . '/' . $part;
                 $isFile = $i === count($parts) - 1;
+
                 if (!$isFile || $this->showFiles) {
-                    $paths[$acc] = $isFile ? 'file' : 'dir';
+                    $paths[$acc] = $isFile
+                        ? ['type' => 'file', 'size' => $file->getSize()]
+                        : ['type' => 'dir'];
                 }
             }
         }
@@ -88,33 +91,44 @@ class TreeBuilder
     private function renderLevel(string &$out, array $paths, string $prefix, string $parent): void
     {
         $children = [];
-        foreach ($paths as $path => $type) {
+
+        foreach ($paths as $path => $info) {
             $parentDir = dirname($path);
+
             if ($parentDir === '.' || $parentDir === '') {
                 $parentDir = '';
             }
+
             if ($parentDir === $parent && ($parent !== '' || !str_contains($path, '/'))) {
-                $children[$path] = $type;
+                $children[$path] = $info;
             }
         }
 
         // Сортируем: папки сначала, затем файлы, по алфавиту
         uksort($children, function ($a, $b) use ($children) {
-            $ta = $children[$a] === 'dir' ? 0 : 1;
-            $tb = $children[$b] === 'dir' ? 0 : 1;
+            $ta = $children[$a]['type'] === 'dir' ? 0 : 1;
+            $tb = $children[$b]['type'] === 'dir' ? 0 : 1;
+
             return $ta !== $tb ? $ta <=> $tb : strcasecmp(basename($a), basename($b));
         });
 
         $i = 0;
         $count = count($children);
-        foreach ($children as $path => $type) {
+
+        foreach ($children as $path => $info) {
             $i++;
             $isLast = $i === $count;
             $name = basename($path);
             $branch = $isLast ? '└── ' : '├── ';
+
+            $type = $info['type'];
             $suffix = $type === 'dir' ? '/' : '';
 
-            $out .= $prefix . $branch . $name . $suffix . "\n";
+            $size = $type === 'file'
+                ? ' (' . $info['size'] . ' байт)'
+                : '';
+
+            $out .= $prefix . $branch . $name . $suffix . $size . "\n";
 
             if ($type === 'dir') {
                 $newPrefix = $prefix . ($isLast ? '    ' : '│   ');
@@ -129,12 +143,11 @@ class TreeBuilder
 $root = $argv[1] ?? __DIR__;
 $root = Path::realPath($root);
 
-
 $tree = new TreeBuilder(
     root: $root,
     ignoredDirs: ['vendor', '.git', 'cli-tools', '.aicoder'],
     ignoredFormats: [],
-    ignoredFiles: ['.env', '.env.local', '.gitignore', 'composer.lock', '.gitkeep', 'tree.out',],
+    ignoredFiles: ['.env', '.env.local', '.gitignore', 'composer.lock', '.gitkeep', 'tree.out'],
     showFiles: true,
 );
 
