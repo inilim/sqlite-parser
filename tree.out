@@ -5,10 +5,10 @@ sqlite-parser/
 │   ├── ddl.pp3 (31480 байт)
 │   ├── dml.pp3 (11795 байт)
 │   ├── expression.pp3 (21538 байт)
-│   ├── select.pp3 (17520 байт)
+│   ├── select.pp3 (18029 байт)
 │   ├── sqlite.pp3 (1440 байт)
 │   ├── statement.pp3 (2461 байт)
-│   ├── tokens.pp3 (6589 байт)
+│   ├── tokens.pp3 (7857 байт)
 │   └── utility.pp3 (12107 байт)
 ├── src/
 │   ├── Ast/
@@ -60,7 +60,7 @@ sqlite-parser/
 │   │   │   ├── InsertValuesBody.php (806 байт)
 │   │   │   ├── JoinClause.php (1243 байт)
 │   │   │   ├── JoinConstraint.php (805 байт)
-│   │   │   ├── OrderBy.php (607 байт)
+│   │   │   ├── OrderBy.php (857 байт)
 │   │   │   ├── OrderByList.php (757 байт)
 │   │   │   ├── PragmaStatement.php (774 байт)
 │   │   │   ├── ResultColumn.php (743 байт)
@@ -80,14 +80,24 @@ sqlite-parser/
 │   │   │   ├── WindowSpecification.php (776 байт)
 │   │   │   └── WithClause.php (521 байт)
 │   │   ├── Expression.php (277 байт)
-│   │   ├── Node.php (1679 байт)
-│   │   ├── Script.php (531 байт)
+│   │   ├── Node.php (3002 байт)
+│   │   ├── Script.php (552 байт)
 │   │   └── Statement.php (277 байт)
 │   ├── Grammar/
 │   │   └── Reducers.php (5538 байт)
-│   └── Parser/
-│       ├── Parser.php (1312 байт)
-│       └── SqliteParser.php (211297 байт)
+│   ├── Parser/
+│   │   ├── Parser.php (1312 байт)
+│   │   └── SqliteParser.php (212296 байт)
+│   ├── Printer/
+│   │   ├── NodeDumper.php (3921 байт)
+│   │   └── SqlPrinter.php (37889 байт)
+│   └── Traversal/
+│       ├── NodeChildExtractor.php (2306 байт)
+│       ├── NodeCloner.php (1534 байт)
+│       ├── NodeFinder.php (2431 байт)
+│       ├── NodeTransformer.php (5256 байт)
+│       ├── NodeTraverser.php (1266 байт)
+│       └── NodeVisitor.php (978 байт)
 ├── tests/
 │   ├── Ast/
 │   │   └── ScriptTest.php (1536 байт)
@@ -103,7 +113,7 @@ sqlite-parser/
 │       ├── ParserTest.php (1523 байт)
 │       └── SqliteParserTest.php (2502 байт)
 ├── .gitattributes (108 байт)
-├── .phpunit.result.cache (10042 байт)
+├── .phpunit.result.cache (10034 байт)
 ├── composer.json (1783 байт)
 ├── phpstan.neon (225 байт)
 ├── phpstan.neon.dist (225 байт)
