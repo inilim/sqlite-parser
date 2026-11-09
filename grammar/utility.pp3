@@ -295,16 +295,32 @@ SavepointStatement
 
 // ----------------------------------------------------------------------------
 // EXPLAIN
+//
+// ВАЖНО: токены `QUERY` и `PLAN` объявлены через `<T_X>`, а НЕ через `::T_X::`
+// — иначе они отбрасываются из `$children`, и редуктор не может выставить
+// флаг `queryPlan = true`.
 // ----------------------------------------------------------------------------
 
 ExplainStatement
     -> {
         $children = \is_array($children) ? $children : [$children];
 
+        $flat = [];
+        $collect = static function ($items) use (&$collect, &$flat): void {
+            foreach ($items as $item) {
+                if (\is_array($item)) {
+                    $collect($item);
+                } else {
+                    $flat[] = $item;
+                }
+            }
+        };
+        $collect($children);
+
         $statement = null;
         $queryPlan = false;
 
-        foreach ($children as $child) {
+        foreach ($flat as $child) {
             if ($child instanceof \Inilim\SqliteParser\Ast\Statement) {
                 $statement = $child;
                 continue;
@@ -326,5 +342,5 @@ ExplainStatement
             queryPlan: $queryPlan,
         );
     }
-    : ::T_EXPLAIN:: (::T_QUERY:: ::T_PLAN::)? Statement()
+    : ::T_EXPLAIN:: (<T_QUERY> <T_PLAN>)? Statement()
     ;
