@@ -5,8 +5,17 @@ sqlite-parser/
 │   └── sqlite.pp3
 ├── src/
 │   ├── Ast/
+│   │   ├── Expression/
+│   │   │   ├── BinaryOperation.php
+│   │   │   ├── ColumnReference.php
+│   │   │   ├── Literal.php
+│   │   │   └── Star.php
 │   │   ├── Statement/
-│   │   │   └── EmptyStatement.php
+│   │   │   ├── EmptyStatement.php
+│   │   │   ├── OrderBy.php
+│   │   │   ├── ResultColumn.php
+│   │   │   ├── SelectStatement.php
+│   │   │   └── TableReference.php
 │   │   ├── Expression.php
 │   │   ├── Node.php
 │   │   ├── Script.php
@@ -14,8 +23,10 @@ sqlite-parser/
 │   └── Parser/
 │       └── SqliteParser.php
 ├── tests/
-│   └── Ast/
-│       └── ScriptTest.php
+│   ├── Ast/
+│   │   └── ScriptTest.php
+│   └── Grammar/
+│       └── SelectTest.php
 ├── .gitattributes
 ├── .phpunit.result.cache
 ├── composer.json
