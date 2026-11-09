@@ -123,8 +123,7 @@ final class Reducers
             if ($defaultOperator !== null) {
                 $op = $defaultOperator;
             } elseif ($opRaw instanceof TokenInterface) {
-                /** @var \Phplrt\Lexer\Token\Token $opRaw */
-                $op = \strtoupper($opRaw->getValue());
+                $op = \strtoupper((string) $opRaw->value);
             } elseif (\is_string($opRaw)) {
                 $op = \strtoupper($opRaw);
             } else {
