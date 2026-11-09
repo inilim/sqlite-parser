@@ -920,6 +920,63 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
         false,
         false,
         true,
+        true,
+        false,
+        true,
+        false,
+        false,
+        false,
+        true,
+        false,
+        true,
+        true,
+        true,
+        false,
+        true,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        true,
+        false,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        true,
+        false,
+        true,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        true,
+        true,
+        false,
+        true,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
         false,
     ];
 
@@ -932,21 +989,41 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
         null,
         [
             2 => true,
+            28 => true,
             43 => true,
             47 => true,
             49 => true,
             true,
             55 => true,
+            true,
+            75 => true,
+            true,
+            true,
+            79 => true,
+            84 => true,
+            true,
+            true,
+            true,
             true,
             96 => true,
         ],
         [
             2 => true,
+            28 => true,
             43 => true,
             47 => true,
             49 => true,
             true,
             55 => true,
+            true,
+            75 => true,
+            true,
+            true,
+            79 => true,
+            84 => true,
+            true,
+            true,
+            true,
             true,
             96 => true,
         ],
@@ -2439,6 +2516,176 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
         [
             69 => true,
         ],
+        [
+            75 => true,
+        ],
+        [
+            75 => true,
+        ],
+        [
+            129 => true,
+            true,
+        ],
+        null,
+        [
+            137 => true,
+            148 => true,
+        ],
+        [
+            137 => true,
+        ],
+        [
+            18 => true,
+            38 => true,
+            49 => true,
+            106 => true,
+            true,
+            126 => true,
+            true,
+            true,
+            true,
+            true,
+            143 => true,
+            true,
+        ],
+        [
+            38 => true,
+        ],
+        [
+            144 => true,
+        ],
+        [
+            143 => true,
+        ],
+        [
+            144 => true,
+        ],
+        [
+            126 => true,
+        ],
+        [
+            143 => true,
+        ],
+        [
+            148 => true,
+        ],
+        null,
+        [
+            76 => true,
+        ],
+        [
+            76 => true,
+        ],
+        null,
+        [
+            78 => true,
+        ],
+        [
+            77 => true,
+        ],
+        [
+            77 => true,
+        ],
+        [
+            28 => true,
+            79 => true,
+            84 => true,
+            true,
+        ],
+        [
+            79 => true,
+        ],
+        [
+            79 => true,
+        ],
+        null,
+        [
+            80 => true,
+            true,
+            true,
+        ],
+        [
+            80 => true,
+        ],
+        [
+            81 => true,
+        ],
+        [
+            82 => true,
+        ],
+        null,
+        [
+            83 => true,
+        ],
+        [
+            83 => true,
+        ],
+        null,
+        [
+            84 => true,
+        ],
+        [
+            84 => true,
+        ],
+        [
+            28 => true,
+        ],
+        [
+            28 => true,
+        ],
+        [
+            85 => true,
+        ],
+        null,
+        null,
+        [
+            60 => true,
+        ],
+        [
+            60 => true,
+        ],
+        null,
+        [
+            86 => true,
+        ],
+        [
+            60 => true,
+        ],
+        [
+            60 => true,
+        ],
+        [
+            86 => true,
+            true,
+        ],
+        [
+            86 => true,
+        ],
+        [
+            86 => true,
+        ],
+        [
+            87 => true,
+        ],
+        [
+            87 => true,
+        ],
+        [
+            88 => true,
+        ],
+        [
+            88 => true,
+        ],
+        null,
+        [
+            89 => true,
+        ],
+        [
+            89 => true,
+        ],
+        [
+            90 => true,
+        ],
         null,
     ];
 
@@ -2477,6 +2724,36 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
             ],
             56 => [
                 409,
+            ],
+            75 => [
+                418,
+            ],
+            76 => [
+                433,
+            ],
+            77 => [
+                437,
+            ],
+            28 => [
+                439,
+            ],
+            79 => [
+                439,
+            ],
+            84 => [
+                439,
+            ],
+            85 => [
+                439,
+            ],
+            86 => [
+                464,
+            ],
+            87 => [
+                464,
+            ],
+            88 => [
+                469,
             ],
         ],
         13 => [
@@ -3204,6 +3481,95 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
                 -416,
             ],
         ],
+        420 => [
+            130 => [
+                123,
+            ],
+            129 => [
+                127,
+            ],
+        ],
+        422 => [
+            137 => [
+                423,
+            ],
+            148 => [
+                431,
+            ],
+        ],
+        424 => [
+            18 => [
+                115,
+            ],
+            106 => [
+                115,
+            ],
+            [
+                115,
+            ],
+            126 => [
+                115,
+            ],
+            [
+                115,
+            ],
+            [
+                115,
+            ],
+            130 => [
+                -15,
+            ],
+            129 => [
+                -16,
+            ],
+            38 => [
+                -426,
+            ],
+            49 => [
+                -317,
+            ],
+            144 => [
+                426,
+                428,
+            ],
+            143 => [
+                427,
+                430,
+            ],
+        ],
+        439 => [
+            79 => [
+                440,
+            ],
+            84 => [
+                451,
+            ],
+            28 => [
+                453,
+            ],
+            [
+                455,
+            ],
+        ],
+        443 => [
+            80 => [
+                -445,
+            ],
+            [
+                -446,
+            ],
+            [
+                -447,
+            ],
+        ],
+        464 => [
+            86 => [
+                465,
+            ],
+            [
+                467,
+            ],
+        ],
     ];
 
     /** @var array<int, list<int>> */
@@ -3578,6 +3944,66 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
             -418,
             13,
         ],
+        418 => [
+            419,
+            420,
+            -423,
+        ],
+        431 => [
+            18,
+            -425,
+            24,
+        ],
+        433 => [
+            434,
+            -437,
+            38,
+            25,
+            265,
+        ],
+        437 => [
+            438,
+            -437,
+            265,
+        ],
+        440 => [
+            441,
+            -444,
+            -449,
+        ],
+        448 => [
+            449,
+            -266,
+        ],
+        451 => [
+            452,
+            -449,
+        ],
+        453 => [
+            454,
+            449,
+            -266,
+        ],
+        455 => [
+            244,
+            -450,
+            -459,
+        ],
+        459 => [
+            401,
+            -462,
+            265,
+        ],
+        467 => [
+            468,
+            -462,
+            265,
+        ],
+        469 => [
+            470,
+            -473,
+            4,
+        ],
     ];
 
     /**
@@ -3762,8 +4188,8 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
                 new \Phplrt\Parser\Grammar\Alternation([1, 2]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_SEMICOLON, true),
                 new \Phplrt\Parser\Grammar\Optional(3),
-                new \Phplrt\Parser\Grammar\Concatenation([4, 392, 418]),
-                new \Phplrt\Parser\Grammar\Alternation([5, 235, 273, 274, 276, 363, 368, 370, 396, 409]),
+                new \Phplrt\Parser\Grammar\Concatenation([4, 392, 475]),
+                new \Phplrt\Parser\Grammar\Alternation([5, 235, 273, 274, 276, 363, 368, 370, 396, 409, 418, 433, 437, 439, 464, 469]),
                 new \Phplrt\Parser\Grammar\Concatenation([6, 29, 219, 89, 228]),
                 new \Phplrt\Parser\Grammar\Optional(7),
                 new \Phplrt\Parser\Grammar\Concatenation([8, 9, 11]),
@@ -4177,6 +4603,63 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_TRIGGER, true),
                 new \Phplrt\Parser\Grammar\Optional(417),
                 new \Phplrt\Parser\Grammar\Concatenation([285, 287]),
+                new \Phplrt\Parser\Grammar\Concatenation([419, 420, 421]),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_PRAGMA, false),
+                new \Phplrt\Parser\Grammar\Alternation([123, 127]),
+                new \Phplrt\Parser\Grammar\Optional(422),
+                new \Phplrt\Parser\Grammar\Alternation([423, 431]),
+                new \Phplrt\Parser\Grammar\Concatenation([266, 424]),
+                new \Phplrt\Parser\Grammar\Alternation([115, 14, 15, 425, 316, 426, 427, 428, 430]),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_ON, true),
+                new \Phplrt\Parser\Grammar\Concatenation([50, 231]),
+                new \Phplrt\Parser\Grammar\Concatenation([48, 231]),
+                new \Phplrt\Parser\Grammar\Concatenation([50, 429]),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_FLOAT, true),
+                new \Phplrt\Parser\Grammar\Concatenation([48, 429]),
+                new \Phplrt\Parser\Grammar\Concatenation([18, 432, 24]),
+                new \Phplrt\Parser\Grammar\Optional(424),
+                new \Phplrt\Parser\Grammar\Concatenation([434, 435, 38, 25, 265]),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_ATTACH, false),
+                new \Phplrt\Parser\Grammar\Optional(436),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_DATABASE, false),
+                new \Phplrt\Parser\Grammar\Concatenation([438, 435, 265]),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_DETACH, false),
+                new \Phplrt\Parser\Grammar\Alternation([440, 451, 453, 455]),
+                new \Phplrt\Parser\Grammar\Concatenation([441, 442, 447]),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_BEGIN, true),
+                new \Phplrt\Parser\Grammar\Optional(443),
+                new \Phplrt\Parser\Grammar\Alternation([444, 445, 446]),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_DEFERRED, true),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_IMMEDIATE, true),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_EXCLUSIVE, true),
+                new \Phplrt\Parser\Grammar\Optional(448),
+                new \Phplrt\Parser\Grammar\Concatenation([449, 450]),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_TRANSACTION, false),
+                new \Phplrt\Parser\Grammar\Optional(265),
+                new \Phplrt\Parser\Grammar\Concatenation([452, 447]),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_COMMIT, true),
+                new \Phplrt\Parser\Grammar\Concatenation([454, 449, 450]),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_END, true),
+                new \Phplrt\Parser\Grammar\Concatenation([244, 456, 457]),
+                new \Phplrt\Parser\Grammar\Optional(449),
+                new \Phplrt\Parser\Grammar\Optional(458),
+                new \Phplrt\Parser\Grammar\Alternation([459, 462]),
+                new \Phplrt\Parser\Grammar\Concatenation([401, 460, 265]),
+                new \Phplrt\Parser\Grammar\Optional(461),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_SAVEPOINT, false),
+                new \Phplrt\Parser\Grammar\Concatenation([463, 461, 265]),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_TO, false),
+                new \Phplrt\Parser\Grammar\Alternation([465, 467]),
+                new \Phplrt\Parser\Grammar\Concatenation([466, 265]),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_SAVEPOINT, true),
+                new \Phplrt\Parser\Grammar\Concatenation([468, 460, 265]),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_RELEASE, true),
+                new \Phplrt\Parser\Grammar\Concatenation([470, 471, 4]),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_EXPLAIN, false),
+                new \Phplrt\Parser\Grammar\Optional(472),
+                new \Phplrt\Parser\Grammar\Concatenation([473, 474]),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_QUERY, false),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_PLAN, false),
                 new \Phplrt\Parser\Grammar\Optional(395),
             ],
             initial: 0,
@@ -4266,6 +4749,14 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
                 396 => self::reduceAlterTableStatement(...),
                 409 => self::reduceDropStatement(...),
                 417 => self::reduceIfExistsClause(...),
+                418 => self::reducePragmaStatement(...),
+                420 => self::reducePragmaName(...),
+                424 => self::reducePragmaValue(...),
+                433 => self::reduceAttachStatement(...),
+                437 => self::reduceDetachStatement(...),
+                439 => self::reduceTransactionStatement(...),
+                464 => self::reduceSavepointStatement(...),
+                469 => self::reduceExplainStatement(...),
             ],
             expectations: self::PARSER_EXPECTATIONS,
             kept: self::PARSER_KEPT_TABLE,
@@ -6457,5 +6948,248 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
     private static function reduceIfExistsClause(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
         return 'IF_EXISTS';
+    }
+
+    private static function reducePragmaStatement(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        $children = \is_array($children) ? $children : [$children];
+
+            $schema = null;
+            $name   = '';
+            $value  = null;
+
+            foreach ($children as $child) {
+                if ($child instanceof \Inilim\SqliteParser\Ast\Statement\IdentListWrapper) {
+                    $items = $child->items;
+                    if (\count($items) === 2) {
+                        $schema = $items[0];
+                        $name   = $items[1];
+                    } elseif (\count($items) === 1) {
+                        $name = $items[0];
+                    }
+                    continue;
+                }
+                if ($child instanceof \Inilim\SqliteParser\Ast\Expression) {
+                    $value = $child;
+                    continue;
+                }
+            }
+
+            return new \Inilim\SqliteParser\Ast\Statement\PragmaStatement(
+                name: $name,
+                value: $value,
+                schema: $schema,
+            );
+    }
+
+    private static function reducePragmaName(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        $children = \is_array($children) ? $children : [$children];
+
+            $flat = [];
+            $collect = static function ($items) use (&$collect, &$flat): void {
+                foreach ($items as $item) {
+                    if (\is_array($item)) {
+                        $collect($item);
+                    } elseif ($item instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+                        $v = $item->value;
+                        $len = \strlen($v);
+                        if ($len >= 2) {
+                            $first = $v[0];
+                            $last  = $v[$len - 1];
+                            if ($first === '"' && $last === '"') {
+                                $v = \substr($v, 1, -1);
+                                $v = \str_replace('""', '"', $v);
+                            } elseif ($first === '`' && $last === '`') {
+                                $v = \substr($v, 1, -1);
+                                $v = \str_replace('``', '`', $v);
+                            } elseif ($first === '[' && $last === ']') {
+                                $v = \substr($v, 1, -1);
+                            }
+                        }
+                        $flat[] = $v;
+                    }
+                }
+            };
+            $collect($children);
+
+            return new \Inilim\SqliteParser\Ast\Statement\IdentListWrapper($flat);
+    }
+
+    private static function reducePragmaValue(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        $children = \is_array($children) ? $children : [$children];
+
+            if (isset($children[0]) && $children[0] instanceof \Inilim\SqliteParser\Ast\Expression) {
+                return $children[0];
+            }
+
+            if (\count($children) === 2
+                && $children[0] instanceof \Phplrt\Contracts\Lexer\TokenInterface
+                && $children[1] instanceof \Phplrt\Contracts\Lexer\TokenInterface
+            ) {
+                $sign = (string) $children[0]->value;
+                $num  = (string) $children[1]->value;
+                $combined = $sign . $num;
+                if (\str_contains($num, '.') || \stripos($num, 'e') !== false) {
+                    return new \Inilim\SqliteParser\Ast\Expression\Literal((float) $combined, 'float');
+                }
+                return new \Inilim\SqliteParser\Ast\Expression\Literal((int) $combined, 'int');
+            }
+
+            $first = $children[0] ?? null;
+            if ($first instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+                return new \Inilim\SqliteParser\Ast\Expression\Literal($first->value, 'string');
+            }
+
+            return null;
+    }
+
+    private static function reduceAttachStatement(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        $children = \is_array($children) ? $children : [$children];
+
+            $expression = null;
+            $schemaName = '';
+
+            foreach ($children as $child) {
+                if ($child instanceof \Inilim\SqliteParser\Ast\Expression) {
+                    $expression = $child;
+                    continue;
+                }
+                if ($child instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+                    $schemaName = $child->value;
+                    continue;
+                }
+            }
+
+            return new \Inilim\SqliteParser\Ast\Statement\AttachStatement(
+                expression: $expression,
+                schemaName: $schemaName,
+            );
+    }
+
+    private static function reduceDetachStatement(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        $children = \is_array($children) ? $children : [$children];
+
+            $schemaName = '';
+            foreach ($children as $child) {
+                if ($child instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+                    $schemaName = $child->value;
+                    break;
+                }
+            }
+
+            return new \Inilim\SqliteParser\Ast\Statement\DetachStatement($schemaName);
+    }
+
+    private static function reduceTransactionStatement(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        $children = \is_array($children) ? $children : [$children];
+
+            $flat = [];
+            $collect = static function ($items) use (&$collect, &$flat): void {
+                foreach ($items as $item) {
+                    if (\is_array($item)) {
+                        $collect($item);
+                    } else {
+                        $flat[] = $item;
+                    }
+                }
+            };
+            $collect($children);
+
+            $type        = '';
+            $mode        = '';
+            $name        = null;
+            $toSavepoint = false;
+
+            foreach ($flat as $item) {
+                if (!$item instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+                    continue;
+                }
+                $u = \strtoupper((string) $item->value);
+
+                if (\in_array($u, ['BEGIN', 'COMMIT', 'END', 'ROLLBACK'], true)) {
+                    if ($type === '') {
+                        $type = $u;
+                    }
+                    continue;
+                }
+                if (\in_array($u, ['DEFERRED', 'IMMEDIATE', 'EXCLUSIVE'], true)) {
+                    $mode = $u;
+                    continue;
+                }
+                if ($u === 'TO') {
+                    $toSavepoint = true;
+                    continue;
+                }
+                if ($u === 'TRANSACTION' || $u === 'SAVEPOINT') {
+                    continue;
+                }
+                if ($name === null) {
+                    $name = (string) $item->value;
+                }
+            }
+
+            return new \Inilim\SqliteParser\Ast\Statement\TransactionStatement(
+                type: $type,
+                mode: $mode,
+                name: $name,
+                toSavepoint: $toSavepoint,
+            );
+    }
+
+    private static function reduceSavepointStatement(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        $children = \is_array($children) ? $children : [$children];
+
+            $type = '';
+            $name = '';
+
+            foreach ($children as $child) {
+                if (!$child instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+                    continue;
+                }
+                $u = \strtoupper((string) $child->value);
+                if ($u === 'SAVEPOINT' || $u === 'RELEASE') {
+                    $type = $u;
+                    continue;
+                }
+                $name = (string) $child->value;
+            }
+
+            return new \Inilim\SqliteParser\Ast\Statement\SavepointStatement($type, $name);
+    }
+
+    private static function reduceExplainStatement(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        $children = \is_array($children) ? $children : [$children];
+
+            $statement = null;
+            $queryPlan = false;
+
+            foreach ($children as $child) {
+                if ($child instanceof \Inilim\SqliteParser\Ast\Statement) {
+                    $statement = $child;
+                    continue;
+                }
+                if ($child instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+                    $u = \strtoupper((string) $child->value);
+                    if ($u === 'QUERY' || $u === 'PLAN') {
+                        $queryPlan = true;
+                    }
+                }
+            }
+
+            if (!$statement instanceof \Inilim\SqliteParser\Ast\Statement) {
+                throw new \LogicException('EXPLAIN without statement');
+            }
+
+            return new \Inilim\SqliteParser\Ast\Statement\ExplainStatement(
+                statement: $statement,
+                queryPlan: $queryPlan,
+            );
     }
 }
