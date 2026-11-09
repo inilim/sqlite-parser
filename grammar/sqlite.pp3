@@ -214,11 +214,6 @@ Script
     -> {
         // Альтернатива <T_SEMICOLON> — одиночная `;` даёт пустую инструкцию.
         // Альтернатива StatementList()? — либо список инструкций, либо пусто.
-        //
-        // $children:
-        //   - Token  — когда сработала первая альтернатива `<T_SEMICOLON>`;
-        //   - array  — когда `StatementList()` вернул непустой список;
-        //   - null   — когда `StatementList()?` совпал по нулю (пустой ввод).
         if ($children === null) {
             return new \Inilim\SqliteParser\Ast\Script([]);
         }
@@ -237,8 +232,6 @@ Script
 
 StatementList
     -> {
-        // $children может прийти массивом [first, rest, trailingSemicolon]
-        // либо (из-за phplrt unwrap) одиночным значением — оборачиваем.
         $children = \is_array($children) ? $children : [$children];
 
         $flat = [];
@@ -267,18 +260,23 @@ Statement
 
 SelectStatement
     -> {
-        // phplrt может "схлопнуть" конкатенацию с единственным значимым
-        // ребёнком — поэтому $children[0] иногда приходит как одиночный
-        // ResultColumn (когда FromClause()? WhereClause()? и т.д. все null).
         $children = \is_array($children) ? $children : [$children];
 
-        $columns_raw = $children[0] ?? [];
+        // Columns: максимально безопасный сбор ResultColumn из $children[0].
+        // phplrt может передать:
+        //   - ResultColumn (unwrap при одной колонке),
+        //   - [ResultColumn, ResultColumn, ...] (обычный массив),
+        //   - [[ResultColumn, ResultColumn, ...]] (двойная обёртка).
+        $columns = [];
+        $columns_raw = $children[0] ?? null;
         if ($columns_raw instanceof \Inilim\SqliteParser\Ast\Statement\ResultColumn) {
             $columns = [$columns_raw];
         } elseif (\is_array($columns_raw)) {
-            $columns = $columns_raw;
-        } else {
-            $columns = [];
+            \array_walk_recursive($columns_raw, static function ($item) use (&$columns): void {
+                if ($item instanceof \Inilim\SqliteParser\Ast\Statement\ResultColumn) {
+                    $columns[] = $item;
+                }
+            });
         }
 
         $from_raw    = $children[1] ?? null;
@@ -286,10 +284,20 @@ SelectStatement
         $orderBy_raw = $children[3] ?? null;
         $limit_raw   = $children[4] ?? null;
 
-        $from    = $from_raw instanceof \Inilim\SqliteParser\Ast\Statement\TableReference ? $from_raw : null;
-        $where   = $where_raw instanceof \Inilim\SqliteParser\Ast\Expression ? $where_raw : null;
-        $orderBy = \is_array($orderBy_raw) ? $orderBy_raw : null;
-        $limit   = \is_array($limit_raw) ? $limit_raw : null;
+        $from  = $from_raw instanceof \Inilim\SqliteParser\Ast\Statement\TableReference ? $from_raw : null;
+        $where = $where_raw instanceof \Inilim\SqliteParser\Ast\Expression ? $where_raw : null;
+
+        $orderBy = null;
+        if (\is_array($orderBy_raw)) {
+            $orderBy = [];
+            \array_walk_recursive($orderBy_raw, static function ($item) use (&$orderBy): void {
+                if ($item instanceof \Inilim\SqliteParser\Ast\Statement\OrderBy) {
+                    $orderBy[] = $item;
+                }
+            });
+        }
+
+        $limit = \is_array($limit_raw) && isset($limit_raw['limit']) ? $limit_raw : null;
 
         return new \Inilim\SqliteParser\Ast\Statement\SelectStatement(
             columns: $columns,
@@ -302,20 +310,35 @@ SelectStatement
     : ::T_SELECT:: SelectList() FromClause()? WhereClause()? OrderByClause()? LimitClause()?
     ;
 
+// SelectList построен через ПРАВУЮ рекурсию (ResultColumn() (::T_COMMA:: SelectList())?).
+// Это позволяет unwrap-логике phplrt корректно отдавать вложенные RC без
+// потери элементов при unwrap-е repetition.
 SelectList
     -> {
+        // $children = [first] | [first, rest], где rest — либо массив RC,
+        // либо одиночный RC (unwrap), либо null.
         $children = \is_array($children) ? $children : [$children];
+        $first = $children[0] ?? null;
+        $rest = $children[1] ?? null;
 
-        $flat = [];
-        \array_walk_recursive($children, static function ($item) use (&$flat): void {
-            if ($item instanceof \Inilim\SqliteParser\Ast\Statement\ResultColumn) {
-                $flat[] = $item;
-            }
-        });
+        $list = [];
+        if ($first instanceof \Inilim\SqliteParser\Ast\Statement\ResultColumn) {
+            $list[] = $first;
+        }
 
-        return $flat;
+        if ($rest instanceof \Inilim\SqliteParser\Ast\Statement\ResultColumn) {
+            $list[] = $rest;
+        } elseif (\is_array($rest)) {
+            \array_walk_recursive($rest, static function ($item) use (&$list): void {
+                if ($item instanceof \Inilim\SqliteParser\Ast\Statement\ResultColumn) {
+                    $list[] = $item;
+                }
+            });
+        }
+
+        return $list;
     }
-    : ResultColumn() (::T_COMMA:: ResultColumn())*
+    : ResultColumn() (::T_COMMA:: SelectList())?
     ;
 
 ResultColumn
@@ -421,7 +444,7 @@ Expression
 
 Comparison
     -> {
-        // phplrt может вернуть структуру повторения в двух формах:
+        // phplrt может вернуть структуру повторения в нескольких формах:
         //   nested: [left, [[op1, primary1], [op2, primary2], ...]]
         //   flat:   [left, op1, primary1, op2, primary2, ...]
         //   flat-inner (1 итерация): [left, [op, primary]]
@@ -432,7 +455,6 @@ Comparison
         $rest = $children[1] ?? [];
 
         if (\is_string($rest)) {
-            // Полностью "плоская" форма: [left, op, primary, op, primary, ...]
             $items = \array_slice($children, 1);
             for ($i = 0; $i + 1 < \count($items); $i += 2) {
                 $op = $items[$i];
@@ -444,7 +466,6 @@ Comparison
         } elseif (\is_array($rest)) {
             $isFlat = !empty($rest) && \is_string($rest[0] ?? null);
             if ($isFlat) {
-                // Плоская форма: [op1, primary1, op2, primary2, ...]
                 for ($i = 0; $i + 1 < \count($rest); $i += 2) {
                     $op = $rest[$i];
                     $right = $rest[$i + 1];
@@ -453,7 +474,6 @@ Comparison
                     }
                 }
             } else {
-                // Вложенная форма: [[op1, primary1], [op2, primary2], ...]
                 foreach ($rest as $pair) {
                     if (\is_array($pair) && \count($pair) >= 2 && \is_string($pair[0])) {
                         $left = new \Inilim\SqliteParser\Ast\Expression\BinaryOperation($pair[0], $left, $pair[1]);
