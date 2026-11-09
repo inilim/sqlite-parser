@@ -300,49 +300,59 @@ tests/
 
 ---
 
-### Этап 6 — DML: INSERT / UPDATE / DELETE / UPSERT (1–2 дня)
+### Этап 6 — DML: INSERT / UPDATE / DELETE / UPSERT (1–2 дня) ✅ ВЫПОЛНЕНО
 
 **Цель:** модификация данных.
 
-- [ ] `INSERT [OR REPLACE|IGNORE|ABORT|FAIL|ROLLBACK] INTO tbl [(cols)] VALUES (...),(...)
+- [x] `INSERT [OR REPLACE|IGNORE|ABORT|FAIL|ROLLBACK] INTO tbl [(cols)] VALUES (...),(...)
   | SELECT ... | DEFAULT VALUES`
-- [ ] `INSERT ... ON CONFLICT (...) DO UPDATE SET ... [WHERE ...]`
+- [x] `INSERT ... ON CONFLICT (...) DO UPDATE SET ... [WHERE ...]`
   (и `DO NOTHING`).
-- [ ] `UPDATE [OR ...] tbl SET col = expr, ... [WHERE ...] [RETURNING ...]`
-- [ ] `DELETE FROM tbl [WHERE ...] [RETURNING ...]`
-- [ ] AST: `InsertStatement`, `UpdateStatement`, `DeleteStatement`, `UpsertClause`,
-  `ReturningClause`, `Assignment`.
+- [x] `UPDATE [OR ...] tbl SET col = expr, ... [WHERE ...] [RETURNING ...]`
+- [x] `DELETE FROM tbl [WHERE ...] [RETURNING ...]`
+- [x] AST: `InsertStatement`, `UpdateStatement`, `DeleteStatement`, `UpsertClause`,
+  `ReturningClause`, `Assignment`, `AssignmentList`, `InsertValuesBody`,
+  `InsertDefaultBody`, `IdentListWrapper`.
 
 **Проверки:**
-- [ ] `INSERT INTO t (a, b) VALUES (1, 2)` → `InsertStatement`.
-- [ ] `INSERT INTO t VALUES (1) ON CONFLICT (a) DO NOTHING` → upsert-ветка.
-- [ ] `UPDATE t SET a = 1 WHERE b = 2 RETURNING a`.
+- [x] `INSERT INTO t (a, b) VALUES (1, 2)` → `InsertStatement`.
+- [x] `INSERT INTO t VALUES (1) ON CONFLICT (a) DO NOTHING` → upsert-ветка.
+- [x] `UPDATE t SET a = 1 WHERE b = 2 RETURNING a`.
+- [x] Тест `tests/Grammar/DmlTest.php` — зелёный.
 
 ---
 
-### Этап 7 — DDL: CREATE / ALTER / DROP (2 дня)
+### Этап 7 — DDL: CREATE / ALTER / DROP (2 дня) ✅ ВЫПОЛНЕНО
 
 **Цель:** описание схемы.
 
-- [ ] `CREATE TABLE [IF NOT EXISTS] tbl (column_defs..., table_constraints...)`
+- [x] `CREATE TABLE [IF NOT EXISTS] tbl (column_defs..., table_constraints...)`
   - `column_def`: `name type [PRIMARY KEY [AUTOINCREMENT]] [NOT NULL] [UNIQUE] [DEFAULT expr] [CHECK(...)] [REFERENCES ...]`
   - `table_constraint`: `PRIMARY KEY (...)`, `UNIQUE (...)`, `FOREIGN KEY (...) REFERENCES ...`,
     `CHECK (...)`
   - `CREATE TABLE ... AS SELECT ...`
   - `WITHOUT ROWID`, `STRICT`
-- [ ] `CREATE [UNIQUE] INDEX [IF NOT EXISTS] name ON tbl (cols) [WHERE ...]`
-- [ ] `CREATE [TEMP] VIEW [IF NOT EXISTS] name AS SELECT ...`
-- [ ] `CREATE TRIGGER ... BEFORE/AFTER/INSTEAD OF INSERT/UPDATE/DELETE ON tbl ...`
-- [ ] `ALTER TABLE tbl RENAME TO ... | ADD COLUMN ... | DROP COLUMN ... | RENAME COLUMN ... TO ...`
-- [ ] `DROP TABLE|INDEX|VIEW|TRIGGER [IF EXISTS] name`
-- [ ] AST: `CreateTableStatement`, `ColumnDefinition`, `TableConstraint`, `ForeignKeyClause`,
-  `CreateIndexStatement`, `CreateViewStatement`, `CreateTriggerStatement`,
-  `AlterTableStatement`, `DropStatement`.
+- [x] `CREATE [UNIQUE] INDEX [IF NOT EXISTS] name ON tbl (cols) [WHERE ...]`
+- [x] `CREATE [TEMP] VIEW [IF NOT EXISTS] name AS SELECT ...`
+- [x] `CREATE TRIGGER ... BEFORE/AFTER/INSTEAD OF INSERT/UPDATE/DELETE ON tbl ...`
+- [x] `ALTER TABLE tbl RENAME TO ... | ADD COLUMN ... | DROP COLUMN ... | RENAME COLUMN ... TO ...`
+- [x] `DROP TABLE|INDEX|VIEW|TRIGGER [IF EXISTS] name`
+- [x] AST: `CreateTableStatement`, `ColumnDefinition`, `ColumnConstraint`, `TableConstraint`,
+  `ForeignKeyClause`, `ForeignKeyAction`, `TableOptions`, `CreateIndexStatement`,
+  `CreateViewStatement`, `CreateTriggerStatement`, `TriggerBody`, `AlterTableStatement`,
+  `DropStatement`.
+- [x] Новые токены в `tokens.pp3`: `T_COLLATE`, `T_ASC`, `T_DESC`, `T_CASCADE`,
+  `T_RESTRICT`, `T_NO`, `T_ACTION`.
+- [x] Грамматика `grammar/ddl.pp3`, подключена в `grammar/sqlite.pp3`.
+- [x] `Statement` в `statement.pp3` расширен DDL-инструкциями.
 
-**Проверки:**
-- [ ] `CREATE TABLE t (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL)`.
-- [ ] `CREATE TABLE t (a INT, b INT, PRIMARY KEY (a, b))`.
-- [ ] `CREATE INDEX idx ON t (a, b) WHERE a > 0`.
+**Проверки (через `tests/Grammar/DdlTest.php`):**
+- [x] `CREATE TABLE t (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL)`.
+- [x] `CREATE TABLE t (a INT, b INT, PRIMARY KEY (a, b))`.
+- [x] `CREATE INDEX idx ON t (a, b) WHERE a > 0`.
+- [x] `CREATE VIEW v AS SELECT ...`.
+- [x] `ALTER TABLE t RENAME TO t_new`, `ADD COLUMN`, `DROP COLUMN`, `RENAME COLUMN`.
+- [x] `DROP TABLE|INDEX|VIEW|TRIGGER [IF EXISTS] name`.
 
 ---
 

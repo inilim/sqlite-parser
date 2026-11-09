@@ -47,7 +47,7 @@ StatementList
     ;
 
 // ----------------------------------------------------------------------------
-// Statement: SELECT, INSERT, UPDATE, DELETE.
+// Statement: SELECT, INSERT, UPDATE, DELETE, CREATE, ALTER, DROP.
 // ----------------------------------------------------------------------------
 
 Statement
@@ -55,4 +55,10 @@ Statement
     | InsertStatement()
     | UpdateStatement()
     | DeleteStatement()
+    | CreateTableStatement()
+    | CreateIndexStatement()
+    | CreateViewStatement()
+    | CreateTriggerStatement()
+    | AlterTableStatement()
+    | DropStatement()
     ;

@@ -1,0 +1,962 @@
+// ============================================================================
+// DDL: CREATE / ALTER / DROP
+//
+// Опирается на:
+//   - tokens.pp3      — T_CREATE, T_TABLE, T_INDEX, T_VIEW, T_TRIGGER,
+//                       T_ALTER, T_DROP, T_RENAME, T_ADD, T_COLUMN, T_TO,
+//                       T_PRIMARY, T_KEY, T_FOREIGN, T_REFERENCES, T_CHECK,
+//                       T_UNIQUE, T_AUTOINCREMENT, T_CONSTRAINT, T_IF,
+//                       T_TEMP, T_TEMPORARY, T_WITHOUT, T_ROWID, T_STRICT,
+//                       T_COLLATE, T_ASC, T_DESC, T_CASCADE, T_RESTRICT,
+//                       T_NO, T_ACTION, T_BEFORE, T_AFTER, T_INSTEAD, T_OF,
+//                       T_FOR, T_EACH, T_ROW, T_BEGIN, T_END
+//   - select.pp3      — SelectStatement, TableName, IdentList
+//   - expression.pp3  — Expression, Literal
+// ============================================================================
+
+// ----------------------------------------------------------------------------
+// CREATE TABLE
+// ----------------------------------------------------------------------------
+
+CreateTableStatement
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+
+        $table            = null;
+        $ifNotExists      = false;
+        $temporary        = false;
+        $columns          = [];
+        $tableConstraints = [];
+        $withoutRowid     = false;
+        $strict           = false;
+        $asSelect         = null;
+
+        $flat = [];
+        $collect = static function ($items) use (&$collect, &$flat): void {
+            foreach ($items as $item) {
+                if (\is_array($item)) {
+                    $collect($item);
+                } else {
+                    $flat[] = $item;
+                }
+            }
+        };
+        $collect($children);
+
+        foreach ($flat as $child) {
+            if ($child === 'TEMP' || $child === 'TEMPORARY') {
+                $temporary = true;
+                continue;
+            }
+            if ($child === 'IF_NOT_EXISTS') {
+                $ifNotExists = true;
+                continue;
+            }
+            if ($child instanceof \Inilim\SqliteParser\Ast\Statement\TableOptions) {
+                $withoutRowid = $child->withoutRowid;
+                $strict = $child->strict;
+                continue;
+            }
+            if ($child instanceof \Inilim\SqliteParser\Ast\Statement\ColumnDefinition) {
+                $columns[] = $child;
+                continue;
+            }
+            if ($child instanceof \Inilim\SqliteParser\Ast\Statement\TableConstraint) {
+                $tableConstraints[] = $child;
+                continue;
+            }
+            if ($child instanceof \Inilim\SqliteParser\Ast\Statement) {
+                $asSelect = $child;
+                continue;
+            }
+            if (\is_string($child) && $table === null) {
+                $table = $child;
+                continue;
+            }
+        }
+
+        return new \Inilim\SqliteParser\Ast\Statement\CreateTableStatement(
+            table: $table ?? '',
+            columns: $columns,
+            tableConstraints: $tableConstraints,
+            ifNotExists: $ifNotExists,
+            temporary: $temporary,
+            withoutRowid: $withoutRowid,
+            strict: $strict,
+            asSelect: $asSelect,
+        );
+    }
+    : ::T_CREATE:: TemporaryModifier()? ::T_TABLE:: IfNotExistsClause()? TableName()
+      (
+          ::T_LPAREN:: (TableItem() (::T_COMMA:: TableItem())*)? ::T_RPAREN:: TableOptions()?
+        | ::T_AS:: SelectStatement()
+      )
+    ;
+
+TemporaryModifier
+    -> {
+        return $children instanceof \Phplrt\Contracts\Lexer\TokenInterface
+            ? \strtoupper($children->value)
+            : 'TEMP';
+    }
+    : <T_TEMP>
+    | <T_TEMPORARY>
+    ;
+
+IfNotExistsClause
+    -> { return 'IF_NOT_EXISTS'; }
+    : ::T_IF:: ::T_NOT:: ::T_EXISTS::
+    ;
+
+IfExistsClause
+    -> { return 'IF_EXISTS'; }
+    : ::T_IF:: ::T_EXISTS::
+    ;
+
+TableOptions
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+
+        $withoutRowid = false;
+        $strict = false;
+
+        $flat = [];
+        $collect = static function ($items) use (&$collect, &$flat): void {
+            foreach ($items as $item) {
+                if (\is_array($item)) {
+                    $collect($item);
+                } else {
+                    $flat[] = $item;
+                }
+            }
+        };
+        $collect($children);
+
+        foreach ($flat as $item) {
+            if ($item instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+                $u = \strtoupper($item->value);
+                if ($u === 'WITHOUT') {
+                    $withoutRowid = true;
+                } elseif ($u === 'STRICT') {
+                    $strict = true;
+                }
+            }
+        }
+
+        return new \Inilim\SqliteParser\Ast\Statement\TableOptions($withoutRowid, $strict);
+    }
+    : (::T_WITHOUT:: ::T_ROWID::) (::T_COMMA:: ::T_STRICT::)?
+    | ::T_COMMA:: ::T_STRICT::
+    | ::T_STRICT::
+    ;
+
+TableItem
+    : TableConstraint()
+    | ColumnDefinition()
+    ;
+
+// ----------------------------------------------------------------------------
+// ColumnDefinition
+// ----------------------------------------------------------------------------
+
+ColumnDefinition
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+
+        $name        = null;
+        $type        = null;
+        $constraints = [];
+
+        $flat = [];
+        $collect = static function ($items) use (&$collect, &$flat): void {
+            foreach ($items as $item) {
+                if (\is_array($item)) {
+                    $collect($item);
+                } else {
+                    $flat[] = $item;
+                }
+            }
+        };
+        $collect($children);
+
+        foreach ($flat as $item) {
+            if ($item instanceof \Inilim\SqliteParser\Ast\Statement\ColumnConstraint) {
+                $constraints[] = $item;
+                continue;
+            }
+            if (\is_string($item)) {
+                if ($name === null) {
+                    $name = $item;
+                } elseif ($type === null) {
+                    $type = $item;
+                }
+                continue;
+            }
+        }
+
+        return new \Inilim\SqliteParser\Ast\Statement\ColumnDefinition(
+            name: $name ?? '',
+            type: $type,
+            constraints: $constraints,
+        );
+    }
+    : TableName() TypeName()? ColumnConstraint()*
+    ;
+
+TypeName
+    -> {
+        if ($children instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+            return $children->value;
+        }
+        if (\is_array($children)) {
+            foreach ($children as $child) {
+                if ($child instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+                    return $child->value;
+                }
+            }
+        }
+        return null;
+    }
+    : <T_IDENT> (::T_LPAREN:: <T_INT> (::T_COMMA:: <T_INT>)? ::T_RPAREN::)?
+    ;
+
+// ----------------------------------------------------------------------------
+// ColumnConstraint
+// ----------------------------------------------------------------------------
+
+ColumnConstraint
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+
+        $type           = '';
+        $expression     = null;
+        $value          = null;
+        $fk             = null;
+        $conflictAction = null;
+        $autoincrement  = false;
+        $asc            = null;
+
+        $flat = [];
+        $collect = static function ($items) use (&$collect, &$flat): void {
+            foreach ($items as $item) {
+                if (\is_array($item)) {
+                    $collect($item);
+                } else {
+                    $flat[] = $item;
+                }
+            }
+        };
+        $collect($children);
+
+        foreach ($flat as $item) {
+            if ($item instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+                $u = \strtoupper($item->value);
+                if ($u === 'PRIMARY') {
+                    $type = 'PRIMARY_KEY';
+                } elseif ($u === 'UNIQUE') {
+                    $type = 'UNIQUE';
+                } elseif ($u === 'CHECK') {
+                    $type = 'CHECK';
+                } elseif ($u === 'DEFAULT') {
+                    $type = 'DEFAULT';
+                } elseif ($u === 'COLLATE') {
+                    $type = 'COLLATE';
+                } elseif ($u === 'NOT') {
+                    $type = 'NOT_NULL';
+                } elseif ($u === 'AUTOINCREMENT') {
+                    $autoincrement = true;
+                } elseif ($u === 'ASC') {
+                    $asc = true;
+                } elseif ($u === 'DESC') {
+                    $asc = false;
+                } elseif ($type === 'COLLATE' && $value === null) {
+                    $value = $item->value;
+                }
+                continue;
+            }
+            if ($item instanceof \Inilim\SqliteParser\Ast\Expression) {
+                if ($type === 'CHECK' || $type === 'DEFAULT') {
+                    $expression = $item;
+                }
+                continue;
+            }
+            if ($item instanceof \Inilim\SqliteParser\Ast\Statement\ForeignKeyClause) {
+                $type = 'REFERENCES';
+                $fk = $item;
+                continue;
+            }
+            if (\is_string($item)) {
+                if ($item === 'ASC') {
+                    $asc = true;
+                } elseif ($item === 'DESC') {
+                    $asc = false;
+                } elseif ($item !== '') {
+                    $conflictAction = $item;
+                }
+                continue;
+            }
+        }
+
+        return new \Inilim\SqliteParser\Ast\Statement\ColumnConstraint(
+            type: $type,
+            expression: $expression,
+            value: $value,
+            foreignKey: $fk,
+            conflictAction: $conflictAction,
+            autoincrement: $autoincrement,
+            asc: $asc,
+        );
+    }
+    : ::T_PRIMARY:: ::T_KEY:: SortOrder()? ConflictClause()? ::T_AUTOINCREMENT::?
+    | ::T_NOT:: ::T_NULL:: ConflictClause()?
+    | ::T_UNIQUE:: ConflictClause()?
+    | ::T_CHECK:: ::T_LPAREN:: Expression() ::T_RPAREN::
+    | ::T_DEFAULT:: (::T_LPAREN:: Expression() ::T_RPAREN:: | Literal())
+    | ::T_COLLATE:: <T_IDENT>
+    | ReferencesClause()
+    ;
+
+SortOrder
+    -> {
+        return $children instanceof \Phplrt\Contracts\Lexer\TokenInterface
+            ? \strtoupper($children->value)
+            : '';
+    }
+    : <T_ASC>
+    | <T_DESC>
+    ;
+
+ConflictClause
+    -> {
+        return $children instanceof \Phplrt\Contracts\Lexer\TokenInterface
+            ? \strtoupper($children->value)
+            : '';
+    }
+    : ::T_ON:: ::T_CONFLICT:: (<T_ROLLBACK> | <T_ABORT> | <T_FAIL> | <T_IGNORE> | <T_REPLACE>)
+    ;
+
+ReferencesClause
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+
+        $table    = null;
+        $columns  = null;
+        $onDelete = null;
+        $onUpdate = null;
+
+        $flat = [];
+        $collect = static function ($items) use (&$collect, &$flat): void {
+            foreach ($items as $item) {
+                if (\is_array($item)) {
+                    $collect($item);
+                } else {
+                    $flat[] = $item;
+                }
+            }
+        };
+        $collect($children);
+
+        $tableSet = false;
+        foreach ($flat as $item) {
+            if ($item instanceof \Inilim\SqliteParser\Ast\Statement\IdentListWrapper) {
+                $columns = $item->items;
+                continue;
+            }
+            if ($item instanceof \Inilim\SqliteParser\Ast\Statement\ForeignKeyAction) {
+                if ($item->type === 'DELETE') {
+                    $onDelete = $item->action;
+                } elseif ($item->type === 'UPDATE') {
+                    $onUpdate = $item->action;
+                }
+                continue;
+            }
+            if (\is_string($item) && !$tableSet) {
+                $table = $item;
+                $tableSet = true;
+                continue;
+            }
+        }
+
+        return new \Inilim\SqliteParser\Ast\Statement\ForeignKeyClause(
+            table: $table ?? '',
+            columns: $columns,
+            onDelete: $onDelete,
+            onUpdate: $onUpdate,
+        );
+    }
+    : ::T_REFERENCES:: TableName() (::T_LPAREN:: IdentList() ::T_RPAREN::)? ForeignKeyAction()*
+    ;
+
+ForeignKeyAction
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+
+        $type   = '';
+        $action = '';
+
+        $flat = [];
+        $collect = static function ($items) use (&$collect, &$flat): void {
+            foreach ($items as $item) {
+                if (\is_array($item)) {
+                    $collect($item);
+                } else {
+                    $flat[] = $item;
+                }
+            }
+        };
+        $collect($children);
+
+        foreach ($flat as $item) {
+            if ($item instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+                $u = \strtoupper($item->value);
+                if ($u === 'DELETE' || $u === 'UPDATE') {
+                    $type = $u;
+                } elseif ($u === 'CASCADE') {
+                    $action = 'CASCADE';
+                } elseif ($u === 'RESTRICT') {
+                    $action = 'RESTRICT';
+                } elseif ($u === 'NULL') {
+                    $action = 'SET_NULL';
+                } elseif ($u === 'DEFAULT') {
+                    $action = 'SET_DEFAULT';
+                } elseif ($u === 'ACTION') {
+                    $action = 'NO_ACTION';
+                }
+            }
+        }
+
+        return new \Inilim\SqliteParser\Ast\Statement\ForeignKeyAction($type, $action);
+    }
+    : ::T_ON:: (::T_DELETE:: | ::T_UPDATE::)
+      (
+          ::T_CASCADE::
+        | ::T_RESTRICT::
+        | ::T_SET:: ::T_NULL::
+        | ::T_SET:: ::T_DEFAULT::
+        | ::T_NO:: ::T_ACTION::
+      )
+    ;
+
+// ----------------------------------------------------------------------------
+// TableConstraint
+// ----------------------------------------------------------------------------
+
+TableConstraint
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+
+        $name           = null;
+        $type           = '';
+        $columns        = null;
+        $expression     = null;
+        $fk             = null;
+        $conflictAction = null;
+        $expectName     = false;
+
+        $flat = [];
+        $collect = static function ($items) use (&$collect, &$flat): void {
+            foreach ($items as $item) {
+                if (\is_array($item)) {
+                    $collect($item);
+                } else {
+                    $flat[] = $item;
+                }
+            }
+        };
+        $collect($children);
+
+        foreach ($flat as $item) {
+            if ($item instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+                $u = \strtoupper($item->value);
+                if ($u === 'CONSTRAINT') {
+                    $expectName = true;
+                    continue;
+                }
+                if ($expectName) {
+                    $name = $item->value;
+                    $expectName = false;
+                    continue;
+                }
+                if ($u === 'PRIMARY') {
+                    $type = 'PRIMARY_KEY';
+                } elseif ($u === 'UNIQUE') {
+                    $type = 'UNIQUE';
+                } elseif ($u === 'CHECK') {
+                    $type = 'CHECK';
+                } elseif ($u === 'FOREIGN') {
+                    $type = 'FOREIGN_KEY';
+                }
+                continue;
+            }
+            if ($item instanceof \Inilim\SqliteParser\Ast\Statement\IdentListWrapper) {
+                $columns = $item->items;
+                continue;
+            }
+            if ($item instanceof \Inilim\SqliteParser\Ast\Expression) {
+                if ($type === 'CHECK') {
+                    $expression = $item;
+                }
+                continue;
+            }
+            if ($item instanceof \Inilim\SqliteParser\Ast\Statement\ForeignKeyClause) {
+                $fk = $item;
+                continue;
+            }
+            if (\is_string($item) && $item !== '') {
+                $conflictAction = $item;
+                continue;
+            }
+        }
+
+        return new \Inilim\SqliteParser\Ast\Statement\TableConstraint(
+            type: $type,
+            name: $name,
+            columns: $columns,
+            expression: $expression,
+            foreignKey: $fk,
+            conflictAction: $conflictAction,
+        );
+    }
+    : (::T_CONSTRAINT:: <T_IDENT>)?
+      (
+          ::T_PRIMARY:: ::T_KEY:: ::T_LPAREN:: IdentList() ::T_RPAREN:: ConflictClause()?
+        | ::T_UNIQUE:: ::T_LPAREN:: IdentList() ::T_RPAREN:: ConflictClause()?
+        | ::T_CHECK:: ::T_LPAREN:: Expression() ::T_RPAREN::
+        | ::T_FOREIGN:: ::T_KEY:: ::T_LPAREN:: IdentList() ::T_RPAREN:: ReferencesClause()
+      )
+    ;
+
+// ----------------------------------------------------------------------------
+// CREATE INDEX
+// ----------------------------------------------------------------------------
+
+CreateIndexStatement
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+
+        $name        = '';
+        $table       = '';
+        $columns     = [];
+        $unique      = false;
+        $ifNotExists = false;
+        $where       = null;
+
+        $flat = [];
+        $collect = static function ($items) use (&$collect, &$flat): void {
+            foreach ($items as $item) {
+                if (\is_array($item)) {
+                    $collect($item);
+                } else {
+                    $flat[] = $item;
+                }
+            }
+        };
+        $collect($children);
+
+        $nameSet = false;
+        foreach ($flat as $item) {
+            if ($item instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+                $u = \strtoupper($item->value);
+                if ($u === 'UNIQUE') {
+                    $unique = true;
+                }
+                continue;
+            }
+            if ($item === 'IF_NOT_EXISTS') {
+                $ifNotExists = true;
+                continue;
+            }
+            if ($item instanceof \Inilim\SqliteParser\Ast\Statement\IdentListWrapper) {
+                $columns = $item->items;
+                continue;
+            }
+            if ($item instanceof \Inilim\SqliteParser\Ast\Expression) {
+                $where = $item;
+                continue;
+            }
+            if (\is_string($item)) {
+                if (!$nameSet) {
+                    $name = $item;
+                    $nameSet = true;
+                } else {
+                    $table = $item;
+                }
+                continue;
+            }
+        }
+
+        return new \Inilim\SqliteParser\Ast\Statement\CreateIndexStatement(
+            name: $name,
+            table: $table,
+            columns: $columns,
+            unique: $unique,
+            ifNotExists: $ifNotExists,
+            where: $where,
+        );
+    }
+    : ::T_CREATE:: (::T_UNIQUE::)? ::T_INDEX:: IfNotExistsClause()? TableName()
+      ::T_ON:: TableName()
+      ::T_LPAREN:: IdentList() ::T_RPAREN::
+      (::T_WHERE:: Expression())?
+    ;
+
+// ----------------------------------------------------------------------------
+// CREATE VIEW
+// ----------------------------------------------------------------------------
+
+CreateViewStatement
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+
+        $name        = '';
+        $select      = null;
+        $ifNotExists = false;
+        $temporary   = false;
+        $columns     = null;
+
+        $flat = [];
+        $collect = static function ($items) use (&$collect, &$flat): void {
+            foreach ($items as $item) {
+                if (\is_array($item)) {
+                    $collect($item);
+                } else {
+                    $flat[] = $item;
+                }
+            }
+        };
+        $collect($children);
+
+        $nameSet = false;
+        foreach ($flat as $item) {
+            if ($item === 'TEMP' || $item === 'TEMPORARY') {
+                $temporary = true;
+                continue;
+            }
+            if ($item === 'IF_NOT_EXISTS') {
+                $ifNotExists = true;
+                continue;
+            }
+            if ($item instanceof \Inilim\SqliteParser\Ast\Statement) {
+                $select = $item;
+                continue;
+            }
+            if ($item instanceof \Inilim\SqliteParser\Ast\Statement\IdentListWrapper) {
+                $columns = $item->items;
+                continue;
+            }
+            if (\is_string($item) && !$nameSet) {
+                $name = $item;
+                $nameSet = true;
+                continue;
+            }
+        }
+
+        if ($select === null) {
+            throw new \LogicException('CREATE VIEW without SELECT');
+        }
+
+        return new \Inilim\SqliteParser\Ast\Statement\CreateViewStatement(
+            name: $name,
+            select: $select,
+            ifNotExists: $ifNotExists,
+            temporary: $temporary,
+            columns: $columns,
+        );
+    }
+    : ::T_CREATE:: TemporaryModifier()? ::T_VIEW:: IfNotExistsClause()? TableName()
+      (::T_LPAREN:: IdentList() ::T_RPAREN::)?
+      ::T_AS:: SelectStatement()
+    ;
+
+// ----------------------------------------------------------------------------
+// CREATE TRIGGER
+// ----------------------------------------------------------------------------
+
+CreateTriggerStatement
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+
+        $name        = '';
+        $event       = '';
+        $table       = '';
+        $timing      = 'BEFORE';
+        $updateOf    = [];
+        $forEachRow  = false;
+        $when        = null;
+        $statements  = [];
+        $ifNotExists = false;
+        $temporary   = false;
+
+        $flat = [];
+        $collect = static function ($items) use (&$collect, &$flat): void {
+            foreach ($items as $item) {
+                if (\is_array($item)) {
+                    $collect($item);
+                } else {
+                    $flat[] = $item;
+                }
+            }
+        };
+        $collect($children);
+
+        $nameSet = false;
+        $tableSet = false;
+        foreach ($flat as $item) {
+            if ($item === 'TEMP' || $item === 'TEMPORARY') {
+                $temporary = true;
+                continue;
+            }
+            if ($item === 'IF_NOT_EXISTS') {
+                $ifNotExists = true;
+                continue;
+            }
+            if ($item === 'BEFORE' || $item === 'AFTER' || $item === 'INSTEAD') {
+                $timing = $item;
+                continue;
+            }
+            if ($item === 'INSERT' || $item === 'DELETE') {
+                $event = $item;
+                continue;
+            }
+            if ($item === 'UPDATE') {
+                $event = 'UPDATE';
+                continue;
+            }
+            if ($item === 'FOR_EACH_ROW') {
+                $forEachRow = true;
+                continue;
+            }
+            if ($item instanceof \Inilim\SqliteParser\Ast\Statement\IdentListWrapper) {
+                $updateOf = $item->items;
+                continue;
+            }
+            if ($item instanceof \Inilim\SqliteParser\Ast\Expression) {
+                $when = $item;
+                continue;
+            }
+            if ($item instanceof \Inilim\SqliteParser\Ast\Statement\TriggerBody) {
+                $statements = $item->statements;
+                continue;
+            }
+            if (\is_string($item)) {
+                if (!$nameSet) {
+                    $name = $item;
+                    $nameSet = true;
+                    continue;
+                }
+                if (!$tableSet) {
+                    $table = $item;
+                    $tableSet = true;
+                    continue;
+                }
+                continue;
+            }
+        }
+
+        return new \Inilim\SqliteParser\Ast\Statement\CreateTriggerStatement(
+            name: $name,
+            event: $event,
+            table: $table,
+            timing: $timing,
+            updateOf: $updateOf,
+            forEachRow: $forEachRow,
+            when: $when,
+            statements: $statements,
+            ifNotExists: $ifNotExists,
+            temporary: $temporary,
+        );
+    }
+    : ::T_CREATE:: TemporaryModifier()? ::T_TRIGGER:: IfNotExistsClause()? TableName()
+      (::T_BEFORE:: | ::T_AFTER:: | ::T_INSTEAD:: ::T_OF::)?
+      TriggerEvent()
+      ::T_ON:: TableName()
+      (::T_FOR:: ::T_EACH:: ::T_ROW::)?
+      (::T_WHEN:: Expression())?
+      TriggerBody()
+    ;
+
+TriggerEvent
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+        $event = '';
+        $updateOf = [];
+        $collect = static function ($items) use (&$collect, &$event, &$updateOf): void {
+            foreach ($items as $item) {
+                if (\is_array($item)) { $collect($item); continue; }
+                if ($item instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+                    $u = \strtoupper($item->value);
+                    if ($u === 'INSERT' || $u === 'UPDATE' || $u === 'DELETE') {
+                        $event = $u;
+                    }
+                } elseif ($item instanceof \Inilim\SqliteParser\Ast\Statement\IdentListWrapper) {
+                    $updateOf = $item->items;
+                }
+            }
+        };
+        $collect($children);
+        return ['event' => $event, 'updateOf' => $updateOf];
+    }
+    : ::T_INSERT::
+    | ::T_UPDATE:: (::T_OF:: IdentList())?
+    | ::T_DELETE::
+    ;
+
+TriggerBody
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+        $statements = [];
+        $collect = static function ($items) use (&$collect, &$statements): void {
+            foreach ($items as $item) {
+                if (\is_array($item)) { $collect($item); continue; }
+                if ($item instanceof \Inilim\SqliteParser\Ast\Statement) {
+                    $statements[] = $item;
+                }
+            }
+        };
+        $collect($children);
+        return new \Inilim\SqliteParser\Ast\Statement\TriggerBody($statements);
+    }
+    : ::T_BEGIN:: Statement() (::T_SEMICOLON:: Statement())* ::T_SEMICOLON:: ::T_END::
+    ;
+
+// ----------------------------------------------------------------------------
+// ALTER TABLE
+// ----------------------------------------------------------------------------
+
+AlterTableStatement
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+
+        $table     = '';
+        $tableSet  = false;
+        $action    = '';
+        $oldName   = null;
+        $newName   = null;
+        $column    = null;
+        $idents    = [];
+        $sawTo     = false;
+        $sawColumn = false;
+
+        $flat = [];
+        $collect = static function ($items) use (&$collect, &$flat): void {
+            foreach ($items as $item) {
+                if (\is_array($item)) {
+                    $collect($item);
+                } else {
+                    $flat[] = $item;
+                }
+            }
+        };
+        $collect($children);
+
+        foreach ($flat as $item) {
+            if ($item instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+                $u = \strtoupper($item->value);
+                if ($u === 'RENAME') {
+                    $action = 'RENAME';
+                } elseif ($u === 'ADD') {
+                    $action = 'ADD_COLUMN';
+                } elseif ($u === 'DROP') {
+                    $action = 'DROP_COLUMN';
+                } elseif ($u === 'COLUMN') {
+                    $sawColumn = true;
+                } elseif ($u === 'TO') {
+                    $sawTo = true;
+                }
+                continue;
+            }
+            if ($item instanceof \Inilim\SqliteParser\Ast\Statement\ColumnDefinition) {
+                $column = $item;
+                continue;
+            }
+            if (\is_string($item)) {
+                if (!$tableSet) {
+                    $table = $item;
+                    $tableSet = true;
+                } else {
+                    $idents[] = $item;
+                }
+                continue;
+            }
+        }
+
+        if ($action === 'RENAME') {
+            if ($sawTo && \count($idents) === 1) {
+                $action = 'RENAME_TO';
+                $newName = $idents[0];
+            } elseif (\count($idents) >= 2) {
+                $action = 'RENAME_COLUMN';
+                $oldName = $idents[0];
+                $newName = $idents[1];
+            } elseif (\count($idents) === 1) {
+                $action = 'RENAME_TO';
+                $newName = $idents[0];
+            }
+        } elseif ($action === 'DROP_COLUMN') {
+            $oldName = $idents[0] ?? null;
+        }
+
+        return new \Inilim\SqliteParser\Ast\Statement\AlterTableStatement(
+            table: $table,
+            action: $action,
+            oldName: $oldName,
+            newName: $newName,
+            column: $column,
+        );
+    }
+    : ::T_ALTER:: ::T_TABLE:: TableName()
+      (
+          ::T_RENAME:: ::T_TO:: TableName()
+        | ::T_RENAME:: (::T_COLUMN::)? TableName() ::T_TO:: TableName()
+        | ::T_ADD:: (::T_COLUMN::)? ColumnDefinition()
+        | ::T_DROP:: (::T_COLUMN::)? TableName()
+      )
+    ;
+
+// ----------------------------------------------------------------------------
+// DROP
+// ----------------------------------------------------------------------------
+
+DropStatement
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+
+        $type     = '';
+        $name     = '';
+        $ifExists = false;
+
+        $flat = [];
+        $collect = static function ($items) use (&$collect, &$flat): void {
+            foreach ($items as $item) {
+                if (\is_array($item)) {
+                    $collect($item);
+                } else {
+                    $flat[] = $item;
+                }
+            }
+        };
+        $collect($children);
+
+        foreach ($flat as $item) {
+            if ($item instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+                $u = \strtoupper($item->value);
+                if ($u === 'TABLE' || $u === 'INDEX' || $u === 'VIEW' || $u === 'TRIGGER') {
+                    $type = $u;
+                }
+                continue;
+            }
+            if ($item === 'IF_EXISTS') {
+                $ifExists = true;
+                continue;
+            }
+            if (\is_string($item) && $name === '') {
+                $name = $item;
+                continue;
+            }
+        }
+
+        return new \Inilim\SqliteParser\Ast\Statement\DropStatement($type, $name, $ifExists);
+    }
+    : ::T_DROP:: (::T_TABLE:: | ::T_INDEX:: | ::T_VIEW:: | ::T_TRIGGER::)
+      IfExistsClause()? TableName()
+    ;

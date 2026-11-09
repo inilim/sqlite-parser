@@ -139,6 +139,13 @@
 %token T_AFTER (?i)AFTER\b
 %token T_INSTEAD (?i)INSTEAD\b
 %token T_OF (?i)OF\b
+%token T_COLLATE (?i)COLLATE\b
+%token T_ASC (?i)ASC\b
+%token T_DESC (?i)DESC\b
+%token T_CASCADE (?i)CASCADE\b
+%token T_RESTRICT (?i)RESTRICT\b
+%token T_NO (?i)NO\b
+%token T_ACTION (?i)ACTION\b
 
 // ----------------------------------------------------------------------------
 // Литералы

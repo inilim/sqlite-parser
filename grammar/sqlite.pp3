@@ -11,6 +11,7 @@
 //   select.pp3      — SELECT, FROM, JOIN, WITH, WHERE, GROUP BY, ORDER BY, LIMIT
 //   expression.pp3  — выражения, приоритеты, функции, CAST, CASE, литералы
 //   dml.pp3         — INSERT / UPDATE / DELETE / UPSERT
+//   ddl.pp3         — CREATE / ALTER / DROP
 //
 // Порядок включения важен только для лексера: токены объявляются первыми,
 // чтобы многосимвольные операторы и ключевые слова выигрывали у T_IDENT.
@@ -21,3 +22,4 @@
 %include select.pp3
 %include expression.pp3
 %include dml.pp3
+%include ddl.pp3
