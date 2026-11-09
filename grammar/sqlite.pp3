@@ -139,7 +139,7 @@
 
 %token T_CONCAT /\|\|/
 %token T_LSHIFT /<</
-%token T_RSHIFT />>/
+%token T_RSHIFT />/
 %token T_LTE /<=/
 %token T_GTE />=/
 %token T_NEQ /<>|!=/
@@ -177,10 +177,9 @@
 // редуктор правила.
 // ============================================================================
 
-Statement
-    -> { return new \Inilim\SqliteParser\Ast\Statement\EmptyStatement(); }
-    : ::T_IDENT::
-    ;
+// ----------------------------------------------------------------------------
+// Точка входа: Script
+// ----------------------------------------------------------------------------
 
 Script
     -> {
@@ -209,11 +208,73 @@ Script
 
 StatementList
     -> {
-        // $children = [first, rest], где `rest` — массив итераций
-        // `(::T_SEMICOLON:: Statement())*`. В зависимости от того, как
-        // phplrt оборачивает итерацию с discard-токеном, элементы `rest`
-        // могут быть как одиночными Statement, так и массивами [Statement].
-        // Поэтому разворачиваем рекурсивно — итог всегда list<Statement>.
+        // $children = [first, rest, trailingSemicolon], где `rest` — массив
+        // итераций `(::T_SEMICOLON:: Statement())*`, а `trailingSemicolon` —
+        // результат опционального `(::T_SEMICOLON::)?` в конце (Token или null).
+        //
+        // Собираем только объекты Statement — токены `;` отбрасываем.
+        $flat = [];
+        \array_walk_recursive($children, static function ($item) use (&$flat): void {
+            if ($item instanceof \Inilim\SqliteParser\Ast\Statement) {
+                $flat[] = $item;
+            }
+        });
+
+        return $flat;
+    }
+    : Statement() (::T_SEMICOLON:: Statement())* (::T_SEMICOLON::)?
+    ;
+
+// ----------------------------------------------------------------------------
+// Statement: на этапе 3 — только SELECT.
+// ----------------------------------------------------------------------------
+
+Statement
+    : SelectStatement()
+    ;
+
+// ----------------------------------------------------------------------------
+// SELECT (MVP, этап 3)
+//
+//   SelectStatement : T_SELECT SelectList FromClause? WhereClause?
+//                     OrderByClause? LimitClause?
+//   SelectList      : ResultColumn (',' ResultColumn)*
+//   ResultColumn    : Expression ('AS' IDENT)? | '*'
+//   FromClause      : 'FROM' TableReference
+//   TableReference  : TableName ('AS' IDENT)?
+//   TableName       : IDENT | QUOTED_IDENT
+//   WhereClause     : 'WHERE' Expression
+//   OrderByClause   : 'ORDER' 'BY' OrderByItem (',' OrderByItem)*
+//   LimitClause     : 'LIMIT' INT ('OFFSET' INT)?
+// ----------------------------------------------------------------------------
+
+SelectStatement
+    -> {
+        // $children = [SelectList(array), FromClause|null, WhereClause|null,
+        //              OrderByClause|null, LimitClause|null]
+        $children = \is_array($children) ? $children : [$children];
+
+        $columns  = $children[0] ?? [];
+        $from     = $children[1] ?? null;
+        $where    = $children[2] ?? null;
+        $orderBy  = $children[3] ?? null;
+        $limit    = $children[4] ?? null;
+
+        return new \Inilim\SqliteParser\Ast\Statement\SelectStatement(
+            columns: $columns,
+            from: $from,
+            where: $where,
+            orderBy: $orderBy,
+            limit: $limit,
+        );
+    }
+    : ::T_SELECT:: SelectList() FromClause()? WhereClause()? OrderByClause()? LimitClause()?
+    ;
+
+SelectList
+    -> {
+        // $children = [ResultColumn, [ResultColumn, ResultColumn, ...]]
+        // Разворачиваем в плоский list<ResultColumn>.
         $flat = [];
         \array_walk_recursive($children, static function ($item) use (&$flat): void {
             $flat[] = $item;
@@ -221,5 +282,165 @@ StatementList
 
         return $flat;
     }
-    : Statement() (::T_SEMICOLON:: Statement())*
+    : ResultColumn() (::T_COMMA:: ResultColumn())*
+    ;
+
+ResultColumn
+    -> {
+        // Альтернатива <T_STAR> — одиночный Token.
+        if ($children instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+            return new \Inilim\SqliteParser\Ast\Statement\ResultColumn(
+                new \Inilim\SqliteParser\Ast\Expression\Star(),
+                null,
+            );
+        }
+
+        // Альтернатива Expression() (::T_AS:: <T_IDENT>)? — массив [Expression]
+        // или [Expression, Token(alias)].
+        $expression = $children[0];
+        $alias = null;
+        if (isset($children[1]) && $children[1] instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+            $alias = $children[1]->value;
+        }
+
+        return new \Inilim\SqliteParser\Ast\Statement\ResultColumn($expression, $alias);
+    }
+    : Expression() (::T_AS:: <T_IDENT>)?
+    | <T_STAR>
+    ;
+
+FromClause
+    : ::T_FROM:: TableReference()
+    ;
+
+TableReference
+    -> {
+        // $children = [name(string), aliasToken|null]
+        $name = $children[0];
+        $alias = null;
+        if (isset($children[1]) && $children[1] instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+            $alias = $children[1]->value;
+        }
+
+        return new \Inilim\SqliteParser\Ast\Statement\TableReference($name, $alias);
+    }
+    : TableName() (::T_AS:: <T_IDENT>)?
+    ;
+
+TableName
+    -> { return $children->value; }
+    : <T_IDENT>
+    | <T_QUOTED_IDENT>
+    ;
+
+WhereClause
+    : ::T_WHERE:: Expression()
+    ;
+
+OrderByClause
+    -> {
+        // $children = [OrderByItem, [OrderByItem, ...]]
+        $flat = [];
+        \array_walk_recursive($children, static function ($item) use (&$flat): void {
+            $flat[] = $item;
+        });
+
+        return $flat;
+    }
+    : ::T_ORDER:: ::T_BY:: OrderByItem() (::T_COMMA:: OrderByItem())*
+    ;
+
+OrderByItem
+    -> { return new \Inilim\SqliteParser\Ast\Statement\OrderBy($children); }
+    : Expression()
+    ;
+
+LimitClause
+    -> {
+        // $children = [Token(INT limit), Token(INT offset)|null]
+        $limit = (int) $children[0]->value;
+        $offset = null;
+        if (isset($children[1]) && $children[1] instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+            $offset = (int) $children[1]->value;
+        }
+
+        return ['limit' => $limit, 'offset' => $offset];
+    }
+    : ::T_LIMIT:: <T_INT> (::T_OFFSET:: <T_INT>)?
+    ;
+
+// ----------------------------------------------------------------------------
+// Выражения (MVP, этап 3 — минимум для тестов SELECT)
+//
+//   Expression : Primary (CompareOp Primary)*
+//   Primary    : Literal | ColumnReference
+// ----------------------------------------------------------------------------
+
+Expression
+    : Comparison()
+    ;
+
+Comparison
+    -> {
+        // $children = [leftPrimary, [[op, primary], [op, primary], ...]]
+        $left = $children[0];
+        $rest = $children[1] ?? [];
+
+        foreach ($rest as $pair) {
+            $op = $pair[0];
+            $right = $pair[1];
+            $left = new \Inilim\SqliteParser\Ast\Expression\BinaryOperation($op, $left, $right);
+        }
+
+        return $left;
+    }
+    : Primary() (CompareOp() Primary())*
+    ;
+
+CompareOp
+    -> { return $children->value; }
+    : <T_EQ>
+    | <T_NEQ>
+    | <T_LT>
+    | <T_LTE>
+    | <T_GT>
+    | <T_GTE>
+    ;
+
+Primary
+    : Literal()
+    | ColumnReference()
+    ;
+
+Literal
+    : IntLiteral()
+    | FloatLiteral()
+    | StringLiteral()
+    | NullLiteral()
+    ;
+
+IntLiteral
+    -> { return new \Inilim\SqliteParser\Ast\Expression\Literal((int) $children->value, 'int'); }
+    : <T_INT>
+    ;
+
+FloatLiteral
+    -> { return new \Inilim\SqliteParser\Ast\Expression\Literal((float) $children->value, 'float'); }
+    : <T_FLOAT>
+    ;
+
+StringLiteral
+    -> { return new \Inilim\SqliteParser\Ast\Expression\Literal($children->value, 'string'); }
+    : <T_STRING>
+    ;
+
+NullLiteral
+    -> { return new \Inilim\SqliteParser\Ast\Expression\Literal(null, 'null'); }
+    : <T_NULL>
+    ;
+
+ColumnReference
+    -> { return new \Inilim\SqliteParser\Ast\Expression\ColumnReference($children->value); }
+    : <T_IDENT>
+    | <T_QUOTED_IDENT>
     ;
