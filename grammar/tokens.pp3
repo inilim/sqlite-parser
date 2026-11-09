@@ -1,0 +1,187 @@
+// ============================================================================
+// Токены SQLite 3.54
+//
+// phplrt НЕ снимает /.../ с шаблонов %token / %skip — они попадают в итоговое
+// регулярное выражение как ЛИТЕРАЛЬНЫЕ слэши. Поэтому паттерны объявляются
+// БЕЗ обрамляющих /.../ (raw regex), а литеральные слэши пишутся как \x2F.
+//
+// Порядок объявления важен:
+// 1. Многосимвольные операторы ДО односимвольных префиксов.
+// 2. Ключевые слова ДО T_IDENT (с \b на конце, чтобы SELECTED != SELECT).
+// 3. Литералы (T_FLOAT ДО T_INT; T_BLOB ДО T_IDENT).
+// 4. Комментарии ДО операторов (чтобы -- и /* не путались с -, /).
+// ============================================================================
+
+// ----------------------------------------------------------------------------
+// Комментарии — объявляются первыми, чтобы -- и /* выигрывали у - и /.
+// ----------------------------------------------------------------------------
+
+%skip T_COMMENT_BLOCK \x2F\*[\s\S]*?\*\x2F
+%skip T_COMMENT --[^\n]*
+
+// ----------------------------------------------------------------------------
+// Ключевые слова (регистронезависимо, (?i); \b — граница слова).
+// ----------------------------------------------------------------------------
+
+%token T_SELECT (?i)SELECT\b
+%token T_FROM (?i)FROM\b
+%token T_WHERE (?i)WHERE\b
+%token T_ORDER (?i)ORDER\b
+%token T_GROUP (?i)GROUP\b
+%token T_BY (?i)BY\b
+%token T_HAVING (?i)HAVING\b
+%token T_LIMIT (?i)LIMIT\b
+%token T_OFFSET (?i)OFFSET\b
+%token T_AS (?i)AS\b
+%token T_DISTINCT (?i)DISTINCT\b
+%token T_ALL (?i)ALL\b
+%token T_AND (?i)AND\b
+%token T_OR (?i)OR\b
+%token T_NOT (?i)NOT\b
+%token T_IS (?i)IS\b
+%token T_NULL (?i)NULL\b
+%token T_IN (?i)IN\b
+%token T_LIKE (?i)LIKE\b
+%token T_GLOB (?i)GLOB\b
+%token T_BETWEEN (?i)BETWEEN\b
+%token T_EXISTS (?i)EXISTS\b
+%token T_CASE (?i)CASE\b
+%token T_WHEN (?i)WHEN\b
+%token T_THEN (?i)THEN\b
+%token T_ELSE (?i)ELSE\b
+%token T_END (?i)END\b
+%token T_CAST (?i)CAST\b
+%token T_JOIN (?i)JOIN\b
+%token T_INNER (?i)INNER\b
+%token T_LEFT (?i)LEFT\b
+%token T_RIGHT (?i)RIGHT\b
+%token T_FULL (?i)FULL\b
+%token T_OUTER (?i)OUTER\b
+%token T_CROSS (?i)CROSS\b
+%token T_NATURAL (?i)NATURAL\b
+%token T_ON (?i)ON\b
+%token T_USING (?i)USING\b
+%token T_UNION (?i)UNION\b
+%token T_INTERSECT (?i)INTERSECT\b
+%token T_EXCEPT (?i)EXCEPT\b
+%token T_INSERT (?i)INSERT\b
+%token T_INTO (?i)INTO\b
+%token T_VALUES (?i)VALUES\b
+%token T_DEFAULT (?i)DEFAULT\b
+%token T_UPDATE (?i)UPDATE\b
+%token T_SET (?i)SET\b
+%token T_DELETE (?i)DELETE\b
+%token T_CREATE (?i)CREATE\b
+%token T_TABLE (?i)TABLE\b
+%token T_INDEX (?i)INDEX\b
+%token T_VIEW (?i)VIEW\b
+%token T_TRIGGER (?i)TRIGGER\b
+%token T_ALTER (?i)ALTER\b
+%token T_DROP (?i)DROP\b
+%token T_RENAME (?i)RENAME\b
+%token T_ADD (?i)ADD\b
+%token T_COLUMN (?i)COLUMN\b
+%token T_TO (?i)TO\b
+%token T_PRIMARY (?i)PRIMARY\b
+%token T_KEY (?i)KEY\b
+%token T_FOREIGN (?i)FOREIGN\b
+%token T_REFERENCES (?i)REFERENCES\b
+%token T_CHECK (?i)CHECK\b
+%token T_UNIQUE (?i)UNIQUE\b
+%token T_AUTOINCREMENT (?i)AUTOINCREMENT\b
+%token T_CONSTRAINT (?i)CONSTRAINT\b
+%token T_IF (?i)IF\b
+%token T_TEMP (?i)TEMP\b
+%token T_TEMPORARY (?i)TEMPORARY\b
+%token T_WITHOUT (?i)WITHOUT\b
+%token T_ROWID (?i)ROWID\b
+%token T_STRICT (?i)STRICT\b
+%token T_PRAGMA (?i)PRAGMA\b
+%token T_ATTACH (?i)ATTACH\b
+%token T_DETACH (?i)DETACH\b
+%token T_DATABASE (?i)DATABASE\b
+%token T_BEGIN (?i)BEGIN\b
+%token T_DEFERRED (?i)DEFERRED\b
+%token T_IMMEDIATE (?i)IMMEDIATE\b
+%token T_EXCLUSIVE (?i)EXCLUSIVE\b
+%token T_TRANSACTION (?i)TRANSACTION\b
+%token T_COMMIT (?i)COMMIT\b
+%token T_ROLLBACK (?i)ROLLBACK\b
+%token T_SAVEPOINT (?i)SAVEPOINT\b
+%token T_RELEASE (?i)RELEASE\b
+%token T_EXPLAIN (?i)EXPLAIN\b
+%token T_QUERY (?i)QUERY\b
+%token T_PLAN (?i)PLAN\b
+%token T_RETURNING (?i)RETURNING\b
+%token T_CONFLICT (?i)CONFLICT\b
+%token T_DO (?i)DO\b
+%token T_NOTHING (?i)NOTHING\b
+%token T_RECURSIVE (?i)RECURSIVE\b
+%token T_WITH (?i)WITH\b
+%token T_OVER (?i)OVER\b
+%token T_PARTITION (?i)PARTITION\b
+%token T_RANGE (?i)RANGE\b
+%token T_ROWS (?i)ROWS\b
+%token T_PRECEDING (?i)PRECEDING\b
+%token T_FOLLOWING (?i)FOLLOWING\b
+%token T_UNBOUNDED (?i)UNBOUNDED\b
+%token T_CURRENT (?i)CURRENT\b
+%token T_ROW (?i)ROW\b
+%token T_TRUE (?i)TRUE\b
+%token T_FALSE (?i)FALSE\b
+%token T_REPLACE (?i)REPLACE\b
+%token T_IGNORE (?i)IGNORE\b
+%token T_ABORT (?i)ABORT\b
+%token T_FAIL (?i)FAIL\b
+%token T_FOR (?i)FOR\b
+%token T_EACH (?i)EACH\b
+%token T_BEFORE (?i)BEFORE\b
+%token T_AFTER (?i)AFTER\b
+%token T_INSTEAD (?i)INSTEAD\b
+%token T_OF (?i)OF\b
+
+// ----------------------------------------------------------------------------
+// Литералы
+// ----------------------------------------------------------------------------
+
+%token T_BLOB [xX]\x27(?:[0-9a-fA-F]{2})*\x27
+%token T_FLOAT (?:\d+\.\d+(?:[eE][+-]?\d+)?|\.\d+(?:[eE][+-]?\d+)?|\d+[eE][+-]?\d+)
+%token T_INT (?:0[xX][0-9a-fA-F]+|0[bB][01]+|\d+)
+%token T_STRING \x27(?:[^\x27]|\x27\x27)*\x27
+%token T_QUOTED_IDENT \x22(?:[^\x22]|\x22\x22)*\x22|`(?:[^`]|``)*`|\[[^\]]*\]`
+
+// ----------------------------------------------------------------------------
+// Идентификатор — объявляется ПОСЛЕ ключевых слов, иначе SELECT ловится как IDENT.
+// ----------------------------------------------------------------------------
+
+%token T_IDENT [A-Za-z_][A-Za-z0-9_]*
+
+// ----------------------------------------------------------------------------
+// Операторы (многосимвольные ДО односимвольных).
+// ----------------------------------------------------------------------------
+
+%token T_CONCAT \|\|
+%token T_LSHIFT <<
+%token T_RSHIFT >>
+%token T_LTE <=
+%token T_GTE >=
+%token T_NEQ <>|!=
+%token T_EQ ==|=
+%token T_LT <
+%token T_GT >
+%token T_AMP &
+%token T_PIPE \|
+%token T_TILDE ~
+%token T_PLUS \+
+%token T_MINUS -
+%token T_STAR \*
+%token T_SLASH \x2F
+%token T_PERCENT \x25
+%token T_LPAREN \(
+%token T_RPAREN \)
+%token T_COMMA ,
+%token T_DOT \.
+%token T_SEMICOLON \x3B
+%token T_COLON \x3A
+
+%skip T_WHITESPACE \s+

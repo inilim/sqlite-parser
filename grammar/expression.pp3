@@ -1,0 +1,661 @@
+// ============================================================================
+// Выражения: полная грамматика SQLite.
+//
+// Приоритеты (по возрастанию):
+//   OR < AND < NOT < Comparison(= <> != < <= > >=)
+//      < Additive(+ -) < Multiplicative(* / %)
+//      < Unary(+ - ~) < Primary
+//
+// ВАЖНО: во всех редукторах OrExpr / AndExpr / Comparison / Additive /
+// Multiplicative используется `\array_slice($children, 1)`.
+// ============================================================================
+
+// ----------------------------------------------------------------------------
+// Выражения
+// ----------------------------------------------------------------------------
+
+Expression
+    : OrExpr()
+    ;
+
+OrExpr
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+        $left = $children[0] ?? null;
+        if (!$left instanceof \Inilim\SqliteParser\Ast\Expression) {
+            return $left;
+        }
+        return \Inilim\SqliteParser\Grammar\Reducers::foldLeftBinaryChain(
+            $left,
+            \array_slice($children, 1),
+            'OR',
+        );
+    }
+    : AndExpr() (::T_OR:: AndExpr())*
+    ;
+
+AndExpr
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+        $left = $children[0] ?? null;
+        if (!$left instanceof \Inilim\SqliteParser\Ast\Expression) {
+            return $left;
+        }
+        return \Inilim\SqliteParser\Grammar\Reducers::foldLeftBinaryChain(
+            $left,
+            \array_slice($children, 1),
+            'AND',
+        );
+    }
+    : NotExpr() (::T_AND:: NotExpr())*
+    ;
+
+NotExpr
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+        if (isset($children[0]) && $children[0] instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+            $operand = $children[1] ?? null;
+            return $operand instanceof \Inilim\SqliteParser\Ast\Expression
+                ? new \Inilim\SqliteParser\Ast\Expression\UnaryOperation('NOT', $operand)
+                : null;
+        }
+        return $children[0] ?? null;
+    }
+    : <T_NOT> NotExpr()
+    | Comparison()
+    ;
+
+Comparison
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+        $left = $children[0] ?? null;
+        if (!$left instanceof \Inilim\SqliteParser\Ast\Expression) {
+            return $left;
+        }
+        return \Inilim\SqliteParser\Grammar\Reducers::foldLeftBinaryChain(
+            $left,
+            \array_slice($children, 1),
+        );
+    }
+    : Additive() (CompareOp() Additive())*
+    ;
+
+CompareOp
+    -> { return $children->value; }
+    : <T_EQ>
+    | <T_NEQ>
+    | <T_LT>
+    | <T_LTE>
+    | <T_GT>
+    | <T_GTE>
+    ;
+
+Additive
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+        $left = $children[0] ?? null;
+        if (!$left instanceof \Inilim\SqliteParser\Ast\Expression) {
+            return $left;
+        }
+        return \Inilim\SqliteParser\Grammar\Reducers::foldLeftBinaryChain(
+            $left,
+            \array_slice($children, 1),
+        );
+    }
+    : Multiplicative() (AddOp() Multiplicative())*
+    ;
+
+AddOp
+    -> { return $children->value; }
+    : <T_PLUS>
+    | <T_MINUS>
+    ;
+
+Multiplicative
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+        $left = $children[0] ?? null;
+        if (!$left instanceof \Inilim\SqliteParser\Ast\Expression) {
+            return $left;
+        }
+        return \Inilim\SqliteParser\Grammar\Reducers::foldLeftBinaryChain(
+            $left,
+            \array_slice($children, 1),
+        );
+    }
+    : Unary() (MulOp() Unary())*
+    ;
+
+MulOp
+    -> { return $children->value; }
+    : <T_STAR>
+    | <T_SLASH>
+    | <T_PERCENT>
+    ;
+
+Unary
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+        if (isset($children[0]) && $children[0] instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+            $operand = $children[1] ?? null;
+            if ($operand instanceof \Inilim\SqliteParser\Ast\Expression) {
+                $op = \strtoupper($children[0]->value);
+                return new \Inilim\SqliteParser\Ast\Expression\UnaryOperation($op, $operand);
+            }
+            return null;
+        }
+        return $children[0] ?? null;
+    }
+    : <T_PLUS> Unary()
+    | <T_MINUS> Unary()
+    | <T_TILDE> Unary()
+    | Primary()
+    ;
+
+Primary
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+        if (empty($children)) {
+            return null;
+        }
+        $result = $children[0];
+        if (!isset($children[1])) {
+            return $result;
+        }
+        $rest = \array_slice($children, 1);
+        $postfixes = [];
+        $collect = static function ($items) use (&$collect, &$postfixes): void {
+            foreach ($items as $item) {
+                if ($item instanceof \Closure) {
+                    $postfixes[] = $item;
+                } elseif (\is_array($item)) {
+                    $collect($item);
+                }
+            }
+        };
+        $collect($rest);
+        foreach ($postfixes as $postfix) {
+            /** @var \Closure(\Inilim\SqliteParser\Ast\Expression): \Inilim\SqliteParser\Ast\Expression $postfix */
+            $result = $postfix($result);
+        }
+        return $result;
+    }
+    : PrimaryBase() (PostfixOp())*
+    ;
+
+PrimaryBase
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+        return $children[0] ?? null;
+    }
+    : Subquery()
+    | ::T_LPAREN:: Expression() ::T_RPAREN::
+    | CastExpression()
+    | CaseExpression()
+    | FunctionCallWithOver()
+    | Literal()
+    | ColumnReference()
+    ;
+
+Subquery
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+        foreach ($children as $child) {
+            if ($child instanceof \Inilim\SqliteParser\Ast\Statement) {
+                return new \Inilim\SqliteParser\Ast\Expression\Subquery($child);
+            }
+        }
+        return null;
+    }
+    : ::T_LPAREN:: SelectStatement() ::T_RPAREN::
+    ;
+
+FunctionCallWithOver
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+
+        $fn   = null;
+        $spec = null;
+        $name = null;
+
+        foreach ($children as $child) {
+            if ($child instanceof \Inilim\SqliteParser\Ast\Expression\FunctionCall) {
+                $fn = $child;
+            } elseif ($child instanceof \Inilim\SqliteParser\Ast\Statement\WindowSpecification) {
+                $spec = $child;
+            } elseif ($child instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+                if (\strtoupper($child->value) === 'OVER') {
+                    continue;
+                }
+                $name = $child->value;
+            }
+        }
+
+        if ($fn === null) {
+            return null;
+        }
+        if ($spec === null && $name === null) {
+            return $fn;
+        }
+
+        return new \Inilim\SqliteParser\Ast\Expression\WindowFunction($fn, $spec, $name);
+    }
+    : FunctionCall() ::T_OVER:: (WindowSpecification() | <T_IDENT>)
+    | FunctionCall()
+    ;
+
+WindowSpecification
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+
+        $partition = null;
+        $orderBy   = null;
+        $frame     = null;
+
+        foreach ($children as $child) {
+            if ($child instanceof \Inilim\SqliteParser\Ast\Expression\ExpressionList) {
+                $partition = $child->items;
+            } elseif ($child instanceof \Inilim\SqliteParser\Ast\Statement\OrderByList) {
+                $orderBy = $child->items;
+            } elseif ($child instanceof \Inilim\SqliteParser\Ast\Statement\FrameSpec) {
+                $frame = $child;
+            }
+        }
+
+        return new \Inilim\SqliteParser\Ast\Statement\WindowSpecification(
+            partitionBy: $partition,
+            orderBy: $orderBy,
+            frame: $frame,
+        );
+    }
+    : ::T_LPAREN:: (::T_PARTITION:: ::T_BY:: ExprList())? OrderByClause()? FrameSpec()? ::T_RPAREN::
+    ;
+
+FrameSpec
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+
+        $unit   = '';
+        $bounds = [];
+
+        foreach ($children as $child) {
+            if ($child instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+                $u = \strtoupper($child->value);
+                if (\in_array($u, ['ROWS', 'RANGE'], true)) {
+                    $unit = $u;
+                }
+            } elseif ($child instanceof \Inilim\SqliteParser\Ast\Statement\FrameBound) {
+                $bounds[] = $child;
+            }
+        }
+
+        return new \Inilim\SqliteParser\Ast\Statement\FrameSpec(
+            unit: $unit,
+            start: $bounds[0],
+            end: $bounds[1] ?? null,
+        );
+    }
+    : (<T_ROWS> | <T_RANGE>) FrameBound() (::T_AND:: FrameBound())?
+    ;
+
+FrameBound
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+
+        $prefix = '';
+        $expr   = null;
+
+        foreach ($children as $child) {
+            if ($child instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+                $u = \strtoupper($child->value);
+                if ($u === 'UNBOUNDED') {
+                    $prefix = 'UNBOUNDED';
+                } elseif ($u === 'CURRENT') {
+                    $prefix = 'CURRENT';
+                } elseif ($u === 'ROW') {
+                    $prefix .= '_ROW';
+                } elseif ($u === 'PRECEDING') {
+                    $prefix .= '_PRECEDING';
+                } elseif ($u === 'FOLLOWING') {
+                    $prefix .= '_FOLLOWING';
+                }
+            } elseif ($child instanceof \Inilim\SqliteParser\Ast\Expression) {
+                $expr = $child;
+            }
+        }
+
+        if ($expr !== null) {
+            $direction = \strpos($prefix, 'FOLLOWING') !== false ? 'FOLLOWING' : 'PRECEDING';
+            return new \Inilim\SqliteParser\Ast\Statement\FrameBound('EXPR_' . $direction, $expr);
+        }
+
+        return new \Inilim\SqliteParser\Ast\Statement\FrameBound($prefix);
+    }
+    : <T_UNBOUNDED> <T_PRECEDING>
+    | <T_UNBOUNDED> <T_FOLLOWING>
+    | <T_CURRENT> <T_ROW>
+    | Additive() <T_PRECEDING>
+    | Additive() <T_FOLLOWING>
+    ;
+
+PostfixOp
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+        $first = $children[0] ?? null;
+
+        return function (\Inilim\SqliteParser\Ast\Expression $left) use ($children, $first): \Inilim\SqliteParser\Ast\Expression {
+            if (!$first instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+                return $left;
+            }
+            $v = \strtoupper($first->value);
+
+            if ($v === 'IS') {
+                $not = false;
+                if (isset($children[1]) && $children[1] instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+                    $not = \strtoupper($children[1]->value) === 'NOT';
+                }
+                return new \Inilim\SqliteParser\Ast\Expression\IsNullExpression($left, $not);
+            }
+
+            if ($v === 'LIKE') {
+                $pattern = $children[1] ?? null;
+                if ($pattern instanceof \Inilim\SqliteParser\Ast\Expression) {
+                    return new \Inilim\SqliteParser\Ast\Expression\LikeExpression($left, $pattern, false, false);
+                }
+                return $left;
+            }
+
+            if ($v === 'GLOB') {
+                $pattern = $children[1] ?? null;
+                if ($pattern instanceof \Inilim\SqliteParser\Ast\Expression) {
+                    return new \Inilim\SqliteParser\Ast\Expression\LikeExpression($left, $pattern, false, true);
+                }
+                return $left;
+            }
+
+            if ($v === 'BETWEEN') {
+                $lower = $children[1] ?? null;
+                $upper = $children[2] ?? null;
+                if ($lower instanceof \Inilim\SqliteParser\Ast\Expression
+                    && $upper instanceof \Inilim\SqliteParser\Ast\Expression
+                ) {
+                    return new \Inilim\SqliteParser\Ast\Expression\BetweenExpression($left, $lower, $upper, false);
+                }
+                return $left;
+            }
+
+            if ($v === 'IN') {
+                $listRaw = $children[1] ?? null;
+                if ($listRaw instanceof \Inilim\SqliteParser\Ast\Statement) {
+                    return new \Inilim\SqliteParser\Ast\Expression\InExpression(
+                        $left,
+                        [],
+                        false,
+                        $listRaw,
+                    );
+                }
+                $items = $listRaw instanceof \Inilim\SqliteParser\Ast\Expression\ExpressionList
+                    ? $listRaw->items
+                    : [];
+                return new \Inilim\SqliteParser\Ast\Expression\InExpression($left, $items, false);
+            }
+
+            if ($v === 'NOT') {
+                $second = $children[1] ?? null;
+                if (!$second instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+                    return $left;
+                }
+                $v2 = \strtoupper($second->value);
+                if ($v2 === 'LIKE') {
+                    $pattern = $children[2] ?? null;
+                    if ($pattern instanceof \Inilim\SqliteParser\Ast\Expression) {
+                        return new \Inilim\SqliteParser\Ast\Expression\LikeExpression($left, $pattern, true, false);
+                    }
+                    return $left;
+                }
+                if ($v2 === 'GLOB') {
+                    $pattern = $children[2] ?? null;
+                    if ($pattern instanceof \Inilim\SqliteParser\Ast\Expression) {
+                        return new \Inilim\SqliteParser\Ast\Expression\LikeExpression($left, $pattern, true, true);
+                    }
+                    return $left;
+                }
+                if ($v2 === 'BETWEEN') {
+                    $lower = $children[2] ?? null;
+                    $upper = $children[3] ?? null;
+                    if ($lower instanceof \Inilim\SqliteParser\Ast\Expression
+                        && $upper instanceof \Inilim\SqliteParser\Ast\Expression
+                    ) {
+                        return new \Inilim\SqliteParser\Ast\Expression\BetweenExpression($left, $lower, $upper, true);
+                    }
+                    return $left;
+                }
+                if ($v2 === 'IN') {
+                    $listRaw = $children[2] ?? null;
+                    if ($listRaw instanceof \Inilim\SqliteParser\Ast\Statement) {
+                        return new \Inilim\SqliteParser\Ast\Expression\InExpression(
+                            $left,
+                            [],
+                            true,
+                            $listRaw,
+                        );
+                    }
+                    $items = $listRaw instanceof \Inilim\SqliteParser\Ast\Expression\ExpressionList
+                        ? $listRaw->items
+                        : [];
+                    return new \Inilim\SqliteParser\Ast\Expression\InExpression($left, $items, true);
+                }
+                return $left;
+            }
+
+            return $left;
+        };
+    }
+    : <T_IS> (<T_NOT>)? ::T_NULL::
+    | <T_LIKE> Additive()
+    | <T_GLOB> Additive()
+    | <T_BETWEEN> Additive() ::T_AND:: Additive()
+    | <T_IN> ::T_LPAREN:: ExprList()? ::T_RPAREN::
+    | <T_IN> ::T_LPAREN:: SelectStatement() ::T_RPAREN::
+    | <T_NOT> <T_LIKE> Additive()
+    | <T_NOT> <T_GLOB> Additive()
+    | <T_NOT> <T_BETWEEN> Additive() ::T_AND:: Additive()
+    | <T_NOT> <T_IN> ::T_LPAREN:: ExprList()? ::T_RPAREN::
+    | <T_NOT> <T_IN> ::T_LPAREN:: SelectStatement() ::T_RPAREN::
+    ;
+
+ExprList
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+
+        $flat = [];
+        \array_walk_recursive($children, static function ($item) use (&$flat): void {
+            if ($item instanceof \Inilim\SqliteParser\Ast\Expression) {
+                $flat[] = $item;
+            }
+        });
+
+        return new \Inilim\SqliteParser\Ast\Expression\ExpressionList($flat);
+    }
+    : Expression() (::T_COMMA:: Expression())*
+    ;
+
+// ----------------------------------------------------------------------------
+// Первичные выражения
+// ----------------------------------------------------------------------------
+
+Literal
+    : IntLiteral()
+    | FloatLiteral()
+    | StringLiteral()
+    | NullLiteral()
+    | TrueLiteral()
+    | FalseLiteral()
+    ;
+
+IntLiteral
+    -> { return new \Inilim\SqliteParser\Ast\Expression\Literal((int) $children->value, 'int'); }
+    : <T_INT>
+    ;
+
+FloatLiteral
+    -> { return new \Inilim\SqliteParser\Ast\Expression\Literal((float) $children->value, 'float'); }
+    : <T_FLOAT>
+    ;
+
+StringLiteral
+    -> { return new \Inilim\SqliteParser\Ast\Expression\Literal($children->value, 'string'); }
+    : <T_STRING>
+    ;
+
+NullLiteral
+    -> { return new \Inilim\SqliteParser\Ast\Expression\Literal(null, 'null'); }
+    : <T_NULL>
+    ;
+
+TrueLiteral
+    -> { return new \Inilim\SqliteParser\Ast\Expression\Literal(true, 'bool'); }
+    : <T_TRUE>
+    ;
+
+FalseLiteral
+    -> { return new \Inilim\SqliteParser\Ast\Expression\Literal(false, 'bool'); }
+    : <T_FALSE>
+    ;
+
+ColumnReference
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+
+        $table = null;
+        $name  = null;
+
+        if (isset($children[1]) && $children[1] instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+            $table = $children[0]->value;
+            $name  = $children[1]->value;
+        } else {
+            $name = $children[0]->value;
+        }
+
+        return new \Inilim\SqliteParser\Ast\Expression\ColumnReference($name, $table);
+    }
+    : <T_IDENT> (::T_DOT:: <T_IDENT>)?
+    | <T_QUOTED_IDENT> (::T_DOT:: <T_QUOTED_IDENT>)?
+    ;
+
+FunctionCall
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+
+        $nameToken = $children[0] ?? null;
+        if (!$nameToken instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+            return null;
+        }
+        $name = $nameToken->value;
+
+        $distinct = false;
+        $args = [];
+
+        foreach (\array_slice($children, 1) as $item) {
+            if ($item instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
+                $v = \strtoupper($item->value);
+                if ($v === 'DISTINCT') {
+                    $distinct = true;
+                    continue;
+                }
+                if ($v === 'ALL') {
+                    $distinct = false;
+                    continue;
+                }
+                if ($item->value === '*') {
+                    $args[] = new \Inilim\SqliteParser\Ast\Expression\Star();
+                    continue;
+                }
+            }
+            if ($item instanceof \Inilim\SqliteParser\Ast\Expression\ExpressionList) {
+                foreach ($item->items as $arg) {
+                    $args[] = $arg;
+                }
+                continue;
+            }
+            if ($item instanceof \Inilim\SqliteParser\Ast\Expression) {
+                $args[] = $item;
+                continue;
+            }
+        }
+
+        return new \Inilim\SqliteParser\Ast\Expression\FunctionCall($name, $args, $distinct);
+    }
+    : <T_IDENT> ::T_LPAREN:: (<T_DISTINCT> | <T_ALL>)? (ExprList() | <T_STAR>)? ::T_RPAREN::
+    ;
+
+CastExpression
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+        $expression = $children[0] ?? null;
+        $typeToken = $children[1] ?? null;
+
+        if (!$expression instanceof \Inilim\SqliteParser\Ast\Expression
+            || !$typeToken instanceof \Phplrt\Contracts\Lexer\TokenInterface
+        ) {
+            return null;
+        }
+
+        return new \Inilim\SqliteParser\Ast\Expression\CastExpression(
+            $expression,
+            \strtoupper($typeToken->value),
+        );
+    }
+    : ::T_CAST:: ::T_LPAREN:: Expression() ::T_AS:: <T_IDENT> ::T_RPAREN::
+    ;
+
+CaseExpression
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+
+        $subject = null;
+        $i = 0;
+        if (isset($children[0]) && $children[0] instanceof \Inilim\SqliteParser\Ast\Expression) {
+            $subject = $children[0];
+            $i = 1;
+        }
+
+        $whens = [];
+        $else = null;
+        $count = \count($children);
+        while ($i < $count) {
+            $item = $children[$i];
+            if ($item instanceof \Inilim\SqliteParser\Ast\Expression\WhenClause) {
+                $whens[] = $item;
+                $i++;
+                continue;
+            }
+            if ($item instanceof \Inilim\SqliteParser\Ast\Expression) {
+                $else = $item;
+                $i++;
+                continue;
+            }
+            $i++;
+        }
+
+        return new \Inilim\SqliteParser\Ast\Expression\CaseExpression($subject, $whens, $else);
+    }
+    : ::T_CASE:: Expression()? (WhenClause())+ (::T_ELSE:: Expression())? ::T_END::
+    ;
+
+WhenClause
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+        $when = $children[0] ?? null;
+        $then = $children[1] ?? null;
+
+        if (!$when instanceof \Inilim\SqliteParser\Ast\Expression
+            || !$then instanceof \Inilim\SqliteParser\Ast\Expression
+        ) {
+            return null;
+        }
+
+        return new \Inilim\SqliteParser\Ast\Expression\WhenClause($when, $then);
+    }
+    : ::T_WHEN:: Expression() ::T_THEN:: Expression()
+    ;
