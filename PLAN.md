@@ -124,17 +124,17 @@ tests/
 
 ---
 
-### Этап 1 — Фундамент AST (0.5 дня)
+### Этап 1 — Фундамент AST (0.5 дня) ✅ ВЫПОЛНЕНО
 
 **Цель:** каркас типов, от которого будут зависеть все последующие этапы.
 
-- [ ] `src/Ast/Node.php` — абстрактный класс с `public readonly array $attributes` (для отладки)
+- [x] `src/Ast/Node.php` — абстрактный класс с `public readonly array $attributes` (для отладки)
   и методом `jsonSerialize()` (реализация `JsonSerializable` для тестов).
-- [ ] `src/Ast/Script.php` — `public readonly array $statements`.
-- [ ] `src/Ast/Statement.php` — абстрактный.
-- [ ] `src/Ast/Expression.php` — абстрактный.
+- [x] `src/Ast/Script.php` — `public readonly array $statements`.
+- [x] `src/Ast/Statement.php` — абстрактный.
+- [x] `src/Ast/Expression.php` — абстрактный.
 - [ ] Заглушки конкретных типов появлятельные по мере этапов (пока пустые).
-- [ ] Первый тест `tests/Ast/ScriptTest.php` — конструктор работает.
+- [x] Первый тест `tests/Ast/ScriptTest.php` — конструктор работает.
 
 **Готово когда:** `phpstan analyse` чистый, базовые тесты зелёные.
 
