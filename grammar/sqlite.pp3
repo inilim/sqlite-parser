@@ -199,11 +199,17 @@
 // размещать внутри альтернативы (`| pattern -> { ... }` недопустимо —
 // PP3 воспринимает `->` как T_PHP и падает с UnexpectedTokenException).
 //
-// ВАЖНО (phplrt 4.x gotcha): если правило-конкатенация возвращает голый array
-// из нескольких элементов, родительское правило при unwrap "схлопывает" этот
-// массив в плоский `$children`. Поэтому СПИСКИ узлов (columns, orderBy, ...)
-// оборачиваются в объекты-контейнеры (ResultColumnList, OrderByList) — они
-// служат "barrier" против флаттенинга (см. PHPLRT_GUIDE.md, §3.4 и SKILL.md).
+// ВАЖНО (phplrt 4.x gotcha): результат повтора `(A B)*` приходит в $children
+// в одной из нескольких форм (плоская, вложенная парами, «одна пара без
+// обёртки»). Поэтому редукторы, работающие со списками, должны передавать в
+// Reducers::foldLeftBinaryChain ВСЁ содержимое начиная с индекса 1 — через
+// `\array_slice($children, 1)`, а не `$children[1]`. Иначе теряются элементы
+// при «плоском» ответе парсера.
+//
+// ВАЖНО (phplrt 4.x gotcha): списки AST-узлов (columns, orderBy, ...) внутри
+// конкатенации оборачиваются в объекты-контейнеры (ResultColumnList,
+// OrderByList, ExpressionList) — они служат "barrier" против флаттенинга
+// при unwrap (см. PHPLRT_GUIDE.md, §3.4 и SKILL.md).
 // ============================================================================
 
 // ----------------------------------------------------------------------------
@@ -430,6 +436,11 @@ LimitClause
 //
 // PostfixOp возвращает Closure(Expression $left): Expression — родитель
 // Primary-цикла применяет его последовательно к накопленному результату.
+//
+// ВАЖНО: во всех редукторах OrExpr / AndExpr / Comparison / Additive /
+// Multiplicative используется `\array_slice($children, 1)` — это покрывает
+// все формы, в которых phplrt возвращает результат повтора `(A B)*`,
+// включая полностью «плоский» вариант `[left, op, value, op, value]`.
 // ----------------------------------------------------------------------------
 
 Expression
@@ -445,7 +456,7 @@ OrExpr
         }
         return \Inilim\SqliteParser\Grammar\Reducers::foldLeftBinaryChain(
             $left,
-            $children[1] ?? null,
+            \array_slice($children, 1),
             'OR',
         );
     }
@@ -461,7 +472,7 @@ AndExpr
         }
         return \Inilim\SqliteParser\Grammar\Reducers::foldLeftBinaryChain(
             $left,
-            $children[1] ?? null,
+            \array_slice($children, 1),
             'AND',
         );
     }
@@ -473,13 +484,13 @@ NotExpr
         $children = \is_array($children) ? $children : [$children];
         if (isset($children[0]) && $children[0] instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
             $operand = $children[1] ?? null;
-            if ($operand instanceof \Inilim\SqliteParser\Ast\Expression) {
-                return new \Inilim\SqliteParser\Ast\Expression\UnaryOperation('NOT', $operand);
-            }
+            return $operand instanceof \Inilim\SqliteParser\Ast\Expression
+                ? new \Inilim\SqliteParser\Ast\Expression\UnaryOperation('NOT', $operand)
+                : null;
         }
         return $children[0] ?? null;
     }
-    : ::T_NOT:: NotExpr()
+    : <T_NOT> NotExpr()
     | Comparison()
     ;
 
@@ -492,7 +503,7 @@ Comparison
         }
         return \Inilim\SqliteParser\Grammar\Reducers::foldLeftBinaryChain(
             $left,
-            $children[1] ?? null,
+            \array_slice($children, 1),
         );
     }
     : Additive() (CompareOp() Additive())*
@@ -517,7 +528,7 @@ Additive
         }
         return \Inilim\SqliteParser\Grammar\Reducers::foldLeftBinaryChain(
             $left,
-            $children[1] ?? null,
+            \array_slice($children, 1),
         );
     }
     : Multiplicative() (AddOp() Multiplicative())*
@@ -538,7 +549,7 @@ Multiplicative
         }
         return \Inilim\SqliteParser\Grammar\Reducers::foldLeftBinaryChain(
             $left,
-            $children[1] ?? null,
+            \array_slice($children, 1),
         );
     }
     : Unary() (MulOp() Unary())*
@@ -560,6 +571,7 @@ Unary
                 $op = \strtoupper($children[0]->value);
                 return new \Inilim\SqliteParser\Ast\Expression\UnaryOperation($op, $operand);
             }
+            return null;
         }
         return $children[0] ?? null;
     }
@@ -581,11 +593,16 @@ Primary
         }
         $rest = \array_slice($children, 1);
         $postfixes = [];
-        \array_walk_recursive($rest, static function ($item) use (&$postfixes): void {
-            if ($item instanceof \Closure) {
-                $postfixes[] = $item;
+        $collect = static function ($items) use (&$collect, &$postfixes): void {
+            foreach ($items as $item) {
+                if ($item instanceof \Closure) {
+                    $postfixes[] = $item;
+                } elseif (\is_array($item)) {
+                    $collect($item);
+                }
             }
-        });
+        };
+        $collect($rest);
         foreach ($postfixes as $postfix) {
             /** @var \Closure(\Inilim\SqliteParser\Ast\Expression): \Inilim\SqliteParser\Ast\Expression $postfix */
             $result = $postfix($result);
@@ -609,7 +626,8 @@ PrimaryBase
     ;
 
 // PostfixOp возвращает замыкание Expression → Expression. Так парсер может
-// применять операции IS NULL / LIKE / BETWEEN / IN цепочкой.
+// применять операции IS NULL / LIKE / GLOB / BETWEEN / IN цепочкой
+// к накопленному результату Primary.
 PostfixOp
     -> {
         $children = \is_array($children) ? $children : [$children];

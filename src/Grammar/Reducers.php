@@ -17,15 +17,24 @@ use Phplrt\Contracts\Lexer\TokenInterface;
  *   flat:        [op1, value1, op2, value2, ...]
  *   nested:      [[op1, value1], [op2, value2], ...]
  *   flat-inner:  [op, value]                 (ровно одна итерация)
+ *   value-list:  [value1, value2, ...]        (когда оператор выброшен через ::T_X::)
  *
- * {@see self::normalizeRepeat()} приводит все три формы к плоскому массиву
- * `[op1, value1, op2, value2, ...]`, а {@see self::foldLeftBinaryChain()}
- * сворачивает его в левоассоциативную цепочку BinaryOperation.
+ * {@see self::normalizeRepeat()} рекурсивно «выпрямляет» все эти формы в
+ * плоский массив, а {@see self::foldLeftBinaryChain()} сворачивает результат
+ * в левоассоциативную цепочку BinaryOperation.
+ *
+ * Редуктор должен передавать в foldLeftBinaryChain **всё** содержимое
+ * `$children` начиная с индекса 1 (через `\array_slice($children, 1)`), а не
+ * только `$children[1]` — иначе при полностью «плоском» результате повтора
+ * (например, `[left, op, value, op, value]`) теряется всё, кроме первого
+ * элемента.
  */
 final class Reducers
 {
     /**
-     * Приводит результат повторения к плоскому массиву [op, value, op, value, ...].
+     * Рекурсивно «выпрямляет» произвольную форму результата повтора в
+     * плоский массив листьев. Массивы разворачиваются на любую глубину,
+     * скаляры и объекты (Tokens, Closures, AST-узлы) сохраняются как есть.
      *
      * @return list<mixed>
      */
@@ -41,19 +50,14 @@ final class Reducers
             return [];
         }
 
-        $first = $rest[0] ?? null;
-
-        // flat / flat-inner: [op, value] или [op1, value1, op2, value2, ...]
-        if ($first instanceof TokenInterface || \is_string($first)) {
-            return \array_values($rest);
-        }
-
-        // nested: [[op1, value1], [op2, value2], ...]
         $flat = [];
-        foreach ($rest as $pair) {
-            if (\is_array($pair) && \count($pair) >= 2) {
-                $flat[] = $pair[0];
-                $flat[] = $pair[1];
+        foreach ($rest as $item) {
+            if (\is_array($item)) {
+                foreach (self::normalizeRepeat($item) as $sub) {
+                    $flat[] = $sub;
+                }
+            } else {
+                $flat[] = $item;
             }
         }
 
@@ -61,11 +65,23 @@ final class Reducers
     }
 
     /**
-     * Сворачивает пары [op, value] в левоассоциативную цепочку BinaryOperation.
+     * Сворачивает левоассоциативную цепочку в дерево BinaryOperation.
      *
-     * @param ?string $defaultOperator Если задан — используется для всех пар,
-     *                                 иначе оператор берётся из первого элемента пары
-     *                                 (Token или string).
+     * Поддерживает два режима:
+     *
+     * 1. **Пары op/value** (для Comparison / Additive / Multiplicative):
+     *    `[op1, value1, op2, value2, ...]`, где op — TokenInterface или
+     *    строка (результат `CompareOp`/`AddOp`/`MulOp`). Параметр
+     *    `$defaultOperator` должен быть null.
+     *
+     * 2. **Список значений** (для OrExpr / AndExpr, где оператор выбрасывается
+     *    через `::T_OR::` / `::T_AND::`): `[value1, value2, ...]`, все value —
+     *    Expression. Параметр `$defaultOperator` задаёт оператор (`'OR'` /
+     *    `'AND'`).
+     *
+     * @param ?string $defaultOperator Если задан — все элементы считаются
+     *                                 значениями (без оператора в потоке);
+     *                                 иначе — парами [op, value].
      */
     public static function foldLeftBinaryChain(
         Expression $left,
@@ -75,6 +91,31 @@ final class Reducers
         $items = self::normalizeRepeat($rest);
         $count = \count($items);
 
+        if ($count === 0) {
+            return $left;
+        }
+
+        // Режим «список значений» — все элементы Expression, оператор общий.
+        if ($defaultOperator !== null) {
+            $allValues = true;
+            foreach ($items as $item) {
+                if ($item instanceof TokenInterface || \is_string($item)) {
+                    $allValues = false;
+                    break;
+                }
+            }
+
+            if ($allValues) {
+                foreach ($items as $value) {
+                    if ($value instanceof Expression) {
+                        $left = new BinaryOperation($defaultOperator, $left, $value);
+                    }
+                }
+                return $left;
+            }
+        }
+
+        // Режим «пары op/value».
         for ($i = 0; $i + 1 < $count; $i += 2) {
             $opRaw = $items[$i];
             $right = $items[$i + 1];
