@@ -2,6 +2,7 @@
 
 sqlite-parser/
 ├── grammar/
+│   ├── dml.pp3
 │   ├── expression.pp3
 │   ├── select.pp3
 │   ├── sqlite.pp3
@@ -27,22 +28,32 @@ sqlite-parser/
 │   │   │   ├── WhenClause.php
 │   │   │   └── WindowFunction.php
 │   │   ├── Statement/
+│   │   │   ├── Assignment.php
+│   │   │   ├── AssignmentList.php
 │   │   │   ├── CommonTableExpression.php
 │   │   │   ├── CompoundSelect.php
+│   │   │   ├── DeleteStatement.php
 │   │   │   ├── EmptyStatement.php
 │   │   │   ├── FrameBound.php
 │   │   │   ├── FrameSpec.php
 │   │   │   ├── FromClause.php
 │   │   │   ├── GroupByClause.php
 │   │   │   ├── HavingClause.php
+│   │   │   ├── IdentListWrapper.php
+│   │   │   ├── InsertDefaultBody.php
+│   │   │   ├── InsertStatement.php
+│   │   │   ├── InsertValuesBody.php
 │   │   │   ├── JoinClause.php
 │   │   │   ├── JoinConstraint.php
 │   │   │   ├── OrderBy.php
 │   │   │   ├── OrderByList.php
 │   │   │   ├── ResultColumn.php
 │   │   │   ├── ResultColumnList.php
+│   │   │   ├── ReturningClause.php
 │   │   │   ├── SelectStatement.php
 │   │   │   ├── TableReference.php
+│   │   │   ├── UpdateStatement.php
+│   │   │   ├── UpsertClause.php
 │   │   │   ├── WhereClause.php
 │   │   │   ├── WindowSpecification.php
 │   │   │   └── WithClause.php
@@ -59,6 +70,7 @@ sqlite-parser/
 │   │   └── ScriptTest.php
 │   └── Grammar/
 │       ├── AdvancedSelectTest.php
+│       ├── DmlTest.php
 │       ├── ExpressionTest.php
 │       └── SelectTest.php
 ├── .gitattributes

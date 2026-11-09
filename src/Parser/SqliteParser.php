@@ -3284,8 +3284,8 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
             foreach ($children as $child) {
                 if (\is_string($child) && $name === null) {
                     $name = $child;
-                } elseif (\is_array($child)) {
-                    $columns = $child;
+                } elseif ($child instanceof \Inilim\SqliteParser\Ast\Statement\IdentListWrapper) {
+                    $columns = $child->items;
                 } elseif ($child instanceof \Inilim\SqliteParser\Ast\Statement) {
                     $query = $child;
                 }
@@ -3314,7 +3314,7 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
                 }
             });
 
-            return $flat;
+            return new \Inilim\SqliteParser\Ast\Statement\IdentListWrapper($flat);
     }
 
     private static function reduceSelectCore(\Phplrt\Parser\Context $ctx, mixed $children): mixed
@@ -4028,6 +4028,8 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
             foreach (\array_slice($children, 1) as $child) {
                 if ($child instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
                     $alias = $child->value;
+                } elseif ($child instanceof \Inilim\SqliteParser\Ast\Statement\IdentListWrapper) {
+                    $columnAliases = $child->items;
                 } elseif (\is_string($child)) {
                     $columnAliases[] = $child;
                 } elseif (\is_array($child)) {
@@ -4100,25 +4102,12 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
                 if ($child instanceof \Inilim\SqliteParser\Ast\Expression) {
                     return new \Inilim\SqliteParser\Ast\Statement\JoinConstraint(on: $child);
                 }
+                if ($child instanceof \Inilim\SqliteParser\Ast\Statement\IdentListWrapper) {
+                    return new \Inilim\SqliteParser\Ast\Statement\JoinConstraint(using: $child->items);
+                }
             }
 
-            $using = [];
-            $collect = static function ($items) use (&$collect, &$using): void {
-                foreach ($items as $item) {
-                    if (\is_string($item)) {
-                        $using[] = $item;
-                    } elseif (\is_array($item)) {
-                        $collect($item);
-                    } elseif ($item instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
-                        $using[] = $item->value;
-                    }
-                }
-            };
-            $collect($children);
-
-            return $using === []
-                ? null
-                : new \Inilim\SqliteParser\Ast\Statement\JoinConstraint(using: $using);
+            return null;
     }
 
     private static function reduceWhereClause(\Phplrt\Parser\Context $ctx, mixed $children): mixed
@@ -4233,10 +4222,8 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
                     continue;
                 }
 
-                if (\is_array($child)) {
-                    if ($columns === null) {
-                        $columns = $child;
-                    }
+                if ($child instanceof \Inilim\SqliteParser\Ast\Statement\IdentListWrapper) {
+                    $columns = $child->items;
                     continue;
                 }
 
@@ -4328,10 +4315,8 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
             $doNothing      = false;
 
             foreach ($children as $child) {
-                if (\is_array($child)) {
-                    if ($conflictTarget === null) {
-                        $conflictTarget = $child;
-                    }
+                if ($child instanceof \Inilim\SqliteParser\Ast\Statement\IdentListWrapper) {
+                    $conflictTarget = $child->items;
                     continue;
                 }
 
