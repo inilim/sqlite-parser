@@ -23,7 +23,8 @@ use PHPUnit\Framework\TestCase;
  *   - агрегаты: json_group_array(), json_group_object();
  *   - JSON-контексты: SELECT-список, WHERE, GROUP BY/HAVING, ORDER BY,
  *     INSERT/UPDATE/DELETE RETURNING, CTE, UNION, вложенные вызовы,
- *     комбинация с операторами/CAST/CASE/LIKE/BETWEEN/IN.
+ *     комбинация с операторами/CAST/CASE/LIKE/BETWEEN/IN;
+ *   - табличные функции json_each() / json_tree() и операторы -> / ->>.
  *
  * Все проверки — «запрос парсится ровно в 1 statement без исключений»,
  * плюс отдельные проверки формы AST для ключевых JSON-конструкций.
@@ -602,5 +603,343 @@ final class JsonTest extends TestCase
         self::assertCount(1, $stmt->columns);
         self::assertSame('a', $stmt->columns[0]->alias);
         self::assertInstanceOf(FunctionCall::class, $stmt->columns[0]->expression);
+    }
+
+    // ========================================================================
+    // 13. json_each() как табличная функция
+    // ========================================================================
+
+    /**
+     * @dataProvider provideJsonEachInFrom
+     */
+    public function testJsonEachInFrom(string $sql): void
+    {
+        $this->assertSingleStatement($sql);
+    }
+
+    public static function provideJsonEachInFrom(): iterable
+    {
+        // json_each: базовые формы в FROM
+        yield 'json_each literal array' => ["SELECT * FROM json_each('[1, 2, 3]')"];
+        yield 'json_each literal object' => ["SELECT * FROM json_each('{\"a\": 1}')"];
+        yield 'json_each empty array' => ["SELECT * FROM json_each('[]')"];
+        yield 'json_each empty object' => ["SELECT * FROM json_each('{}')"];
+        yield 'json_each scalar' => ["SELECT * FROM json_each('42')"];
+
+        // json_each: alias
+        yield 'json_each alias short' => ["SELECT * FROM json_each('[1, 2, 3]') e"];
+        yield 'json_each alias as' => ["SELECT * FROM json_each('[1, 2, 3]') AS e"];
+
+        // json_each: доступ к столбцам (key/value/type/atom/id/parent/fullkey/path)
+        yield 'json_each select value' => ["SELECT e.value FROM json_each('[10, 20, 30]') e"];
+        yield 'json_each select key value' => ["SELECT e.key, e.value FROM json_each('[10, 20, 30]') e"];
+        yield 'json_each select type' => ["SELECT e.type FROM json_each('[1, \"a\", null]') e"];
+        yield 'json_each select fullkey' => ["SELECT e.fullkey, e.path FROM json_each('{\"a\": 1}') e"];
+        yield 'json_each select atom' => ["SELECT e.atom FROM json_each('[1, true, null]') e"];
+
+        // json_each: с параметром-путём
+        yield 'json_each with path' => ["SELECT * FROM json_each('{\"a\": 1, \"b\": 2}', '$.a')"];
+        yield 'json_each with path alias' => ["SELECT e.value FROM json_each('{\"items\": [1, 2, 3]}', '$.items') e"];
+
+        // json_each: в JOIN-конструкциях
+        yield 'json_each cross join column' => [
+            "SELECT u.id, e.value FROM users u, json_each(u.tags) e",
+        ];
+        yield 'json_each explicit cross join' => [
+            "SELECT u.id, e.value FROM users u CROSS JOIN json_each(u.tags) e",
+        ];
+        yield 'json_each left join' => [
+            "SELECT u.id, e.value FROM users u LEFT JOIN json_each(u.tags) e ON 1",
+        ];
+
+        // json_each: с параметром-заглушкой
+        yield 'json_each parameter' => ['SELECT e.value FROM json_each(?) e'];
+        yield 'json_each parameter alias' => ['SELECT e.key, e.value FROM json_each(?) AS e'];
+
+        // json_each: внутри подзапроса
+        yield 'json_each in subquery' => [
+            "SELECT * FROM users WHERE id IN (SELECT e.value FROM json_each('[1, 2, 3]') e)",
+        ];
+        yield 'json_each in exists subquery' => [
+            "SELECT * FROM users WHERE EXISTS (SELECT 1 FROM json_each(users.tags) e WHERE e.value = 1)",
+        ];
+
+        // json_each: с фильтрацией WHERE/ORDER BY по столбцам
+        yield 'json_each where type' => [
+            "SELECT e.value FROM json_each('[1, \"a\", 2]') e WHERE e.type = 'integer'",
+        ];
+        yield 'json_each order by key' => [
+            "SELECT e.key, e.value FROM json_each('{\"b\": 2, \"a\": 1}') e ORDER BY e.key",
+        ];
+    }
+
+    // ========================================================================
+    // 14. json_tree() как табличная функция
+    // ========================================================================
+
+    /**
+     * @dataProvider provideJsonTreeInFrom
+     */
+    public function testJsonTreeInFrom(string $sql): void
+    {
+        $this->assertSingleStatement($sql);
+    }
+
+    public static function provideJsonTreeInFrom(): iterable
+    {
+        // Классические примеры из документации SQLite
+        yield 'json_tree object' => [
+            "SELECT * FROM json_tree('{ \"name\" : \"Woof\", \"age\" : 10 }')",
+        ];
+        yield 'json_tree array' => ["SELECT * FROM json_tree('[ 10, 30, 45 ]')"];
+        yield 'json_tree nested object with path' => [
+            "SELECT * FROM json_tree('{ \"a\" : 1, \"b\" : [ 4, 7, 8 ] }', '$.b')",
+        ];
+
+        // json_tree: базовые формы
+        yield 'json_tree scalar' => ["SELECT * FROM json_tree('42')"];
+        yield 'json_tree empty object' => ["SELECT * FROM json_tree('{}')"];
+        yield 'json_tree empty array' => ["SELECT * FROM json_tree('[]')"];
+        yield 'json_tree parameter' => ['SELECT * FROM json_tree(?)'];
+
+        // json_tree: alias
+        yield 'json_tree alias' => ["SELECT * FROM json_tree('[1, 2]') t"];
+        yield 'json_tree alias as' => ["SELECT * FROM json_tree('[1, 2]') AS t"];
+
+        // json_tree: доступ к столбцам
+        yield 'json_tree key value type' => [
+            "SELECT jt.key, jt.value, jt.type FROM json_tree('[1, 2, 3]') jt",
+        ];
+        yield 'json_tree fullkey path' => [
+            "SELECT jt.fullkey, jt.path FROM json_tree('{\"a\": 1, \"b\": 2}') jt",
+        ];
+        yield 'json_tree atom id parent' => [
+            "SELECT jt.id, jt.parent, jt.atom FROM json_tree('[1, 2, 3]') jt",
+        ];
+
+        // json_tree: с WHERE/ORDER BY
+        yield 'json_tree where type' => [
+            "SELECT jt.fullkey, jt.value FROM json_tree('[1, \"a\", 2]') jt WHERE jt.type = 'integer'",
+        ];
+        yield 'json_tree order by fullkey' => [
+            "SELECT jt.fullkey FROM json_tree('{\"b\": 2, \"a\": 1}') jt ORDER BY jt.fullkey",
+        ];
+
+        // json_tree: внутри подзапроса
+        yield 'json_tree in subquery' => [
+            "SELECT * FROM users WHERE id IN (SELECT jt.value FROM json_tree('[1, 2, 3]') jt)",
+        ];
+
+        // json_tree: cross join с таблицей
+        yield 'json_tree cross join column' => [
+            "SELECT u.id, jt.value FROM users u, json_tree(u.data) jt",
+        ];
+    }
+
+    // ========================================================================
+    // 15. Операторы -> и ->> (JSON-доступ)
+    // ========================================================================
+
+    /**
+     * @dataProvider provideJsonArrowOperators
+     */
+    public function testJsonArrowOperators(string $sql): void
+    {
+        $this->assertSingleStatement($sql);
+    }
+
+    public static function provideJsonArrowOperators(): iterable
+    {
+        // Базовые формы
+        yield 'arrow column' => ["SELECT data -> '$.a' FROM t"];
+        yield 'arrow text column' => ["SELECT data ->> '$.a' FROM t"];
+        yield 'arrow integer index' => ['SELECT data -> 0 FROM t'];
+        yield 'arrow text integer index' => ['SELECT data ->> 0 FROM t'];
+        yield 'arrow literal json' => ["SELECT '{\"a\": 1}' -> '$.a'"];
+        yield 'arrow text literal json' => ["SELECT '{\"a\": 1}' ->> '$.a'"];
+
+        // Цепочки
+        yield 'arrow chain' => ["SELECT data -> '$.a' -> '$.b' FROM t"];
+        yield 'arrow text chain' => ["SELECT data ->> '$.a' ->> '$.b' FROM t"];
+        yield 'arrow mixed chain' => ["SELECT data -> '$.a' ->> '$.b' FROM t"];
+        yield 'arrow array index chain' => ["SELECT data -> '$.items' -> 0 FROM t"];
+        yield 'arrow text array index chain' => ["SELECT data ->> '$.items' ->> 0 FROM t"];
+
+        // В разных контекстах
+        yield 'arrow in select alias' => ["SELECT data ->> '$.name' AS name FROM t"];
+        yield 'arrow in where' => ["SELECT * FROM t WHERE data ->> '$.name' = 'John'"];
+        yield 'arrow in where gt' => ["SELECT * FROM t WHERE data ->> '$.age' > 18"];
+        yield 'arrow in where is null' => ["SELECT * FROM t WHERE data ->> '$.missing' IS NULL"];
+        yield 'arrow in order by' => ["SELECT * FROM t ORDER BY data ->> '$.age'"];
+        yield 'arrow in order by desc' => ["SELECT * FROM t ORDER BY data ->> '$.age' DESC"];
+        yield 'arrow in group by' => [
+            "SELECT data ->> '$.type' AS t, COUNT(*) FROM t GROUP BY data ->> '$.type'",
+        ];
+        yield 'arrow in having' => [
+            "SELECT data ->> '$.type' AS t, COUNT(*) FROM t GROUP BY data ->> '$.type' HAVING COUNT(*) > 1",
+        ];
+        yield 'arrow compare two' => [
+            "SELECT * FROM t WHERE data -> '$.a' = data -> '$.b'",
+        ];
+        yield 'arrow arithmetic' => ["SELECT data ->> '$.a' + 1 FROM t"];
+        yield 'arrow concat' => ["SELECT data ->> '$.a' || '-' || data ->> '$.b' FROM t"];
+        yield 'arrow with cast' => ["SELECT CAST(data ->> '$.a' AS INTEGER) FROM t"];
+
+        // Внутри других функций
+        yield 'arrow inside coalesce' => ["SELECT COALESCE(data ->> '$.name', 'unknown') FROM t"];
+        yield 'arrow inside case' => [
+            "SELECT CASE WHEN data ->> '$.age' >= 18 THEN 'adult' ELSE 'minor' END FROM t",
+        ];
+
+        // Многоуровневый доступ по индексам массива
+        yield 'arrow array member' => ["SELECT data -> '$.items' -> 0 -> '$.id' FROM t"];
+        yield 'arrow text array member' => ["SELECT data ->> '$.items' ->> 0 FROM t"];
+    }
+
+    // ========================================================================
+    // 16. Примеры из реальных кейсов (json_each + -> / ->> + DML)
+    // ========================================================================
+
+    /**
+     * @dataProvider provideJsonEachRealWorldExamples
+     */
+    public function testJsonEachRealWorldExamples(string $sql): void
+    {
+        $this->assertSingleStatement($sql);
+    }
+
+    public static function provideJsonEachRealWorldExamples(): iterable
+    {
+        // SELECT с IN (SELECT ... FROM json_each(...))
+        yield 'select where in json_each parameter' => [
+            'SELECT * FROM users WHERE id IN (SELECT e.value FROM json_each(?) e)',
+        ];
+        yield 'select where in json_each literal' => [
+            "SELECT * FROM users WHERE id IN (SELECT e.value FROM json_each('[1, 2, 3]') e)",
+        ];
+        yield 'select where not in json_each' => [
+            "SELECT * FROM users WHERE id NOT IN (SELECT e.value FROM json_each('[1, 2, 3]') e)",
+        ];
+
+        // INSERT INTO ... SELECT ... FROM json_each(...)
+        yield 'insert select from json_each arrow' => [
+            "INSERT INTO users(name, email) SELECT e ->> 'name', e ->> 'email' FROM json_each(?) e",
+        ];
+        yield 'insert select from json_each arrow literal' => [
+            "INSERT INTO users(name, email) SELECT e ->> 'name', e ->> 'email' FROM json_each('[{\"name\": \"A\", \"email\": \"a@x\"}]') e",
+        ];
+
+        // WITH + INSERT
+        yield 'with insert from json_each' => [
+            "WITH data AS (SELECT e ->> 'name' as name, e ->> 'email' as email FROM json_each(?) e) "
+            . "INSERT INTO users(name, email) SELECT data.name, data.email FROM data",
+        ];
+        yield 'with insert from json_each literal' => [
+            "WITH data AS (SELECT e ->> 'name' as name, e ->> 'email' as email FROM json_each('[{\"name\": \"A\", \"email\": \"a@x\"}]') e) "
+            . "INSERT INTO users(name, email) SELECT data.name, data.email FROM data",
+        ];
+
+        // WITH + UPDATE ... FROM
+        yield 'with update from data' => [
+            "WITH data AS (SELECT e ->> 'id' as id, e ->> 'name' as name, e ->> 'email' as email FROM json_each(?) e) "
+            . "UPDATE users SET email = data.email, name = data.name FROM data WHERE users.id = data.id",
+        ];
+        yield 'with update from data literal' => [
+            "WITH data AS (SELECT e ->> 'id' as id, e ->> 'name' as name, e ->> 'email' as email FROM json_each('[{\"id\": 1, \"name\": \"A\", \"email\": \"a@x\"}]') e) "
+            . "UPDATE users SET email = data.email, name = data.name FROM data WHERE users.id = data.id",
+        ];
+
+        // DELETE с IN (SELECT ... FROM json_each(...))
+        yield 'delete where in json_each parameter' => [
+            'DELETE FROM users WHERE users.id IN (SELECT e.value FROM json_each(?) e)',
+        ];
+        yield 'delete where in json_each literal' => [
+            "DELETE FROM users WHERE users.id IN (SELECT e.value FROM json_each('[1, 2, 3]') e)",
+        ];
+
+        // json_each в JOIN с явным ON
+        yield 'select join json_each on' => [
+            "SELECT u.id, e.value FROM users u JOIN json_each(u.tags) e ON e.value = u.id",
+        ];
+    }
+
+    // ========================================================================
+    // 17. CREATE INDEX с JSON-выражениями
+    // ========================================================================
+
+    /**
+     * @dataProvider provideJsonExpressionIndexes
+     */
+    public function testJsonExpressionIndexes(string $sql): void
+    {
+        $this->assertSingleStatement($sql);
+    }
+
+    public static function provideJsonExpressionIndexes(): iterable
+    {
+        yield 'create index arrow text' => [
+            "CREATE INDEX myindex ON mytable(json_document ->> 'subfield')",
+        ];
+        yield 'create index arrow' => [
+            "CREATE INDEX myindex ON mytable(json_document -> '$.subfield')",
+        ];
+        yield 'create unique index arrow text' => [
+            "CREATE UNIQUE INDEX myindex ON mytable(json_document ->> 'subfield')",
+        ];
+        yield 'create index if not exists' => [
+            "CREATE INDEX IF NOT EXISTS myindex ON mytable(json_document ->> 'subfield')",
+        ];
+        yield 'create index json_extract' => [
+            "CREATE INDEX idx ON t(json_extract(data, '$.a'))",
+        ];
+        yield 'create index arrow chain' => [
+            "CREATE INDEX idx ON t(data -> '$.a' ->> '$.b')",
+        ];
+        yield 'create index two expressions' => [
+            "CREATE INDEX idx ON t(data ->> '$.a', data ->> '$.b')",
+        ];
+    }
+
+    // ========================================================================
+    // 18. Композиции json_each / json_tree / -> / ->> / json_* функций
+    // ========================================================================
+
+    /**
+     * @dataProvider provideJsonTableFunctionCombinations
+     */
+    public function testJsonTableFunctionCombinations(string $sql): void
+    {
+        $this->assertSingleStatement($sql);
+    }
+
+    public static function provideJsonTableFunctionCombinations(): iterable
+    {
+        yield 'json_each of json_extract' => [
+            "SELECT e.value FROM json_each(json_extract(data, '$.items')) e FROM t",
+        ];
+        yield 'json_each of json_group_array' => [
+            "WITH g AS (SELECT json_group_array(id) AS ids FROM t) "
+            . "SELECT e.value FROM g, json_each(g.ids) e",
+        ];
+        yield 'json_tree of json_object' => [
+            "SELECT jt.fullkey FROM json_tree(json_object('a', 1, 'b', 2)) jt",
+        ];
+        yield 'arrow of json_each value' => [
+            "SELECT e.value ->> '$.name' FROM json_each('[{\"name\": \"A\"}]') e",
+        ];
+        yield 'json_each inside CTE' => [
+            "WITH flat AS (SELECT e.value AS v FROM json_each('[1, 2, 3]') e) "
+            . "SELECT v * 2 FROM flat",
+        ];
+        yield 'json_tree inside CTE' => [
+            "WITH tree AS (SELECT jt.fullkey, jt.value FROM json_tree('{\"a\": 1}') jt) "
+            . "SELECT * FROM tree",
+        ];
+        yield 'json_each in UNION' => [
+            "SELECT e.value FROM json_each('[1, 2]') e UNION ALL SELECT e.value FROM json_each('[3, 4]') e",
+        ];
+        yield 'json_each correlated subquery' => [
+            "SELECT u.id, (SELECT COUNT(*) FROM json_each(u.tags) e) AS cnt FROM users u",
+        ];
     }
 }
