@@ -4,7 +4,7 @@ sqlite-parser/
 ├── grammar/
 │   ├── ddl.pp3 (32507 байт)
 │   ├── dml.pp3 (11795 байт)
-│   ├── expression.pp3 (21538 байт)
+│   ├── expression.pp3 (22052 байт)
 │   ├── select.pp3 (18029 байт)
 │   ├── sqlite.pp3 (1440 байт)
 │   ├── statement.pp3 (2461 байт)
@@ -87,12 +87,12 @@ sqlite-parser/
 │   │   └── Reducers.php (5538 байт)
 │   ├── Parser/
 │   │   ├── Parser.php (1312 байт)
-│   │   └── SqliteParser.php (211614 байт)
+│   │   └── SqliteParser.php (213287 байт)
 │   ├── Printer/
 │   │   ├── NodeDumper.php (3921 байт)
 │   │   └── SqlPrinter.php (37889 байт)
 │   ├── Resolver/
-│   │   ├── ArraySchema.php (2888 байт)
+│   │   ├── ArraySchema.php (3262 байт)
 │   │   ├── ColumnResolver.php (13913 байт)
 │   │   └── SchemaProvider.php (1017 байт)
 │   └── Traversal/
@@ -113,6 +113,7 @@ sqlite-parser/
 │   │   ├── DmlTest.php (8478 байт)
 │   │   ├── ExpressionTest.php (10857 байт)
 │   │   ├── FullScriptTest.php (3505 байт)
+│   │   ├── JsonTest.php (28128 байт)
 │   │   ├── QueryCombinationsTest.php (17187 байт)
 │   │   ├── SelectTest.php (3687 байт)
 │   │   └── UtilityTest.php (8828 байт)
@@ -120,7 +121,7 @@ sqlite-parser/
 │       ├── ParserTest.php (1523 байт)
 │       └── SqliteParserTest.php (2502 байт)
 ├── .gitattributes (108 байт)
-├── .phpunit.result.cache (147394 байт)
+├── .phpunit.result.cache (163556 байт)
 ├── composer.json (1783 байт)
 ├── phpstan.neon (225 байт)
 ├── phpstan.neon.dist (225 байт)
