@@ -33,11 +33,18 @@
 // дополнительная альтернатива `( ::T_LPAREN:: Expression() ::T_RPAREN:: )`
 // не нужна и только увеличивает неоднозначность.
 //
-// ВАЖНО (CREATE INDEX): список индексируемых выражений может содержать
-// как простые идентификаторы (`a, b`), так и произвольные выражения
-// (`json_document ->> 'subfield'`, `json_extract(data, '$.a')`). Поэтому
-// используется `ExprList()` — он покрывает оба случая (идентификатор
-// разбирается как ColumnReference).
+// ВАЖНО (CREATE INDEX): список индексируемых выражений реализован через
+// `ExprList()` — так поддерживаются оба случая:
+//   - простые идентификаторы (`a, b`) — парсятся как ColumnReference;
+//   - произвольные выражения (`json_document ->> 'subfield'`,
+//     `json_extract(data, '$.a')`) — как полноценные Expression.
+//
+// В редьюсере `CreateIndexStatement` результат нормализуется:
+// простые ColumnReference (без квалификатора таблицы) сворачиваются обратно
+// в строковые имена колонок, чтобы `columns` оставался `array<string|Expression>`.
+// Это сохраняет совместимость с `SqlPrinter` и тестами, которые для обычных
+// индексов ожидают массив имён колонок (строк), а для expression-based
+// индексов — массив Expression-узлов.
 // ============================================================================
 
 // ----------------------------------------------------------------------------
@@ -559,13 +566,15 @@ TableConstraint
 // ----------------------------------------------------------------------------
 // CREATE INDEX
 //
-// ВАЖНО: список индексируемых выражений реализован через `ExprList()`.
-// `IdentList()` не подходит, потому что для записей вида
-//   `CREATE INDEX i ON t(data ->> '$.a')`
-// LALR-парсер жадно матчит `data` как IdentList и падает на `->>`.
-// `ExprList()` покрывает оба случая: одиночный идентификатор парсится
-// как `ColumnReference`, а стрелочные/функциональные выражения — как
-// соответствующие Expression-узлы.
+// ВАЖНО: список индексируемых выражений парсится через `ExprList()`.
+// Это позволяет поддерживать как простые идентификаторы (`a, b`), так и
+// произвольные выражения (`data ->> '$.a'`, `json_extract(data, '$.a')`).
+//
+// В редьюсере выполняется нормализация: одиночные `ColumnReference` без
+// квалификатора таблицы сворачиваются в строковое имя колонки, чтобы
+// `CreateIndexStatement::columns` для обычных индексов оставался
+// `array<string>` (совместимость с `SqlPrinter` и тестами). Expression-узлы
+// (стрелочные операторы, вызовы функций и т.п.) остаются как есть.
 // ----------------------------------------------------------------------------
 
 CreateIndexStatement
@@ -591,6 +600,18 @@ CreateIndexStatement
         };
         $collect($children);
 
+        // Нормализует один элемент списка индексируемых выражений:
+        // простые ColumnReference без таблицы -> строковое имя колонки,
+        // всё остальное -> как есть (Expression).
+        $normalize = static function ($col) {
+            if ($col instanceof \Inilim\SqliteParser\Ast\Expression\ColumnReference
+                && $col->table === null
+            ) {
+                return $col->name;
+            }
+            return $col;
+        };
+
         $nameSet = false;
         foreach ($flat as $item) {
             if ($item instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
@@ -609,7 +630,10 @@ CreateIndexStatement
                 continue;
             }
             if ($item instanceof \Inilim\SqliteParser\Ast\Expression\ExpressionList) {
-                $columns = $item->items;
+                $columns = [];
+                foreach ($item->items as $col) {
+                    $columns[] = $normalize($col);
+                }
                 continue;
             }
             if ($item instanceof \Inilim\SqliteParser\Ast\Expression) {
