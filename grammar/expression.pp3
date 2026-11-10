@@ -4,10 +4,10 @@
 // Приоритеты (по возрастанию):
 //   OR < AND < NOT < Comparison(= <> != < <= > >=)
 //      < Additive(+ -) < Multiplicative(* / %)
-//      < Unary(+ - ~) < Primary
+//      < Concat(||) < Unary(+ - ~) < Primary
 //
 // ВАЖНО: во всех редукторах OrExpr / AndExpr / Comparison / Additive /
-// Multiplicative используется `\array_slice($children, 1)`.
+// Multiplicative / Concat используется `\array_slice($children, 1)`.
 // ============================================================================
 
 // ----------------------------------------------------------------------------
@@ -123,7 +123,7 @@ Multiplicative
             \array_slice($children, 1),
         );
     }
-    : Unary() (MulOp() Unary())*
+    : Concat() (MulOp() Concat())*
     ;
 
 MulOp
@@ -131,6 +131,26 @@ MulOp
     : <T_STAR>
     | <T_SLASH>
     | <T_PERCENT>
+    ;
+
+Concat
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+        $left = $children[0] ?? null;
+        if (!$left instanceof \Inilim\SqliteParser\Ast\Expression) {
+            return $left;
+        }
+        return \Inilim\SqliteParser\Grammar\Reducers::foldLeftBinaryChain(
+            $left,
+            \array_slice($children, 1),
+        );
+    }
+    : Unary() (ConcatOp() Unary())*
+    ;
+
+ConcatOp
+    -> { return $children->value; }
+    : <T_CONCAT>
     ;
 
 Unary

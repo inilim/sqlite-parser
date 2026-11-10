@@ -65,7 +65,7 @@ final class CombinatoricsTest extends TestCase
                         foreach ($groups as $g) {
                             foreach ($orders as $o) {
                                 foreach ($limits as $l) {
-                                    yield [$d . 'SELECT ' . $c . $f . $w . $g . $o . $l];
+                                    yield ['SELECT ' . $d . $c . $f . $w . $g . $o . $l];
                                 }
                             }
                         }
