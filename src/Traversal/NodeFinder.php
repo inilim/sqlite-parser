@@ -28,7 +28,7 @@ final class NodeFinder
     private \Closure $predicate;
 
     /**
-     * @param string|\Closure(Node): bool $predicate Класс узла либо замыкание-предикат.
+     * @param class-string<Node>|\Closure(Node): bool $predicate Класс узла либо замыкание-предикат.
      */
     public function __construct(string|\Closure $predicate)
     {
@@ -39,6 +39,9 @@ final class NodeFinder
         }
     }
 
+    /**
+     * @param class-string<Node> $class
+     */
     public static function byClass(string $class): self
     {
         return new self($class);

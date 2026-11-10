@@ -94,7 +94,7 @@ sqlite-parser/
 │   └── Traversal/
 │       ├── NodeChildExtractor.php (2306 байт)
 │       ├── NodeCloner.php (1534 байт)
-│       ├── NodeFinder.php (2431 байт)
+│       ├── NodeFinder.php (2500 байт)
 │       ├── NodeTransformer.php (5256 байт)
 │       ├── NodeTraverser.php (1266 байт)
 │       └── NodeVisitor.php (978 байт)
