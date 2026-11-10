@@ -899,7 +899,6 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
         false,
         false,
         false,
-        false,
         true,
         false,
         true,
@@ -2541,26 +2540,6 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
         [
             52 => true,
         ],
-        [
-            16 => true,
-            18 => true,
-            23 => true,
-            true,
-            29 => true,
-            62 => true,
-            106 => true,
-            true,
-            126 => true,
-            true,
-            true,
-            true,
-            true,
-            true,
-            143 => true,
-            true,
-            147 => true,
-            151 => true,
-        ],
         null,
         [
             4 => true,
@@ -2927,44 +2906,44 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
             50 => [
                 301,
                 383,
-                389,
-                391,
+                388,
+                390,
             ],
             55 => [
-                417,
+                416,
             ],
             56 => [
-                430,
+                429,
             ],
             75 => [
-                439,
+                438,
             ],
             76 => [
-                460,
+                459,
             ],
             77 => [
-                464,
+                463,
             ],
             28 => [
-                466,
+                465,
             ],
             79 => [
-                466,
+                465,
             ],
             84 => [
-                466,
+                465,
             ],
             85 => [
-                466,
+                465,
             ],
             86 => [
-                491,
+                490,
             ],
             87 => [
-                491,
+                490,
             ],
             88 => [
-                496,
+                495,
             ],
         ],
         13 => [
@@ -3733,95 +3712,45 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
                 -382,
             ],
         ],
-        386 => [
-            16 => [
-                80,
-            ],
-            18 => [
-                80,
-            ],
-            23 => [
-                80,
-            ],
-            [
-                80,
-            ],
-            29 => [
-                80,
-            ],
-            62 => [
-                80,
-            ],
-            106 => [
-                80,
-            ],
-            [
-                80,
-            ],
-            126 => [
-                80,
-            ],
-            [
-                80,
-            ],
-            [
-                80,
-            ],
-            [
-                80,
-            ],
-            [
-                80,
-            ],
-            143 => [
-                80,
-            ],
-            [
-                80,
-            ],
-            147 => [
-                80,
-            ],
-            151 => [
-                80,
-            ],
-        ],
-        394 => [
+        393 => [
             114 => [
+                -395,
+            ],
+            [
                 -396,
             ],
             [
                 -397,
             ],
-            [
-                -398,
-            ],
         ],
-        398 => [
+        397 => [
             43 => [
-                -400,
+                -399,
             ],
             47 => [
-                400,
+                399,
             ],
             49 => [
                 -342,
             ],
         ],
-        419 => [
+        418 => [
             57 => [
-                420,
-                423,
+                419,
+                422,
             ],
             [
-                426,
+                425,
             ],
             56 => [
-                428,
+                427,
             ],
         ],
-        432 => [
+        431 => [
             51 => [
+                -433,
+            ],
+            [
                 -434,
             ],
             [
@@ -3830,27 +3759,24 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
             [
                 -436,
             ],
-            [
-                -437,
-            ],
         ],
-        441 => [
+        440 => [
             131 => [
-                442,
+                441,
             ],
             129 => [
-                445,
+                444,
             ],
         ],
-        449 => [
+        448 => [
             138 => [
-                450,
+                449,
             ],
             151 => [
-                458,
+                457,
             ],
         ],
-        451 => [
+        450 => [
             18 => [
                 122,
             ],
@@ -3876,51 +3802,51 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
                 -16,
             ],
             38 => [
-                -453,
+                -452,
             ],
             49 => [
                 -342,
             ],
             147 => [
-                453,
-                455,
+                452,
+                454,
             ],
             144 => [
-                454,
-                457,
+                453,
+                456,
             ],
         ],
-        466 => [
+        465 => [
             79 => [
-                467,
+                466,
             ],
             84 => [
-                478,
+                477,
             ],
             28 => [
-                480,
+                479,
             ],
             [
-                482,
+                481,
             ],
         ],
-        470 => [
+        469 => [
             80 => [
+                -471,
+            ],
+            [
                 -472,
             ],
             [
                 -473,
             ],
-            [
-                -474,
-            ],
         ],
-        491 => [
+        490 => [
             86 => [
-                492,
+                491,
             ],
             [
-                494,
+                493,
             ],
         ],
     ];
@@ -3929,8 +3855,8 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
     private const array PARSER_SEQUENCE_PREDICTION_TABLE = [
         3 => [
             4,
-            -415,
-            -417,
+            -414,
+            -416,
         ],
         5 => [
             -8,
@@ -4256,134 +4182,134 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
             231,
             13,
             18,
-            386,
+            80,
             24,
-            -389,
+            -388,
         ],
-        389 => [
+        388 => [
             302,
             -305,
-            390,
+            389,
             -310,
             13,
             -18,
             25,
             5,
         ],
-        391 => [
+        390 => [
             302,
             -305,
-            392,
+            391,
             -310,
             13,
-            -395,
-            398,
+            -394,
+            397,
             231,
             13,
-            -406,
-            -411,
-            411,
+            -405,
+            -410,
+            410,
         ],
-        400 => [
+        399 => [
             342,
-            -403,
+            -402,
         ],
-        411 => [
-            412,
+        410 => [
+            411,
             4,
-            -415,
-            416,
+            -414,
+            415,
             72,
         ],
-        423 => [
-            421,
-            -426,
+        422 => [
+            420,
+            -425,
             13,
-            422,
+            421,
             13,
         ],
-        426 => [
-            427,
-            -426,
+        425 => [
+            426,
+            -425,
             353,
         ],
-        428 => [
-            429,
-            -426,
+        427 => [
+            428,
+            -425,
             13,
         ],
-        430 => [
+        429 => [
+            430,
             431,
-            432,
-            -439,
+            -438,
             13,
         ],
-        439 => [
+        438 => [
+            439,
             440,
-            441,
-            -450,
+            -449,
         ],
-        442 => [
+        441 => [
             14,
-            -445,
+            -444,
         ],
-        445 => [
+        444 => [
             15,
-            -448,
+            -447,
         ],
-        458 => [
+        457 => [
             18,
-            -452,
+            -451,
             24,
         ],
-        460 => [
-            461,
-            -464,
+        459 => [
+            460,
+            -463,
             38,
             25,
             290,
         ],
-        464 => [
-            465,
-            -464,
+        463 => [
+            464,
+            -463,
             290,
         ],
-        467 => [
-            468,
-            -471,
-            -476,
+        466 => [
+            467,
+            -470,
+            -475,
         ],
-        475 => [
-            476,
+        474 => [
+            475,
             -291,
         ],
-        478 => [
-            479,
-            -476,
+        477 => [
+            478,
+            -475,
         ],
-        480 => [
-            481,
-            476,
+        479 => [
+            480,
+            475,
             -291,
         ],
-        482 => [
+        481 => [
             269,
-            -477,
-            -486,
+            -476,
+            -485,
         ],
-        486 => [
-            422,
-            -489,
+        485 => [
+            421,
+            -488,
             290,
         ],
-        494 => [
-            495,
-            -489,
+        493 => [
+            494,
+            -488,
             290,
         ],
-        496 => [
-            497,
-            -500,
+        495 => [
+            496,
+            -499,
             4,
         ],
     ];
@@ -4573,8 +4499,8 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
                 new \Phplrt\Parser\Grammar\Alternation([1, 2]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_SEMICOLON, true),
                 new \Phplrt\Parser\Grammar\Optional(3),
-                new \Phplrt\Parser\Grammar\Concatenation([4, 413, 502]),
-                new \Phplrt\Parser\Grammar\Alternation([5, 260, 298, 299, 301, 383, 389, 391, 417, 430, 439, 460, 464, 466, 491, 496]),
+                new \Phplrt\Parser\Grammar\Concatenation([4, 412, 501]),
+                new \Phplrt\Parser\Grammar\Alternation([5, 260, 298, 299, 301, 383, 388, 390, 416, 429, 438, 459, 463, 465, 490, 495]),
                 new \Phplrt\Parser\Grammar\Concatenation([6, 29, 244, 92, 253]),
                 new \Phplrt\Parser\Grammar\Optional(7),
                 new \Phplrt\Parser\Grammar\Concatenation([8, 9, 11]),
@@ -4953,126 +4879,125 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
                 new \Phplrt\Parser\Grammar\Concatenation([23, 381]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_STRICT, true),
                 new \Phplrt\Parser\Grammar\Concatenation([25, 5]),
-                new \Phplrt\Parser\Grammar\Concatenation([302, 384, 385, 308, 13, 231, 13, 18, 386, 24, 387]),
+                new \Phplrt\Parser\Grammar\Concatenation([302, 384, 385, 308, 13, 231, 13, 18, 80, 24, 386]),
                 new \Phplrt\Parser\Grammar\Optional(330),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_INDEX, false),
-                new \Phplrt\Parser\Grammar\Alternation([19, 80]),
-                new \Phplrt\Parser\Grammar\Optional(388),
+                new \Phplrt\Parser\Grammar\Optional(387),
                 new \Phplrt\Parser\Grammar\Concatenation([237, 38]),
-                new \Phplrt\Parser\Grammar\Concatenation([302, 303, 390, 308, 13, 16, 25, 5]),
+                new \Phplrt\Parser\Grammar\Concatenation([302, 303, 389, 308, 13, 16, 25, 5]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_VIEW, false),
-                new \Phplrt\Parser\Grammar\Concatenation([302, 303, 392, 308, 13, 393, 398, 231, 13, 404, 409, 411]),
+                new \Phplrt\Parser\Grammar\Concatenation([302, 303, 391, 308, 13, 392, 397, 231, 13, 403, 408, 410]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_TRIGGER, false),
-                new \Phplrt\Parser\Grammar\Optional(394),
-                new \Phplrt\Parser\Grammar\Alternation([395, 396, 397]),
+                new \Phplrt\Parser\Grammar\Optional(393),
+                new \Phplrt\Parser\Grammar\Alternation([394, 395, 396]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_BEFORE, true),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_AFTER, true),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_INSTEAD, true),
-                new \Phplrt\Parser\Grammar\Alternation([399, 400, 341]),
+                new \Phplrt\Parser\Grammar\Alternation([398, 399, 341]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_INSERT, true),
-                new \Phplrt\Parser\Grammar\Concatenation([342, 401]),
-                new \Phplrt\Parser\Grammar\Optional(402),
-                new \Phplrt\Parser\Grammar\Concatenation([403, 19]),
+                new \Phplrt\Parser\Grammar\Concatenation([342, 400]),
+                new \Phplrt\Parser\Grammar\Optional(401),
+                new \Phplrt\Parser\Grammar\Concatenation([402, 19]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_OF, false),
-                new \Phplrt\Parser\Grammar\Optional(405),
-                new \Phplrt\Parser\Grammar\Concatenation([406, 407, 408]),
+                new \Phplrt\Parser\Grammar\Optional(404),
+                new \Phplrt\Parser\Grammar\Concatenation([405, 406, 407]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_FOR, false),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_EACH, false),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_ROW, false),
-                new \Phplrt\Parser\Grammar\Optional(410),
+                new \Phplrt\Parser\Grammar\Optional(409),
                 new \Phplrt\Parser\Grammar\Concatenation([67, 38]),
-                new \Phplrt\Parser\Grammar\Concatenation([412, 4, 413, 416, 72]),
+                new \Phplrt\Parser\Grammar\Concatenation([411, 4, 412, 415, 72]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_BEGIN, false),
-                new \Phplrt\Parser\Grammar\Optional(414),
-                new \Phplrt\Parser\Grammar\Repetition(415, 1, \INF),
-                new \Phplrt\Parser\Grammar\Concatenation([416, 4]),
+                new \Phplrt\Parser\Grammar\Optional(413),
+                new \Phplrt\Parser\Grammar\Repetition(414, 1, \INF),
+                new \Phplrt\Parser\Grammar\Concatenation([415, 4]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_SEMICOLON, false),
-                new \Phplrt\Parser\Grammar\Concatenation([418, 307, 13, 419]),
+                new \Phplrt\Parser\Grammar\Concatenation([417, 307, 13, 418]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_ALTER, false),
-                new \Phplrt\Parser\Grammar\Alternation([420, 423, 426, 428]),
-                new \Phplrt\Parser\Grammar\Concatenation([421, 422, 13]),
+                new \Phplrt\Parser\Grammar\Alternation([419, 422, 425, 427]),
+                new \Phplrt\Parser\Grammar\Concatenation([420, 421, 13]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_RENAME, true),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_TO, true),
-                new \Phplrt\Parser\Grammar\Concatenation([421, 424, 13, 422, 13]),
-                new \Phplrt\Parser\Grammar\Optional(425),
+                new \Phplrt\Parser\Grammar\Concatenation([420, 423, 13, 421, 13]),
+                new \Phplrt\Parser\Grammar\Optional(424),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_COLUMN, true),
-                new \Phplrt\Parser\Grammar\Concatenation([427, 424, 353]),
+                new \Phplrt\Parser\Grammar\Concatenation([426, 423, 353]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_ADD, true),
-                new \Phplrt\Parser\Grammar\Concatenation([429, 424, 13]),
+                new \Phplrt\Parser\Grammar\Concatenation([428, 423, 13]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_DROP, true),
-                new \Phplrt\Parser\Grammar\Concatenation([431, 432, 437, 13]),
+                new \Phplrt\Parser\Grammar\Concatenation([430, 431, 436, 13]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_DROP, false),
-                new \Phplrt\Parser\Grammar\Alternation([433, 434, 435, 436]),
+                new \Phplrt\Parser\Grammar\Alternation([432, 433, 434, 435]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_TABLE, true),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_INDEX, true),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_VIEW, true),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_TRIGGER, true),
-                new \Phplrt\Parser\Grammar\Optional(438),
+                new \Phplrt\Parser\Grammar\Optional(437),
                 new \Phplrt\Parser\Grammar\Concatenation([310, 312]),
-                new \Phplrt\Parser\Grammar\Concatenation([440, 441, 448]),
+                new \Phplrt\Parser\Grammar\Concatenation([439, 440, 447]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_PRAGMA, false),
-                new \Phplrt\Parser\Grammar\Alternation([442, 445]),
-                new \Phplrt\Parser\Grammar\Concatenation([14, 443]),
-                new \Phplrt\Parser\Grammar\Optional(444),
+                new \Phplrt\Parser\Grammar\Alternation([441, 444]),
+                new \Phplrt\Parser\Grammar\Concatenation([14, 442]),
+                new \Phplrt\Parser\Grammar\Optional(443),
                 new \Phplrt\Parser\Grammar\Concatenation([134, 14]),
-                new \Phplrt\Parser\Grammar\Concatenation([15, 446]),
-                new \Phplrt\Parser\Grammar\Optional(447),
+                new \Phplrt\Parser\Grammar\Concatenation([15, 445]),
+                new \Phplrt\Parser\Grammar\Optional(446),
                 new \Phplrt\Parser\Grammar\Concatenation([134, 15]),
-                new \Phplrt\Parser\Grammar\Optional(449),
-                new \Phplrt\Parser\Grammar\Alternation([450, 458]),
-                new \Phplrt\Parser\Grammar\Concatenation([291, 451]),
-                new \Phplrt\Parser\Grammar\Alternation([122, 14, 15, 452, 341, 453, 454, 455, 457]),
+                new \Phplrt\Parser\Grammar\Optional(448),
+                new \Phplrt\Parser\Grammar\Alternation([449, 457]),
+                new \Phplrt\Parser\Grammar\Concatenation([291, 450]),
+                new \Phplrt\Parser\Grammar\Alternation([122, 14, 15, 451, 341, 452, 453, 454, 456]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_ON, true),
                 new \Phplrt\Parser\Grammar\Concatenation([51, 256]),
                 new \Phplrt\Parser\Grammar\Concatenation([49, 256]),
-                new \Phplrt\Parser\Grammar\Concatenation([51, 456]),
+                new \Phplrt\Parser\Grammar\Concatenation([51, 455]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_FLOAT, true),
-                new \Phplrt\Parser\Grammar\Concatenation([49, 456]),
-                new \Phplrt\Parser\Grammar\Concatenation([18, 459, 24]),
-                new \Phplrt\Parser\Grammar\Optional(451),
-                new \Phplrt\Parser\Grammar\Concatenation([461, 462, 38, 25, 290]),
+                new \Phplrt\Parser\Grammar\Concatenation([49, 455]),
+                new \Phplrt\Parser\Grammar\Concatenation([18, 458, 24]),
+                new \Phplrt\Parser\Grammar\Optional(450),
+                new \Phplrt\Parser\Grammar\Concatenation([460, 461, 38, 25, 290]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_ATTACH, false),
-                new \Phplrt\Parser\Grammar\Optional(463),
+                new \Phplrt\Parser\Grammar\Optional(462),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_DATABASE, false),
-                new \Phplrt\Parser\Grammar\Concatenation([465, 462, 290]),
+                new \Phplrt\Parser\Grammar\Concatenation([464, 461, 290]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_DETACH, false),
-                new \Phplrt\Parser\Grammar\Alternation([467, 478, 480, 482]),
-                new \Phplrt\Parser\Grammar\Concatenation([468, 469, 474]),
+                new \Phplrt\Parser\Grammar\Alternation([466, 477, 479, 481]),
+                new \Phplrt\Parser\Grammar\Concatenation([467, 468, 473]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_BEGIN, true),
-                new \Phplrt\Parser\Grammar\Optional(470),
-                new \Phplrt\Parser\Grammar\Alternation([471, 472, 473]),
+                new \Phplrt\Parser\Grammar\Optional(469),
+                new \Phplrt\Parser\Grammar\Alternation([470, 471, 472]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_DEFERRED, true),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_IMMEDIATE, true),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_EXCLUSIVE, true),
-                new \Phplrt\Parser\Grammar\Optional(475),
-                new \Phplrt\Parser\Grammar\Concatenation([476, 477]),
+                new \Phplrt\Parser\Grammar\Optional(474),
+                new \Phplrt\Parser\Grammar\Concatenation([475, 476]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_TRANSACTION, false),
                 new \Phplrt\Parser\Grammar\Optional(290),
-                new \Phplrt\Parser\Grammar\Concatenation([479, 474]),
+                new \Phplrt\Parser\Grammar\Concatenation([478, 473]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_COMMIT, true),
-                new \Phplrt\Parser\Grammar\Concatenation([481, 476, 477]),
+                new \Phplrt\Parser\Grammar\Concatenation([480, 475, 476]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_END, true),
-                new \Phplrt\Parser\Grammar\Concatenation([269, 483, 484]),
-                new \Phplrt\Parser\Grammar\Optional(476),
-                new \Phplrt\Parser\Grammar\Optional(485),
-                new \Phplrt\Parser\Grammar\Alternation([486, 489]),
-                new \Phplrt\Parser\Grammar\Concatenation([422, 487, 290]),
-                new \Phplrt\Parser\Grammar\Optional(488),
+                new \Phplrt\Parser\Grammar\Concatenation([269, 482, 483]),
+                new \Phplrt\Parser\Grammar\Optional(475),
+                new \Phplrt\Parser\Grammar\Optional(484),
+                new \Phplrt\Parser\Grammar\Alternation([485, 488]),
+                new \Phplrt\Parser\Grammar\Concatenation([421, 486, 290]),
+                new \Phplrt\Parser\Grammar\Optional(487),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_SAVEPOINT, false),
-                new \Phplrt\Parser\Grammar\Concatenation([490, 488, 290]),
+                new \Phplrt\Parser\Grammar\Concatenation([489, 487, 290]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_TO, false),
-                new \Phplrt\Parser\Grammar\Alternation([492, 494]),
-                new \Phplrt\Parser\Grammar\Concatenation([493, 290]),
+                new \Phplrt\Parser\Grammar\Alternation([491, 493]),
+                new \Phplrt\Parser\Grammar\Concatenation([492, 290]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_SAVEPOINT, true),
-                new \Phplrt\Parser\Grammar\Concatenation([495, 487, 290]),
+                new \Phplrt\Parser\Grammar\Concatenation([494, 486, 290]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_RELEASE, true),
-                new \Phplrt\Parser\Grammar\Concatenation([497, 498, 4]),
+                new \Phplrt\Parser\Grammar\Concatenation([496, 497, 4]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_EXPLAIN, false),
-                new \Phplrt\Parser\Grammar\Optional(499),
-                new \Phplrt\Parser\Grammar\Concatenation([500, 501]),
+                new \Phplrt\Parser\Grammar\Optional(498),
+                new \Phplrt\Parser\Grammar\Concatenation([499, 500]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_QUERY, true),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_PLAN, true),
-                new \Phplrt\Parser\Grammar\Optional(416),
+                new \Phplrt\Parser\Grammar\Optional(415),
             ],
             initial: 0,
             reducers: [
@@ -5158,22 +5083,22 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
                 362 => self::reduceColumnConstraint(...),
                 375 => self::reduceTableOptions(...),
                 383 => self::reduceCreateIndexStatement(...),
-                389 => self::reduceCreateViewStatement(...),
-                391 => self::reduceCreateTriggerStatement(...),
-                394 => self::reduceTriggerTiming(...),
-                398 => self::reduceTriggerEvent(...),
-                411 => self::reduceTriggerBody(...),
-                417 => self::reduceAlterTableStatement(...),
-                430 => self::reduceDropStatement(...),
-                438 => self::reduceIfExistsClause(...),
-                439 => self::reducePragmaStatement(...),
-                441 => self::reducePragmaName(...),
-                451 => self::reducePragmaValue(...),
-                460 => self::reduceAttachStatement(...),
-                464 => self::reduceDetachStatement(...),
-                466 => self::reduceTransactionStatement(...),
-                491 => self::reduceSavepointStatement(...),
-                496 => self::reduceExplainStatement(...),
+                388 => self::reduceCreateViewStatement(...),
+                390 => self::reduceCreateTriggerStatement(...),
+                393 => self::reduceTriggerTiming(...),
+                397 => self::reduceTriggerEvent(...),
+                410 => self::reduceTriggerBody(...),
+                416 => self::reduceAlterTableStatement(...),
+                429 => self::reduceDropStatement(...),
+                437 => self::reduceIfExistsClause(...),
+                438 => self::reducePragmaStatement(...),
+                440 => self::reducePragmaName(...),
+                450 => self::reducePragmaValue(...),
+                459 => self::reduceAttachStatement(...),
+                463 => self::reduceDetachStatement(...),
+                465 => self::reduceTransactionStatement(...),
+                490 => self::reduceSavepointStatement(...),
+                495 => self::reduceExplainStatement(...),
             ],
             expectations: self::PARSER_EXPECTATIONS,
             kept: self::PARSER_KEPT_TABLE,
@@ -5951,7 +5876,7 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
                 if ($v === '->' || $v === '->>') {
                     $right = $children[1] ?? null;
                     if ($right instanceof \Inilim\SqliteParser\Ast\Expression) {
-                        return new \Inilim\SqliteParser\Ast\Expression\BinaryOperation($left, $v, $right);
+                        return new \Inilim\SqliteParser\Ast\Expression\BinaryOperation($v, $left, $right);
                     }
                     return $left;
                 }
