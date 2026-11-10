@@ -594,6 +594,10 @@ CreateIndexStatement
                 $columns = $item->items;
                 continue;
             }
+            if ($item instanceof \Inilim\SqliteParser\Ast\Expression\ExpressionList) {
+                $columns = $item->items;
+                continue;
+            }
             if ($item instanceof \Inilim\SqliteParser\Ast\Expression) {
                 $where = $item;
                 continue;
@@ -620,7 +624,7 @@ CreateIndexStatement
     }
     : ::T_CREATE:: (<T_UNIQUE>)? ::T_INDEX:: IfNotExistsClause()? TableName()
       ::T_ON:: TableName()
-      ::T_LPAREN:: IdentList() ::T_RPAREN::
+      ::T_LPAREN:: (IdentList() | ExprList()) ::T_RPAREN::
       (::T_WHERE:: Expression())?
     ;
 

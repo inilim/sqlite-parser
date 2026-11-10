@@ -209,11 +209,13 @@ PrimaryBase
         return $children[0] ?? null;
     }
     : Subquery()
+    | ExistsExpression()
     | ::T_LPAREN:: Expression() ::T_RPAREN::
     | CastExpression()
     | CaseExpression()
     | FunctionCallWithOver()
     | Literal()
+    | Parameter()
     | ColumnReference()
     ;
 
@@ -228,6 +230,19 @@ Subquery
         return null;
     }
     : ::T_LPAREN:: SelectStatement() ::T_RPAREN::
+    ;
+
+ExistsExpression
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+        foreach ($children as $child) {
+            if ($child instanceof \Inilim\SqliteParser\Ast\Statement) {
+                return new \Inilim\SqliteParser\Ast\Expression\Subquery($child);
+            }
+        }
+        return null;
+    }
+    : <T_EXISTS> ::T_LPAREN:: SelectStatement() ::T_RPAREN::
     ;
 
 FunctionCallWithOver
@@ -369,6 +384,14 @@ PostfixOp
             }
             $v = \strtoupper($first->value);
 
+            if ($v === '->' || $v === '->>') {
+                $right = $children[1] ?? null;
+                if ($right instanceof \Inilim\SqliteParser\Ast\Expression) {
+                    return new \Inilim\SqliteParser\Ast\Expression\BinaryOperation($left, $v, $right);
+                }
+                return $left;
+            }
+
             if ($v === 'IS') {
                 $not = false;
                 if (isset($children[1]) && $children[1] instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
@@ -471,7 +494,9 @@ PostfixOp
             return $left;
         };
     }
-    : <T_IS> (<T_NOT>)? ::T_NULL::
+    : <T_ARROW> Unary()
+    | <T_ARROW_TEXT> Unary()
+    | <T_IS> (<T_NOT>)? ::T_NULL::
     | <T_LIKE> Additive()
     | <T_GLOB> Additive()
     | <T_BETWEEN> Additive() ::T_AND:: Additive()
@@ -511,6 +536,11 @@ Literal
     | NullLiteral()
     | TrueLiteral()
     | FalseLiteral()
+    ;
+
+Parameter
+    -> { return new \Inilim\SqliteParser\Ast\Expression\Literal($children->value, 'parameter'); }
+    : <T_PARAMETER>
     ;
 
 IntLiteral
@@ -573,8 +603,9 @@ ColumnReference
 
         return new \Inilim\SqliteParser\Ast\Expression\ColumnReference($name, $table);
     }
-    : <T_IDENT> (::T_DOT:: <T_IDENT>)?
-    | <T_QUOTED_IDENT> (::T_DOT:: <T_QUOTED_IDENT>)?
+    : <T_IDENT> (::T_DOT:: (<T_IDENT> | <T_KEY>))?
+    | <T_QUOTED_IDENT> (::T_DOT:: (<T_QUOTED_IDENT> | <T_KEY>))?
+    | <T_KEY>
     ;
 
 FunctionCall

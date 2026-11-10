@@ -84,7 +84,7 @@ InsertStatement
             returning: $returning,
         );
     }
-    : ::T_INSERT:: OrAction()? ::T_INTO:: TableName()
+    : WithClause()? ::T_INSERT:: OrAction()? ::T_INTO:: TableName()
       (::T_LPAREN:: IdentList() ::T_RPAREN::)?
       InsertBody()
       UpsertClause()?
@@ -257,8 +257,9 @@ UpdateStatement
             returning: $returning,
         );
     }
-    : ::T_UPDATE:: OrAction()? TableName()
+    : WithClause()? ::T_UPDATE:: OrAction()? TableName()
       ::T_SET:: AssignmentList()
+      FromClause()?
       WhereClause()? ReturningClause()?
     ;
 
@@ -299,7 +300,7 @@ DeleteStatement
             returning: $returning,
         );
     }
-    : ::T_DELETE:: ::T_FROM:: TableName() WhereClause()? ReturningClause()?
+    : WithClause()? ::T_DELETE:: ::T_FROM:: TableName() WhereClause()? ReturningClause()?
     ;
 
 // ----------------------------------------------------------------------------

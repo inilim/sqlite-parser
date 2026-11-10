@@ -302,7 +302,30 @@ FromClause
 
         return new \Inilim\SqliteParser\Ast\Statement\FromClause($base, $joins);
     }
-    : ::T_FROM:: TableReference() (JoinClause())*
+    : ::T_FROM:: TableReference() (JoinClause() | CommaJoin())*
+    ;
+
+CommaJoin
+    -> {
+        $children = \is_array($children) ? $children : [$children];
+
+        $table = null;
+        foreach ($children as $child) {
+            if ($child instanceof \Inilim\SqliteParser\Ast\Statement\TableReference) {
+                $table = $child;
+                break;
+            }
+        }
+
+        return new \Inilim\SqliteParser\Ast\Statement\JoinClause(
+            type: 'CROSS',
+            table: $table,
+            on: null,
+            using: null,
+            natural: false,
+        );
+    }
+    : ::T_COMMA:: TableReference()
     ;
 
 JoinClause
@@ -395,6 +418,8 @@ TableReference
             $name = $first;
         } elseif ($first instanceof \Inilim\SqliteParser\Ast\Statement) {
             $subquery = $first;
+        } elseif ($first instanceof \Inilim\SqliteParser\Ast\Expression\FunctionCall) {
+            $name = $first->name;
         }
 
         $collectAliases = static function ($items) use (&$collectAliases, &$columnAliases, &$alias): void {
@@ -430,7 +455,8 @@ TableReference
             columnAliases: $columnAliases === [] ? null : $columnAliases,
         );
     }
-    : TableName() ((::T_AS::)? <T_IDENT>)? (::T_LPAREN:: IdentList() ::T_RPAREN::)?
+    : FunctionCall() ((::T_AS::)? <T_IDENT>)? (::T_LPAREN:: IdentList() ::T_RPAREN::)?
+    | TableName() ((::T_AS::)? <T_IDENT>)? (::T_LPAREN:: IdentList() ::T_RPAREN::)?
     | ::T_LPAREN:: SelectStatement() ::T_RPAREN:: ((::T_AS::)? <T_IDENT>)? (::T_LPAREN:: IdentList() ::T_RPAREN::)?
     ;
 
