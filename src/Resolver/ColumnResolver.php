@@ -8,40 +8,67 @@ use Inilim\SqliteParser\Ast\Expression\ColumnReference;
 use Inilim\SqliteParser\Ast\Expression\Star;
 use Inilim\SqliteParser\Ast\Statement;
 use Inilim\SqliteParser\Ast\Statement\CompoundSelect;
+use Inilim\SqliteParser\Ast\Statement\CreateTableStatement;
+use Inilim\SqliteParser\Ast\Statement\CreateViewStatement;
+use Inilim\SqliteParser\Ast\Statement\DeleteStatement;
+use Inilim\SqliteParser\Ast\Statement\ExplainStatement;
+use Inilim\SqliteParser\Ast\Statement\InsertStatement;
 use Inilim\SqliteParser\Ast\Statement\ResultColumn;
+use Inilim\SqliteParser\Ast\Statement\ReturningClause;
 use Inilim\SqliteParser\Ast\Statement\SelectStatement;
 use Inilim\SqliteParser\Ast\Statement\TableReference;
+use Inilim\SqliteParser\Ast\Statement\UpdateStatement;
 use Inilim\SqliteParser\Ast\Statement\WithClause;
 use Inilim\SqliteParser\Printer\SqlPrinter;
 
 /**
- * Определяет имена выходных колонок SELECT-запроса.
+ * Определяет имена выходных колонок SQL-инструкции.
  *
- * Возвращает плоский список имён в порядке `SELECT`-списка — так же, как
+ * Возвращает плоский список имён в порядке выходного списка — так же, как
  * это делает SQLite (см. `sqlite3_column_name()`).
  *
- * Поддерживаемые случаи:
+ * Поддерживаются:
  *
- *   - `SELECT a AS x, b`                  → `['x', 'b']`
- *   - `SELECT a.b, COUNT(*)`             → `['b', 'COUNT(*)']`
- *   - `SELECT * FROM t`                  → все колонки `t` из {@see SchemaProvider}
- *   - `SELECT * FROM t1 JOIN t2 ...`     → все колонки `t1`, затем `t2` (в порядке FROM/JOIN)
- *   - `SELECT * FROM (SELECT ...) AS t`  → колонки внутреннего SELECT
- *   - `WITH cte AS (...) SELECT * FROM cte` → колонки CTE
- *   - `SELECT ... UNION ALL SELECT ...`  → имена берутся из первого SELECT
+ *   1. **SELECT** (в т.ч. сложные):
+ *      - `SELECT a AS x, b`                  → `['x', 'b']`
+ *      - `SELECT a.b, COUNT(*)`              → `['b', 'COUNT(*)']`
+ *      - `SELECT * FROM t`                   → все колонки `t` из {@see SchemaProvider}
+ *      - `SELECT * FROM t1 JOIN t2 ...`      → `t1`, затем `t2` (в порядке FROM/JOIN)
+ *      - `SELECT * FROM (SELECT ...) AS t`   → колонки внутреннего SELECT
+ *      - `WITH cte AS (...) SELECT * FROM cte` → колонки CTE
+ *      - `WITH a AS (...), b AS (SELECT * FROM a) SELECT * FROM b` → цепочка CTE
+ *      - `SELECT ... UNION ALL SELECT ...`   → имена из первого SELECT
+ *      - `EXPLAIN [QUERY PLAN] SELECT ...`   → разворачивается во вложенный statement
  *
- * Если таблица неизвестна `SchemaProvider`-у, `SELECT *` для неё просто
- * ничего не добавляет (best-effort). Если нужна строгая проверка — используйте
- * схему, покрывающую все таблицы запроса.
+ *   2. **DML с `RETURNING`**:
+ *      - `INSERT ... RETURNING *`            → колонки таблицы-цели
+ *      - `INSERT ... RETURNING id, name`     → `['id', 'name']`
+ *      - `UPDATE ... RETURNING * AS x`       → раскрытие `*` по таблице-цели
+ *      - `DELETE ... RETURNING ...`          → аналогично
  *
- * Ограничение AST: `SELECT t.*` пока не поддерживается парсером (звёздочка
- * не хранит квалификатор), поэтому `t.*` обрабатывается как `*`.
+ *   3. **DDL, порождающий выходной набор**:
+ *      - `CREATE VIEW v [(cols)] AS SELECT ...` → колонки SELECT (или явные `cols`)
+ *      - `CREATE TABLE t AS SELECT ...`      → колонки SELECT
  *
- * Пример:
+ * Всё остальное (`CREATE TABLE ... (cols)`, `CREATE INDEX`, `DROP`, `ALTER`,
+ * `PRAGMA`, транзакции, `ATTACH`/`DETACH` и т.п.) возвращает `[]` — у этих
+ * инструкций нет выходного набора колонок.
  *
- *     $schema   = ArraySchema::fromScript($parser->parse($createSql));
- *     $resolver = new ColumnResolver($schema);
- *     $columns  = $resolver->resolve($parser->parse($selectSql)->statements[0]);
+ * Ограничения (best-effort, честно документировано):
+ *
+ *   - `SELECT t.*` / `RETURNING t.*` — текущий AST не хранит квалификатор
+ *     у {@see Star}, поэтому `t.*` обрабатывается как `*`.
+ *   - Рекурсивные CTE (`WITH RECURSIVE r AS (SELECT ... FROM r) SELECT ...`)
+ *     не разворачиваются: тело CTE ссылается на само себя, и раскрытие
+ *     `*` из `r` внутри тела даст `[]`.
+ *   - `WITH ... INSERT/UPDATE/DELETE` — парсер такие конструкции не производит
+ *     (у `InsertStatement`/`UpdateStatement`/`DeleteStatement` нет поля `with`),
+ *     поэтому в резолвере они не поддерживаются. Обычный `WITH ... SELECT`
+ *     работает.
+ *   - Неизвестная таблица в `SchemaProvider` — `SELECT *` для неё даёт `[]`
+ *     (best-effort). Чтобы получить полный список, передайте схему,
+ *     покрывающую все таблицы запроса (например, `ArraySchema::fromScript()`
+ *     по SQL-дампу с `CREATE TABLE`).
  */
 final class ColumnResolver
 {
@@ -72,6 +99,33 @@ final class ColumnResolver
         return match (true) {
             $statement instanceof SelectStatement => $this->resolveSelect($statement, $inheritedSchema),
             $statement instanceof CompoundSelect => $this->resolveCompoundSelect($statement, $inheritedSchema),
+
+            $statement instanceof InsertStatement => $this->resolveReturning(
+                $statement->returning,
+                $statement->table,
+                $inheritedSchema,
+            ),
+            $statement instanceof UpdateStatement => $this->resolveReturning(
+                $statement->returning,
+                $statement->table,
+                $inheritedSchema,
+            ),
+            $statement instanceof DeleteStatement => $this->resolveReturning(
+                $statement->returning,
+                $statement->table,
+                $inheritedSchema,
+            ),
+
+            $statement instanceof CreateViewStatement => $this->resolveCreateView($statement, $inheritedSchema),
+            $statement instanceof CreateTableStatement && $statement->asSelect !== null
+                => $this->resolveStatement($statement->asSelect, $inheritedSchema),
+
+            // EXPLAIN / EXPLAIN QUERY PLAN формально возвращают колонки плана
+            // (addr, opcode, ... / id, parent, ...), но для практической задачи
+            // «какие колонки выдаст запрос» полезнее развернуть во вложенный
+            // statement.
+            $statement instanceof ExplainStatement => $this->resolveStatement($statement->statement, $inheritedSchema),
+
             default => [],
         };
     }
@@ -119,6 +173,51 @@ final class ColumnResolver
     }
 
     /**
+     * @param array<string, list<string>> $inheritedSchema
+     *
+     * @return list<string>
+     */
+    private function resolveCreateView(CreateViewStatement $view, array $inheritedSchema): array
+    {
+        // Явный список колонок `CREATE VIEW v (a, b) AS SELECT ...` затеняет
+        // имена из SELECT.
+        if ($view->columns !== null) {
+            return $view->columns;
+        }
+
+        return $this->resolveStatement($view->select, $inheritedSchema);
+    }
+
+    /**
+     * Разрешает `RETURNING`-секцию DML-инструкции.
+     *
+     * `RETURNING *` раскрывается по колонкам **таблицы-цели** (а не по
+     * FROM/JOIN списку — у INSERT/UPDATE/DELETE его и нет).
+     *
+     * @param array<string, list<string>> $localSchema
+     *
+     * @return list<string>
+     */
+    private function resolveReturning(?ReturningClause $returning, string $targetTable, array $localSchema): array
+    {
+        if ($returning === null) {
+            return [];
+        }
+
+        $targetColumns = $this->getTableColumns($targetTable, $localSchema);
+        $expandStar = static fn (): array => $targetColumns ?? [];
+
+        $result = [];
+        foreach ($returning->columns as $resultColumn) {
+            foreach ($this->resolveResultColumnWithStar($resultColumn, $expandStar) as $name) {
+                $result[] = $name;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
      * @param array<string, list<string>> $localSchema
      *
      * @return list<string>
@@ -128,6 +227,19 @@ final class ColumnResolver
         SelectStatement $select,
         array $localSchema
     ): array {
+        return $this->resolveResultColumnWithStar(
+            $resultColumn,
+            fn (): array => $this->expandStar($select, $localSchema),
+        );
+    }
+
+    /**
+     * @param callable(): list<string> $expandStar
+     *
+     * @return list<string>
+     */
+    private function resolveResultColumnWithStar(ResultColumn $resultColumn, callable $expandStar): array
+    {
         if ($resultColumn->alias !== null) {
             return [$resultColumn->alias];
         }
@@ -139,15 +251,19 @@ final class ColumnResolver
         }
 
         if ($expression instanceof Star) {
-            return $this->expandStar($select, $localSchema);
+            return $expandStar();
         }
 
-        // Для остальных выражений (Literal, FunctionCall, BinaryOperation, ...)
-        // SQLite подставляет текст выражения как имя колонки.
+        // Для остальных выражений (Literal, FunctionCall, BinaryOperation,
+        // CaseExpression, Subquery, ...) SQLite подставляет текст выражения
+        // как имя колонки.
         return [$this->printer->print($expression)];
     }
 
     /**
+     * Раскрывает `*` в контексте SELECT: сначала колонки базовой таблицы
+     * FROM, затем — каждой JOIN-таблицы (в порядке FROM/JOIN, как в SQLite).
+     *
      * @param array<string, list<string>> $localSchema
      *
      * @return list<string>
@@ -186,6 +302,7 @@ final class ColumnResolver
             return null;
         }
 
+        // Явные псевдонимы колонок: `(SELECT ...) AS t (a, b)`.
         if ($reference->columnAliases !== null) {
             return $reference->columnAliases;
         }
@@ -217,6 +334,9 @@ final class ColumnResolver
     }
 
     /**
+     * Строит локальную «теневую» схему из списка CTE. Каждая CTE видит
+     * ранее объявленные CTE этого же `WITH` (chained CTE).
+     *
      * @param array<string, list<string>> $inheritedSchema
      *
      * @return array<string, list<string>>
@@ -232,7 +352,6 @@ final class ColumnResolver
             if ($cte->columns !== null) {
                 $cteColumns = $cte->columns;
             } else {
-                // CTE видит ранее объявленные CTE этого же WITH.
                 $innerSchema = array_merge($inheritedSchema, $result);
                 $cteColumns = $this->resolveStatement($cte->query, $innerSchema);
             }
