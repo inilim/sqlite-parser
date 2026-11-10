@@ -5491,7 +5491,13 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
 
     private static function reduceStringLiteral(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
-        return new \Inilim\SqliteParser\Ast\Expression\Literal($children->value, 'string');
+        $raw = (string) $children->value;
+            $len = \strlen($raw);
+            if ($len >= 2 && $raw[0] === "'" && $raw[$len - 1] === "'") {
+                $raw = \substr($raw, 1, -1);
+                $raw = \str_replace("''", "'", $raw);
+            }
+            return new \Inilim\SqliteParser\Ast\Expression\Literal($raw, 'string');
     }
 
     private static function reduceNullLiteral(\Phplrt\Parser\Context $ctx, mixed $children): mixed
