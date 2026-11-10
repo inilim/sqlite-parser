@@ -6999,6 +6999,18 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
             };
             $collect($children);
 
+            // Нормализует один элемент списка индексируемых выражений:
+            // простые ColumnReference без таблицы -> строковое имя колонки,
+            // всё остальное -> как есть (Expression).
+            $normalize = static function ($col) {
+                if ($col instanceof \Inilim\SqliteParser\Ast\Expression\ColumnReference
+                    && $col->table === null
+                ) {
+                    return $col->name;
+                }
+                return $col;
+            };
+
             $nameSet = false;
             foreach ($flat as $item) {
                 if ($item instanceof \Phplrt\Contracts\Lexer\TokenInterface) {
@@ -7017,7 +7029,10 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
                     continue;
                 }
                 if ($item instanceof \Inilim\SqliteParser\Ast\Expression\ExpressionList) {
-                    $columns = $item->items;
+                    $columns = [];
+                    foreach ($item->items as $col) {
+                        $columns[] = $normalize($col);
+                    }
                     continue;
                 }
                 if ($item instanceof \Inilim\SqliteParser\Ast\Expression) {
