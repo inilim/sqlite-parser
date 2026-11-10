@@ -1,6 +1,11 @@
 /tests export-ignore
 /.git* export-ignore
 /cli-tools export-ignore
+/grammar export-ignore
 
 # files
 /phpstan.neon export-ignore
+/phpstan.neon.dist export-ignore
+/phpunit.xml.dist export-ignore
+/README.md export-ignore
+/tree.out export-ignore
