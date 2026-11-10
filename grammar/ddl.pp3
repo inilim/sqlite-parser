@@ -11,7 +11,7 @@
 //                       T_NO, T_ACTION, T_BEFORE, T_AFTER, T_INSTEAD, T_OF,
 //                       T_FOR, T_EACH, T_ROW, T_BEGIN, T_END
 //   - select.pp3      — SelectStatement, TableName, IdentList
-//   - expression.pp3  — Expression, Literal
+//   - expression.pp3  — Expression, ExprList, Literal
 //
 // ВАЖНО: ключевые слова, которые нужны редьюсеру для определения типа
 // (PRIMARY, NOT, UNIQUE, CHECK, DEFAULT, COLLATE, AUTOINCREMENT, RENAME,
@@ -32,6 +32,12 @@
 // `Expression` уже умеет обрабатывать `( ... )` через PrimaryBase, поэтому
 // дополнительная альтернатива `( ::T_LPAREN:: Expression() ::T_RPAREN:: )`
 // не нужна и только увеличивает неоднозначность.
+//
+// ВАЖНО (CREATE INDEX): список индексируемых выражений может содержать
+// как простые идентификаторы (`a, b`), так и произвольные выражения
+// (`json_document ->> 'subfield'`, `json_extract(data, '$.a')`). Поэтому
+// используется `ExprList()` — он покрывает оба случая (идентификатор
+// разбирается как ColumnReference).
 // ============================================================================
 
 // ----------------------------------------------------------------------------
@@ -552,6 +558,14 @@ TableConstraint
 
 // ----------------------------------------------------------------------------
 // CREATE INDEX
+//
+// ВАЖНО: список индексируемых выражений реализован через `ExprList()`.
+// `IdentList()` не подходит, потому что для записей вида
+//   `CREATE INDEX i ON t(data ->> '$.a')`
+// LALR-парсер жадно матчит `data` как IdentList и падает на `->>`.
+// `ExprList()` покрывает оба случая: одиночный идентификатор парсится
+// как `ColumnReference`, а стрелочные/функциональные выражения — как
+// соответствующие Expression-узлы.
 // ----------------------------------------------------------------------------
 
 CreateIndexStatement
@@ -624,7 +638,7 @@ CreateIndexStatement
     }
     : ::T_CREATE:: (<T_UNIQUE>)? ::T_INDEX:: IfNotExistsClause()? TableName()
       ::T_ON:: TableName()
-      ::T_LPAREN:: (IdentList() | ExprList()) ::T_RPAREN::
+      ::T_LPAREN:: ExprList() ::T_RPAREN::
       (::T_WHERE:: Expression())?
     ;
 

@@ -915,7 +915,7 @@ final class JsonTest extends TestCase
     public static function provideJsonTableFunctionCombinations(): iterable
     {
         yield 'json_each of json_extract' => [
-            "SELECT e.value FROM json_each(json_extract(data, '$.items')) e FROM t",
+            "SELECT e.value FROM json_each(json_extract(data, '$.items')) e",
         ];
         yield 'json_each of json_group_array' => [
             "WITH g AS (SELECT json_group_array(id) AS ids FROM t) "

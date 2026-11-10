@@ -387,7 +387,7 @@ PostfixOp
             if ($v === '->' || $v === '->>') {
                 $right = $children[1] ?? null;
                 if ($right instanceof \Inilim\SqliteParser\Ast\Expression) {
-                    return new \Inilim\SqliteParser\Ast\Expression\BinaryOperation($left, $v, $right);
+                    return new \Inilim\SqliteParser\Ast\Expression\BinaryOperation($v, $left, $right);
                 }
                 return $left;
             }
