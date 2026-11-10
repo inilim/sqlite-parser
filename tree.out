@@ -2,7 +2,7 @@
 
 sqlite-parser/
 ├── grammar/
-│   ├── ddl.pp3 (31480 байт)
+│   ├── ddl.pp3 (32507 байт)
 │   ├── dml.pp3 (11795 байт)
 │   ├── expression.pp3 (21538 байт)
 │   ├── select.pp3 (18029 байт)
@@ -81,16 +81,20 @@ sqlite-parser/
 │   │   │   └── WithClause.php (521 байт)
 │   │   ├── Expression.php (277 байт)
 │   │   ├── Node.php (3002 байт)
-│   │   ├── Script.php (552 байт)
+│   │   ├── Script.php (1620 байт)
 │   │   └── Statement.php (277 байт)
 │   ├── Grammar/
 │   │   └── Reducers.php (5538 байт)
 │   ├── Parser/
 │   │   ├── Parser.php (1312 байт)
-│   │   └── SqliteParser.php (212296 байт)
+│   │   └── SqliteParser.php (211614 байт)
 │   ├── Printer/
 │   │   ├── NodeDumper.php (3921 байт)
 │   │   └── SqlPrinter.php (37889 байт)
+│   ├── Resolver/
+│   │   ├── ArraySchema.php (2888 байт)
+│   │   ├── ColumnResolver.php (13913 байт)
+│   │   └── SchemaProvider.php (1017 байт)
 │   └── Traversal/
 │       ├── NodeChildExtractor.php (2306 байт)
 │       ├── NodeCloner.php (1534 байт)
@@ -103,19 +107,22 @@ sqlite-parser/
 │   │   └── ScriptTest.php (1536 байт)
 │   ├── Grammar/
 │   │   ├── AdvancedSelectTest.php (8898 байт)
+│   │   ├── CombinatoricsTest.php (17842 байт)
+│   │   ├── DdlComprehensiveTest.php (18190 байт)
 │   │   ├── DdlTest.php (9593 байт)
 │   │   ├── DmlTest.php (8478 байт)
 │   │   ├── ExpressionTest.php (10857 байт)
 │   │   ├── FullScriptTest.php (3505 байт)
+│   │   ├── QueryCombinationsTest.php (17187 байт)
 │   │   ├── SelectTest.php (3687 байт)
 │   │   └── UtilityTest.php (8828 байт)
 │   └── Parser/
 │       ├── ParserTest.php (1523 байт)
 │       └── SqliteParserTest.php (2502 байт)
 ├── .gitattributes (108 байт)
-├── .phpunit.result.cache (10034 байт)
+├── .phpunit.result.cache (147394 байт)
 ├── composer.json (1783 байт)
 ├── phpstan.neon (225 байт)
 ├── phpstan.neon.dist (225 байт)
-├── phpunit.xml.dist (562 байт)
+├── phpunit.xml.dist (633 байт)
 └── README.md (4174 байт)
