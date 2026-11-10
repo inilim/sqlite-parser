@@ -95,4 +95,19 @@ final class ArraySchema implements SchemaProvider
     {
         return $this->tables;
     }
+
+    function merge(ArraySchema $schema): self
+    {
+        return new self(\array_merge($this->tables, $schema->tables));
+    }
+
+    static function mergeFrom(ArraySchema ...$schemas): self
+    {
+        $tables = [];
+        foreach ($schemas as $schema) {
+            $tables = \array_merge($tables, $schema->tables);
+        }
+
+        return new self($tables);
+    }
 }
