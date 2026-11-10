@@ -18,6 +18,20 @@
 // ADD, DROP, COLUMN, TO, TABLE, INDEX, VIEW, TRIGGER, WITHOUT, ROWID,
 // STRICT, CONSTRAINT, DELETE, UPDATE, CASCADE, RESTRICT, NULL, ACTION),
 // объявляются через <T_X> (сохраняются в $children), а не ::T_X:: (отбрасываются).
+//
+// ВАЖНО (DEFAULT): значение DEFAULT может быть НЕ только литералом.
+// В SQLite после DEFAULT допускаются:
+//   - литералы (int / float / string / NULL / TRUE / FALSE / blob);
+//   - signed-number (например, -1 или +2.5);
+//   - выражение в скобках: (expr);
+//   - CURRENT_TIME / CURRENT_DATE / CURRENT_TIMESTAMP — в грамматике
+//     они лексятся как T_IDENT и разбираются как ColumnReference;
+//   - вызов функции: datetime('now');
+//   - арифметическое выражение: 1 + 2.
+// Поэтому вместо узкого `Literal()` используется полноценный `Expression()`.
+// `Expression` уже умеет обрабатывать `( ... )` через PrimaryBase, поэтому
+// дополнительная альтернатива `( ::T_LPAREN:: Expression() ::T_RPAREN:: )`
+// не нужна и только увеличивает неоднозначность.
 // ============================================================================
 
 // ----------------------------------------------------------------------------
@@ -313,7 +327,7 @@ ColumnConstraint
     | <T_NOT> ::T_NULL:: ConflictClause()?
     | <T_UNIQUE> ConflictClause()?
     | <T_CHECK> ::T_LPAREN:: Expression() ::T_RPAREN::
-    | <T_DEFAULT> (::T_LPAREN:: Expression() ::T_RPAREN:: | Literal())
+    | <T_DEFAULT> Expression()
     | <T_COLLATE> <T_IDENT>
     | ReferencesClause()
     ;
