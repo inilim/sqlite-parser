@@ -523,8 +523,22 @@ FloatLiteral
     : <T_FLOAT>
     ;
 
+// ВАЖНО: значение строкового литерала хранится в AST БЕЗ обрамляющих одинарных
+// кавычек и с раскрытыми escape-последовательностями `` -> '. То есть AST
+// содержит семантическое значение строки, а не сырой токен. Это ожидается
+// тестами и совпадает с тем, как обрабатываются quoted-идентификаторы
+// (см. правило `Assignment` в dml.pp3, где кавычки тоже снимаются).
+// Обратное оборачивание в кавычки при печати — ответственность SqlPrinter.
 StringLiteral
-    -> { return new \Inilim\SqliteParser\Ast\Expression\Literal($children->value, 'string'); }
+    -> {
+        $raw = (string) $children->value;
+        $len = \strlen($raw);
+        if ($len >= 2 && $raw[0] === "'" && $raw[$len - 1] === "'") {
+            $raw = \substr($raw, 1, -1);
+            $raw = \str_replace("''", "'", $raw);
+        }
+        return new \Inilim\SqliteParser\Ast\Expression\Literal($raw, 'string');
+    }
     : <T_STRING>
     ;
 
