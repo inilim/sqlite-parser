@@ -1013,6 +1013,7 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
         false,
         false,
         false,
+        false,
     ];
 
     /** @var array<int, array<int, true>|null> */
@@ -2911,6 +2912,7 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
         [
             90 => true,
         ],
+        null,
         [
             155 => true,
         ],
@@ -2921,78 +2923,60 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
         2 => [
             2 => [
                 3,
-                4,
             ],
             28 => [
                 3,
-                4,
             ],
             43 => [
                 3,
-                4,
             ],
             47 => [
                 3,
-                4,
             ],
             49 => [
                 3,
-                4,
             ],
             [
                 3,
-                4,
             ],
             55 => [
                 3,
-                4,
             ],
             [
                 3,
-                4,
             ],
             75 => [
                 3,
-                4,
             ],
             [
                 3,
-                4,
             ],
             [
                 3,
-                4,
             ],
             79 => [
                 3,
-                4,
             ],
             84 => [
                 3,
-                4,
             ],
             [
                 3,
-                4,
             ],
             [
                 3,
-                4,
             ],
             [
                 3,
-                4,
             ],
             [
                 3,
-                4,
             ],
             96 => [
                 3,
-                4,
             ],
             155 => [
-                -502,
+                -503,
             ],
         ],
         4 => [
@@ -3964,6 +3948,10 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
 
     /** @var array<int, list<int>> */
     private const array PARSER_SEQUENCE_PREDICTION_TABLE = [
+        3 => [
+            4,
+            -416,
+        ],
         5 => [
             -8,
             29,
@@ -4604,8 +4592,8 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
             grammar: [
                 new \Phplrt\Parser\Grammar\Optional(1),
                 new \Phplrt\Parser\Grammar\Repetition(2, 1, \INF),
-                new \Phplrt\Parser\Grammar\Alternation([3, 4, 501]),
-                new \Phplrt\Parser\Grammar\Concatenation([4, 415]),
+                new \Phplrt\Parser\Grammar\Alternation([3, 502]),
+                new \Phplrt\Parser\Grammar\Concatenation([4, 501]),
                 new \Phplrt\Parser\Grammar\Alternation([5, 260, 298, 299, 301, 383, 388, 390, 416, 429, 438, 459, 463, 465, 490, 495]),
                 new \Phplrt\Parser\Grammar\Concatenation([6, 29, 244, 92, 253]),
                 new \Phplrt\Parser\Grammar\Optional(7),
@@ -5103,13 +5091,14 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
                 new \Phplrt\Parser\Grammar\Concatenation([499, 500]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_QUERY, true),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_PLAN, true),
+                new \Phplrt\Parser\Grammar\Optional(415),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_SEMICOLON, true),
             ],
             initial: 0,
             reducers: [
                 0 => self::reduceScript(...),
-                1 => self::reduceStatementList(...),
-                2 => self::reduceStatementEntry(...),
+                1 => self::reduceStatementSequence(...),
+                2 => self::reduceStatementItem(...),
                 5 => self::reduceSelectStatement(...),
                 7 => self::reduceWithClause(...),
                 11 => self::reduceCTEList(...),
@@ -5237,7 +5226,7 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
         return new \Inilim\SqliteParser\Ast\Script([]);
     }
 
-    private static function reduceStatementList(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    private static function reduceStatementSequence(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
         $children = \is_array($children) ? $children : [$children];
 
@@ -5251,10 +5240,14 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
         return $flat;
     }
 
-    private static function reduceStatementEntry(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    private static function reduceStatementItem(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
-        if ($children instanceof \Inilim\SqliteParser\Ast\Statement) {
-            return $children;
+        $children = \is_array($children) ? $children : [$children];
+
+        foreach ($children as $child) {
+            if ($child instanceof \Inilim\SqliteParser\Ast\Statement) {
+                return $child;
+            }
         }
 
         return new \Inilim\SqliteParser\Ast\Statement\EmptyStatement();
