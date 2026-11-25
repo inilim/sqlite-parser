@@ -4,68 +4,95 @@
 // Синтаксис редукторов phplrt 4.x: RuleName -> { ... } : ... ;
 // Пустая альтернатива выражается через ? (zero or one) или * (zero or more),
 // а не через %empty — директива %empty в PP3 не поддерживается.
+//
+// StatementEntry обрабатывает три случая:
+//   1. Statement() ::T_SEMICOLON::  — инструкция с завершающей точкой с запятой;
+//   2. Statement()                  — инструкция без завершающей точки с запятой
+//                                     (последняя в скрипте);
+//   3. <T_SEMICOLON>               — «голая» точка с запятой → EmptyStatement.
 // ============================================================================
 
 // ----------------------------------------------------------------------------
 // Точка входа: Script
 // ----------------------------------------------------------------------------
-
 Script
-    -> {
-        if ($children === null) {
-            return new \Inilim\SqliteParser\Ast\Script([]);
-        }
-        if (\is_array($children)) {
-            return new \Inilim\SqliteParser\Ast\Script($children);
-        }
-        if ($children instanceof \Inilim\SqliteParser\Ast\Statement) {
-            return new \Inilim\SqliteParser\Ast\Script([$children]);
-        }
-
-        return new \Inilim\SqliteParser\Ast\Script(
-            [new \Inilim\SqliteParser\Ast\Statement\EmptyStatement()]
-        );
+-> {
+    if ($children === null) {
+        return new \Inilim\SqliteParser\Ast\Script([]);
     }
-    : <T_SEMICOLON>
-    | StatementList()?
-    ;
 
+    if (\is_array($children)) {
+        return new \Inilim\SqliteParser\Ast\Script($children);
+    }
+
+    if ($children instanceof \Inilim\SqliteParser\Ast\Statement) {
+        return new \Inilim\SqliteParser\Ast\Script([$children]);
+    }
+
+    return new \Inilim\SqliteParser\Ast\Script([]);
+}
+: StatementList()?
+;
+
+// ----------------------------------------------------------------------------
+// StatementList: последовательность StatementEntry.
+// ----------------------------------------------------------------------------
 StatementList
-    -> {
-        $children = \is_array($children) ? $children : [$children];
+-> {
+    $children = \is_array($children) ? $children : [$children];
 
-        $flat = [];
-        \array_walk_recursive($children, static function ($item) use (&$flat): void {
-            if ($item instanceof \Inilim\SqliteParser\Ast\Statement) {
-                $flat[] = $item;
-            }
-        });
+    $flat = [];
+    \array_walk_recursive($children, static function ($item) use (&$flat): void {
+        if ($item instanceof \Inilim\SqliteParser\Ast\Statement) {
+            $flat[] = $item;
+        }
+    });
 
-        return $flat;
+    return $flat;
+}
+: StatementEntry()+
+;
+
+// ----------------------------------------------------------------------------
+// StatementEntry: один элемент последовательности.
+//
+// Варианты (пробуются по порядку):
+//   1. Инструкция + ';'  (наиболее частый случай)
+//   2. Инструкция без ';' (последняя инструкция в скрипте)
+//   3. Голая ';'         (пустая инструкция / EmptyStatement)
+// ----------------------------------------------------------------------------
+StatementEntry
+-> {
+    if ($children instanceof \Inilim\SqliteParser\Ast\Statement) {
+        return $children;
     }
-    : Statement() (::T_SEMICOLON:: Statement())* (::T_SEMICOLON::)?
-    ;
+
+    return new \Inilim\SqliteParser\Ast\Statement\EmptyStatement();
+}
+: Statement() ::T_SEMICOLON::
+| Statement()
+| <T_SEMICOLON>
+;
 
 // ----------------------------------------------------------------------------
 // Statement: SELECT, INSERT, UPDATE, DELETE, CREATE, ALTER, DROP,
 //            PRAGMA, ATTACH/DETACH, транзакции, SAVEPOINT, EXPLAIN.
 // ----------------------------------------------------------------------------
-
 Statement
-    : SelectStatement()
-    | InsertStatement()
-    | UpdateStatement()
-    | DeleteStatement()
-    | CreateTableStatement()
-    | CreateIndexStatement()
-    | CreateViewStatement()
-    | CreateTriggerStatement()
-    | AlterTableStatement()
-    | DropStatement()
-    | PragmaStatement()
-    | AttachStatement()
-    | DetachStatement()
-    | TransactionStatement()
-    | SavepointStatement()
-    | ExplainStatement()
-    ;
+: SelectStatement()
+| InsertStatement()
+| UpdateStatement()
+| DeleteStatement()
+| CreateTableStatement()
+| CreateIndexStatement()
+| CreateViewStatement()
+| CreateTriggerStatement()
+| AlterTableStatement()
+| DropStatement()
+| PragmaStatement()
+| AttachStatement()
+| DetachStatement()
+| TransactionStatement()
+| SavepointStatement()
+| ExplainStatement()
+;
