@@ -512,8 +512,8 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
     /** @var array<int, bool> */
     private const array PARSER_KEPT_TABLE = [
         true,
-        false,
-        false,
+        true,
+        true,
         true,
         false,
         true,
@@ -1019,9 +1019,47 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
     private const array PARSER_START_PREDICTION_TABLE = [
         null,
         [
+            2 => true,
+            28 => true,
+            43 => true,
+            47 => true,
+            49 => true,
+            true,
+            55 => true,
+            true,
+            75 => true,
+            true,
+            true,
+            79 => true,
+            84 => true,
+            true,
+            true,
+            true,
+            true,
+            96 => true,
             155 => true,
         ],
-        null,
+        [
+            2 => true,
+            28 => true,
+            43 => true,
+            47 => true,
+            49 => true,
+            true,
+            55 => true,
+            true,
+            75 => true,
+            true,
+            true,
+            79 => true,
+            84 => true,
+            true,
+            true,
+            true,
+            true,
+            96 => true,
+            155 => true,
+        ],
         [
             2 => true,
             28 => true,
@@ -2873,15 +2911,88 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
         [
             90 => true,
         ],
-        null,
+        [
+            155 => true,
+        ],
     ];
 
     /** @var array<int, array<int, list<int>>> */
     private const array PARSER_CHOICE_PREDICTION_TABLE = [
-        [
+        2 => [
+            2 => [
+                3,
+                4,
+            ],
+            28 => [
+                3,
+                4,
+            ],
+            43 => [
+                3,
+                4,
+            ],
+            47 => [
+                3,
+                4,
+            ],
+            49 => [
+                3,
+                4,
+            ],
+            [
+                3,
+                4,
+            ],
+            55 => [
+                3,
+                4,
+            ],
+            [
+                3,
+                4,
+            ],
+            75 => [
+                3,
+                4,
+            ],
+            [
+                3,
+                4,
+            ],
+            [
+                3,
+                4,
+            ],
+            79 => [
+                3,
+                4,
+            ],
+            84 => [
+                3,
+                4,
+            ],
+            [
+                3,
+                4,
+            ],
+            [
+                3,
+                4,
+            ],
+            [
+                3,
+                4,
+            ],
+            [
+                3,
+                4,
+            ],
+            96 => [
+                3,
+                4,
+            ],
             155 => [
-                -2,
-                2,
+                -502,
             ],
         ],
         4 => [
@@ -3853,11 +3964,6 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
 
     /** @var array<int, list<int>> */
     private const array PARSER_SEQUENCE_PREDICTION_TABLE = [
-        3 => [
-            4,
-            -414,
-            -416,
-        ],
         5 => [
             -8,
             29,
@@ -4496,10 +4602,10 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
         $this->parser = new \Phplrt\Parser\Parser(
             lexer: $this->lexer,
             grammar: [
-                new \Phplrt\Parser\Grammar\Alternation([1, 2]),
-                new \Phplrt\Parser\Grammar\Lexeme(self::T_SEMICOLON, true),
-                new \Phplrt\Parser\Grammar\Optional(3),
-                new \Phplrt\Parser\Grammar\Concatenation([4, 412, 501]),
+                new \Phplrt\Parser\Grammar\Optional(1),
+                new \Phplrt\Parser\Grammar\Repetition(2, 1, \INF),
+                new \Phplrt\Parser\Grammar\Alternation([3, 4, 501]),
+                new \Phplrt\Parser\Grammar\Concatenation([4, 415]),
                 new \Phplrt\Parser\Grammar\Alternation([5, 260, 298, 299, 301, 383, 388, 390, 416, 429, 438, 459, 463, 465, 490, 495]),
                 new \Phplrt\Parser\Grammar\Concatenation([6, 29, 244, 92, 253]),
                 new \Phplrt\Parser\Grammar\Optional(7),
@@ -4997,12 +5103,13 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
                 new \Phplrt\Parser\Grammar\Concatenation([499, 500]),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_QUERY, true),
                 new \Phplrt\Parser\Grammar\Lexeme(self::T_PLAN, true),
-                new \Phplrt\Parser\Grammar\Optional(415),
+                new \Phplrt\Parser\Grammar\Lexeme(self::T_SEMICOLON, true),
             ],
             initial: 0,
             reducers: [
                 0 => self::reduceScript(...),
-                3 => self::reduceStatementList(...),
+                1 => self::reduceStatementList(...),
+                2 => self::reduceStatementEntry(...),
                 5 => self::reduceSelectStatement(...),
                 7 => self::reduceWithClause(...),
                 11 => self::reduceCTEList(...),
@@ -5116,32 +5223,41 @@ readonly class SqliteParser implements \Phplrt\Contracts\Parser\ParserInterface
     private static function reduceScript(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
         if ($children === null) {
-                return new \Inilim\SqliteParser\Ast\Script([]);
-            }
-            if (\is_array($children)) {
-                return new \Inilim\SqliteParser\Ast\Script($children);
-            }
-            if ($children instanceof \Inilim\SqliteParser\Ast\Statement) {
-                return new \Inilim\SqliteParser\Ast\Script([$children]);
-            }
+            return new \Inilim\SqliteParser\Ast\Script([]);
+        }
 
-            return new \Inilim\SqliteParser\Ast\Script(
-                [new \Inilim\SqliteParser\Ast\Statement\EmptyStatement()]
-            );
+        if (\is_array($children)) {
+            return new \Inilim\SqliteParser\Ast\Script($children);
+        }
+
+        if ($children instanceof \Inilim\SqliteParser\Ast\Statement) {
+            return new \Inilim\SqliteParser\Ast\Script([$children]);
+        }
+
+        return new \Inilim\SqliteParser\Ast\Script([]);
     }
 
     private static function reduceStatementList(\Phplrt\Parser\Context $ctx, mixed $children): mixed
     {
         $children = \is_array($children) ? $children : [$children];
 
-            $flat = [];
-            \array_walk_recursive($children, static function ($item) use (&$flat): void {
-                if ($item instanceof \Inilim\SqliteParser\Ast\Statement) {
-                    $flat[] = $item;
-                }
-            });
+        $flat = [];
+        \array_walk_recursive($children, static function ($item) use (&$flat): void {
+            if ($item instanceof \Inilim\SqliteParser\Ast\Statement) {
+                $flat[] = $item;
+            }
+        });
 
-            return $flat;
+        return $flat;
+    }
+
+    private static function reduceStatementEntry(\Phplrt\Parser\Context $ctx, mixed $children): mixed
+    {
+        if ($children instanceof \Inilim\SqliteParser\Ast\Statement) {
+            return $children;
+        }
+
+        return new \Inilim\SqliteParser\Ast\Statement\EmptyStatement();
     }
 
     private static function reduceSelectStatement(\Phplrt\Parser\Context $ctx, mixed $children): mixed

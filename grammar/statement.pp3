@@ -5,11 +5,13 @@
 // Пустая альтернатива выражается через ? (zero or one) или * (zero or more),
 // а не через %empty — директива %empty в PP3 не поддерживается.
 //
-// StatementEntry обрабатывает три случая:
-//   1. Statement() ::T_SEMICOLON::  — инструкция с завершающей точкой с запятой;
-//   2. Statement()                  — инструкция без завершающей точки с запятой
-//                                     (последняя в скрипте);
-//   3. <T_SEMICOLON>               — «голая» точка с запятой → EmptyStatement.
+// StatementItem обрабатывает два случая:
+//   1. Statement() с необязательной завершающей ';' — инструкция;
+//   2. <T_SEMICOLON> — «голая» точка с запятой → EmptyStatement.
+//
+// Использование (::T_SEMICOLON::)? внутри одной альтернативы устраняет
+// неоднозначность, которая возникала при разделении на две альтернативы
+// (Statement() ::T_SEMICOLON:: | Statement()).
 // ============================================================================
 
 // ----------------------------------------------------------------------------
@@ -31,13 +33,13 @@ Script
 
     return new \Inilim\SqliteParser\Ast\Script([]);
 }
-: StatementList()?
+: StatementSequence()?
 ;
 
 // ----------------------------------------------------------------------------
-// StatementList: последовательность StatementEntry.
+// StatementSequence: один или более StatementItem.
 // ----------------------------------------------------------------------------
-StatementList
+StatementSequence
 -> {
     $children = \is_array($children) ? $children : [$children];
 
@@ -50,27 +52,30 @@ StatementList
 
     return $flat;
 }
-: StatementEntry()+
+: StatementItem()+
 ;
 
 // ----------------------------------------------------------------------------
-// StatementEntry: один элемент последовательности.
+// StatementItem: один элемент последовательности.
 //
-// Варианты (пробуются по порядку):
-//   1. Инструкция + ';'  (наиболее частый случай)
-//   2. Инструкция без ';' (последняя инструкция в скрипте)
-//   3. Голая ';'         (пустая инструкция / EmptyStatement)
+// Альтернативы:
+//   1. Инструкция с необязательной ';' — покрывает оба случая:
+//      "SELECT 1;" и "SELECT 1" (последняя без точки с запятой).
+//   2. Голая ';' — EmptyStatement.
 // ----------------------------------------------------------------------------
-StatementEntry
+StatementItem
 -> {
-    if ($children instanceof \Inilim\SqliteParser\Ast\Statement) {
-        return $children;
+    $children = \is_array($children) ? $children : [$children];
+
+    foreach ($children as $child) {
+        if ($child instanceof \Inilim\SqliteParser\Ast\Statement) {
+            return $child;
+        }
     }
 
     return new \Inilim\SqliteParser\Ast\Statement\EmptyStatement();
 }
-: Statement() ::T_SEMICOLON::
-| Statement()
+: Statement() (::T_SEMICOLON::)?
 | <T_SEMICOLON>
 ;
 
