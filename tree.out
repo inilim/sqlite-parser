@@ -7,7 +7,7 @@ sqlite-parser/
 │   ├── expression.pp3 (24060 байт)
 │   ├── select.pp3 (18825 байт)
 │   ├── sqlite.pp3 (1440 байт)
-│   ├── statement.pp3 (2461 байт)
+│   ├── statement.pp3 (3812 байт)
 │   ├── tokens.pp3 (8204 байт)
 │   └── utility.pp3 (12107 байт)
 ├── src/
@@ -87,7 +87,7 @@ sqlite-parser/
 │   │   └── Reducers.php (5538 байт)
 │   ├── Parser/
 │   │   ├── Parser.php (1312 байт)
-│   │   └── SqliteParser.php (222904 байт)
+│   │   └── SqliteParser.php (225055 байт)
 │   ├── Printer/
 │   │   ├── NodeDumper.php (3921 байт)
 │   │   └── SqlPrinter.php (38473 байт)
@@ -117,11 +117,19 @@ sqlite-parser/
 │   │   ├── QueryCombinationsTest.php (17187 байт)
 │   │   ├── SelectTest.php (3687 байт)
 │   │   └── UtilityTest.php (8828 байт)
-│   └── Parser/
-│       ├── ParserTest.php (1523 байт)
-│       └── SqliteParserTest.php (2502 байт)
-├── .gitattributes (108 байт)
-├── .phpunit.result.cache (182873 байт)
+│   ├── Parser/
+│   │   ├── ParserTest.php (1523 байт)
+│   │   └── SqliteParserTest.php (2502 байт)
+│   └── Ported/
+│       ├── ChildEnumerationTest.php (5275 байт)
+│       ├── ParserReuseTest.php (5844 байт)
+│       ├── PrinterRoundTripTest.php (5474 байт)
+│       ├── README.md (5999 байт)
+│       ├── RejectInvalidSqlTest.php (7219 байт)
+│       ├── StatementBoundaryTest.php (7151 байт)
+│       └── StatementVariantsTest.php (6428 байт)
+├── .gitattributes (250 байт)
+├── .phpunit.result.cache (237248 байт)
 ├── composer.json (1783 байт)
 ├── phpstan.neon (225 байт)
 ├── phpstan.neon.dist (225 байт)
